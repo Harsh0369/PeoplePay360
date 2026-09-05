@@ -16,6 +16,10 @@ const userSchema = new Schema(
       ref: "Employee",
       default: null,
     },
+    customPermissions: {
+      type: Object,
+      default: {},
+    },
     active: { type: Boolean, default: true },
     lastLoginAt: { type: Date, default: null },
   },

@@ -14,9 +14,7 @@ export const getBusinessLogsController = catchAsync(async (req: AuthRequest, res
   };
   const pagination = getPaginationParams(req);
   
-  // Wait for the dynamic import in the service to resolve
-  const result = await getBusinessLogsService(pagination, filters);
-  const offsetPagination = await result.offsetPagination;
+  const { data, offsetPagination } = await getBusinessLogsService(pagination, filters);
   
-  return ResponseUtil.paginatedOffset(res, "Business logs retrieved", result.data, offsetPagination);
+  return ResponseUtil.paginatedOffset(res, "Business logs retrieved", data, offsetPagination);
 });

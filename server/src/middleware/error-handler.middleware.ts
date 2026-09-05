@@ -6,10 +6,14 @@ export const notFoundHandler = (req: Request, res: Response, next: NextFunction)
 };
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  Logger.error('Unhandled Exception', { error: err.message, stack: err.stack });
-  
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
+
+  if (statusCode === 500) {
+    Logger.error('Unhandled Exception', { error: err.message, stack: err.stack });
+  } else {
+    Logger.warn(`[${statusCode}] ${message}`);
+  }
 
   res.status(statusCode).json({
     success: false,

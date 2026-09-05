@@ -1,4 +1,5 @@
 import { BusinessLog } from "../models/business-log.model";
+import { PaginationParams, buildOffsetPagination } from "../utils/pagination.util";
 
 interface CreateLogParams {
   actorId: string;
@@ -22,7 +23,7 @@ export const createBusinessLog = (params: CreateLogParams) => {
 };
 
 export const getBusinessLogsService = async (
-  pagination: import("../utils/pagination.util").PaginationParams,
+  pagination: PaginationParams,
   filters?: {
     entity?: string;
     action?: string;
@@ -51,6 +52,6 @@ export const getBusinessLogsService = async (
 
   return {
     data,
-    offsetPagination: import("../utils/pagination.util").then(m => m.buildOffsetPagination(totalItems, page, limit)),
+    offsetPagination: buildOffsetPagination(totalItems, page, limit),
   };
 };

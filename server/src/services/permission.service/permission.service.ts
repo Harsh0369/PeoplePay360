@@ -55,8 +55,20 @@ export class PermissionService {
 
     const role = this.toResolvedRole(roleObj);
 
+    const userCustomPermissions = (user as any).customPermissions as PermissionMapLike;
+    
+    // Flatten both to simple key-value records
+    const flatRolePermissions = flattenObject(role?.permissions || {});
+    const flatUserPermissions = flattenObject(userCustomPermissions || {});
+    
+    // Merge them, allowing user's custom permissions to override role's permissions
+    const mergedPermissions = {
+      ...flatRolePermissions,
+      ...flatUserPermissions
+    };
+
     const permissions = new Set<string>(
-      this.extractEnabledPermissions(role?.permissions as PermissionMapLike)
+      this.extractEnabledPermissions(mergedPermissions)
     );
 
     const isAdmin = Boolean(role?.isAdmin);
