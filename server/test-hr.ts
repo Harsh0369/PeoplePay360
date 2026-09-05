@@ -8,6 +8,8 @@ import { createSalaryRuleService } from './src/services/salary-rule.service';
 import { createSalaryStructureService } from './src/services/salary-structure.service';
 import { createDepartmentService, assignEmployeeDepartmentService } from './src/services/department.service';
 import { createJobPositionService, assignEmployeeJobPositionService } from './src/services/job-position.service';
+import { createWorkingScheduleService } from './src/services/working-schedule.service';
+import { createContractService, updateContractService, getApplicableContractService } from './src/services/contract.service/index';
 import { Parser } from 'expr-eval';
 
 const testHR = async () => {
@@ -71,34 +73,7 @@ const testHR = async () => {
     await adminUser.save();
     console.log("Linked User to Employee");
 
-    // Create WorkingSchedule
-    console.log("\n--- Creating Working Schedule ---");
-    const schedule = await Models.WorkingSchedule.create({
-      name: "Standard Full-Time",
-      workingDays: [
-        { dayOfWeek: "Monday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Tuesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Wednesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Thursday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Friday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Saturday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
-        { dayOfWeek: "Sunday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 } // Added all days to avoid Sunday failures
-      ]
-    });
-
-    // Create Contract
-    console.log("\n--- Creating Contract ---");
-    const contract = await Models.Contract.create({
-      employeeId: employee._id,
-      workingScheduleId: schedule._id,
-      startDate: new Date("2020-01-01"),
-      status: "Running",
-      wage: 50000,
-      departmentId: new mongoose.Types.ObjectId(),
-      jobPositionId: new mongoose.Types.ObjectId()
-    });
-
-    // Test getProfileService
+    // Test Organization (Department & Job Title)
     console.log("\n--- Testing Organization (Department & Job Title) ---");
     const dept = await createDepartmentService({
       name: "Engineering"
@@ -115,6 +90,77 @@ const testHR = async () => {
     await assignEmployeeDepartmentService(employee._id.toString(), dept._id.toString(), adminUser._id.toString());
     await assignEmployeeJobPositionService(employee._id.toString(), jobPos._id.toString(), adminUser._id.toString());
     console.log("SUCCESS: Assigned Employee to Department and Job Position");
+
+    // Test WorkingSchedule Service
+    console.log("\n--- Testing Working Schedule Service ---");
+    try {
+      await createWorkingScheduleService({
+        name: "Invalid Schedule",
+        workingDays: [
+          { dayOfWeek: "Monday", startTime: "25:00", endTime: "17:00", breakDurationMinutes: 60 }
+        ]
+      });
+      console.log("FAIL: Invalid time format schedule succeeded incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Invalid time format caught:", e.message);
+    }
+
+    const schedule = await createWorkingScheduleService({
+      name: "Standard Full-Time",
+      workingDays: [
+        { dayOfWeek: "Monday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Tuesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Wednesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Thursday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Friday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Saturday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Sunday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 }
+      ]
+    });
+    console.log(`Created Working Schedule: ${schedule.name}, Total Weekly Hours: ${schedule.totalWeeklyHours}`);
+
+    // Test Contract Service
+    console.log("\n--- Testing Contract Service & Period Applicability ---");
+    const contract = await createContractService({
+      employeeId: employee._id.toString(),
+      workingScheduleId: schedule._id.toString(),
+      departmentId: dept._id.toString(),
+      jobPositionId: jobPos._id.toString(),
+      startDate: "2020-01-01",
+      wage: 50000
+    });
+    console.log(`Created Contract in Draft state. Status: ${contract.status}`);
+
+    // Activate contract
+    const activatedContract = await updateContractService(contract._id.toString(), { status: "Running" });
+    console.log(`Activated Contract. Status: ${activatedContract.status}`);
+
+    // Test Overlapping Running Contract Prevention
+    try {
+      const overlappingContract = await createContractService({
+        employeeId: employee._id.toString(),
+        workingScheduleId: schedule._id.toString(),
+        departmentId: dept._id.toString(),
+        jobPositionId: jobPos._id.toString(),
+        startDate: "2022-01-01",
+        wage: 60000
+      });
+      await updateContractService(overlappingContract._id.toString(), { status: "Running" });
+      console.log("FAIL: Overlapping running contract activation succeeded incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Overlapping running contract prevented:", e.message);
+    }
+
+    // Test Applicable Contract Retrieval for Payroll Period
+    const applicable = await getApplicableContractService(employee._id.toString(), "2026-09-01", "2026-09-30");
+    console.log(`SUCCESS: Retrieved applicable contract for Sept 2026. Wage: ${applicable.wage}`);
+
+    try {
+      await getApplicableContractService(employee._id.toString(), "2019-01-01", "2019-01-31");
+      console.log("FAIL: Historical period before contract start date retrieved a contract incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Non-applicable period rejected:", e.message);
+    }
 
     // --- Testing Get Profile ---
     const profile = await getProfileService(adminUser._id.toString());
