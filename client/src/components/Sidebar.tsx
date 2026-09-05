@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Users, FileText, Briefcase, Clock, CalendarCheck, Wallet,
-  SlidersHorizontal, Building2, ShieldCheck, UserCircle, LogOut, ShieldCheck as Logo, LucideIcon,
+  SlidersHorizontal, Building2, ShieldCheck, ShieldAlert, UserCircle, LogOut, ShieldCheck as Logo, LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { roleLabel } from '../services/auth';
@@ -29,6 +29,7 @@ const ITEMS: Item[] = [
   { tab: 'CONFIG', label: 'Config', icon: SlidersHorizontal, section: 'admin' },
   { tab: 'ORG', label: 'Organization', icon: Building2, section: 'admin' },
   { tab: 'SETTINGS', label: 'Roles & Access', icon: ShieldCheck, section: 'admin' },
+  { tab: 'AUDIT', label: 'Audit Trail', icon: ShieldAlert, section: 'admin' },
   { tab: 'MY_PROFILE', label: 'My Profile', icon: UserCircle, section: 'me' },
 ];
 

@@ -14,6 +14,7 @@ import { AttendanceModule } from './components/AttendanceModule';
 import { TimeOffModule } from './components/TimeOffModule';
 import { OrgModule } from './components/OrgModule';
 import { RolesModule } from './components/RolesModule';
+import { AuditModule } from './components/AuditModule';
 import { MyProfileModule } from './components/MyProfileModule';
 import { AccessDenied } from './components/AccessDenied';
 import { TAB_PERMS, PERM } from './lib/permissions';
@@ -102,6 +103,7 @@ export function App() {
     if (canView('CONFIG')) tasks.push(['CONFIG', total('/payroll-config/rules')]);
     if (canView('ORG')) tasks.push(['ORG', total('/departments')]);
     if (canView('SETTINGS')) tasks.push(['SETTINGS', len(masterApi.getRoles())]);
+    if (canView('AUDIT')) tasks.push(['AUDIT', total('/business-logs')]);
 
     tasks.forEach(([tab, p]) => p.then((n) => put(tab, n)).catch(() => {}));
     return () => { alive = false; };
@@ -248,7 +250,7 @@ export function App() {
   const TAB_TITLE: Record<string, string> = {
     EMPLOYEES: 'Employees Directory', CONTRACTS: 'Contracts', JOB_POSITIONS: 'Job Positions',
     ATTENDANCE: 'Attendance', TIMEOFF: 'Time Off', PAYROLL: 'Payroll', CONFIG: 'Configuration',
-    ORG: 'Organization', SETTINGS: 'Roles & Access', MY_PROFILE: 'My Profile',
+    ORG: 'Organization', SETTINGS: 'Roles & Access', AUDIT: 'Audit Trail', MY_PROFILE: 'My Profile',
   };
 
   return (
@@ -279,6 +281,7 @@ export function App() {
         {activeTab === 'TIMEOFF' && <TimeOffModule />}
         {activeTab === 'ORG' && <OrgModule />}
         {activeTab === 'SETTINGS' && <RolesModule />}
+        {activeTab === 'AUDIT' && <AuditModule />}
         {activeTab === 'MY_PROFILE' && <MyProfileModule />}
         {activeTab === 'EMPLOYEES' && (
           <EmployeesModule

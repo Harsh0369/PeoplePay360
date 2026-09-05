@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, Plus, Trash2 } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Trash2, Pencil } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useAuth } from '../hooks/useAuth';
@@ -46,13 +46,19 @@ export const OrgModule: React.FC = () => {
     try {
       if (form.kind === 'DEPT') {
         await masterApi.createDepartment({ name: form.name, ...(form.managerId ? { managerId: form.managerId } : {}), ...(form.parentDepartmentId ? { parentDepartmentId: form.parentDepartmentId } : {}) });
+        notify.success(`Department "${form.name}" created.`);
       } else {
         const workingDays = (form.workingDays || []).map((l: any) => ({
           dayOfWeek: l.dayOfWeek, startTime: l.startTime, endTime: l.endTime, breakDurationMinutes: Number(l.breakDurationMinutes) || 0,
         }));
-        await masterApi.createWorkingSchedule({ name: form.name, workingDays });
+        if (form._id) {
+          await masterApi.updateWorkingSchedule(form._id, { name: form.name, workingDays });
+          notify.success(`Working schedule "${form.name}" updated.`);
+        } else {
+          await masterApi.createWorkingSchedule({ name: form.name, workingDays });
+          notify.success(`Working schedule "${form.name}" created.`);
+        }
       }
-      notify.success(`${form.kind === 'DEPT' ? 'Department' : 'Working schedule'} "${form.name}" created.`);
       setForm(null); load();
     } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
@@ -61,6 +67,12 @@ export const OrgModule: React.FC = () => {
   const set = (k: string) => (e: any) => setForm((f: any) => ({ ...f, [k]: e.target.value }));
   const defLines = () => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((d) => ({ dayOfWeek: d, startTime: '09:00', endTime: '18:00', breakDurationMinutes: 60 }));
   const openNew = () => setForm(tab === 'DEPARTMENTS' ? { kind: 'DEPT', name: '' } : { kind: 'SCHED', name: '', workingDays: defLines() });
+  const editSchedule = (s: any) => setForm({
+    kind: 'SCHED', _id: s._id, name: s.name,
+    workingDays: (s.workingDays || []).map((l: any) => ({
+      dayOfWeek: l.dayOfWeek, startTime: l.startTime, endTime: l.endTime, breakDurationMinutes: l.breakDurationMinutes ?? 0,
+    })),
+  });
   const setLine = (i: number, k: string, v: any) => setForm((f: any) => ({ ...f, workingDays: f.workingDays.map((l: any, idx: number) => idx === i ? { ...l, [k]: v } : l) }));
   const addLine = () => setForm((f: any) => ({ ...f, workingDays: [...f.workingDays, { dayOfWeek: 'Monday', startTime: '09:00', endTime: '18:00', breakDurationMinutes: 60 }] }));
   const rmLine = (i: number) => setForm((f: any) => ({ ...f, workingDays: f.workingDays.filter((_: any, idx: number) => idx !== i) }));
@@ -104,21 +116,22 @@ export const OrgModule: React.FC = () => {
             <tr><td colSpan={3} className="p-0"><Paginator page={deptList.page} totalPages={deptList.totalPages} totalItems={deptList.totalItems} pageSize={deptList.pageSize} onPage={deptList.setPage} /></td></tr>
           </Table></Card>
         ) : (
-          <Card><Table head={['Schedule', 'Working Days', 'Weekly Hours']}>
+          <Card><Table head={['Schedule', 'Working Days', 'Weekly Hours', ...(canWrite ? [''] : [])]}>
             {schedList.items.map((s) => (
               <tr key={s._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{s.name}</td>
                 <td className="td">{(s.workingDays || []).length} days</td>
                 <td className="td font-semibold">{s.totalWeeklyHours ?? 0} h</td>
+                {canWrite && <td className="td"><button onClick={() => editSchedule(s)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg" title="Edit"><Pencil className="w-4 h-4" /></button></td>}
               </tr>
             ))}
-            {schedules.length === 0 && <EmptyRow cols={3} msg="No working schedules yet." />}
-            <tr><td colSpan={3} className="p-0"><Paginator page={schedList.page} totalPages={schedList.totalPages} totalItems={schedList.totalItems} pageSize={schedList.pageSize} onPage={schedList.setPage} /></td></tr>
+            {schedules.length === 0 && <EmptyRow cols={canWrite ? 4 : 3} msg="No working schedules yet." />}
+            <tr><td colSpan={canWrite ? 4 : 3} className="p-0"><Paginator page={schedList.page} totalPages={schedList.totalPages} totalItems={schedList.totalItems} pageSize={schedList.pageSize} onPage={schedList.setPage} /></td></tr>
           </Table></Card>
         )}
 
       {form && (
-        <Drawer title={form.kind === 'DEPT' ? 'New Department' : 'New Working Schedule'} onClose={() => setForm(null)}
+        <Drawer title={form.kind === 'DEPT' ? 'New Department' : form._id ? 'Edit Working Schedule' : 'New Working Schedule'} onClose={() => setForm(null)}
           footer={<>
             <button onClick={() => setForm(null)} className="px-4 py-2 text-sm text-brand-mutedSlate">Cancel</button>
             <button onClick={submit} disabled={!form.name || busy === 'save'} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{busy === 'save' && <Loader2 className="w-4 h-4 animate-spin" />} Save</button>

@@ -52,8 +52,13 @@ export const masterApi = {
   getJobPositions: () => req('GET', '/job-positions'),
   getWorkingSchedules: () => req('GET', '/working-schedules'),
   createWorkingSchedule: (data: any) => req('POST', '/working-schedules', data),
+  updateWorkingSchedule: (id: string, data: any) => req('PUT', `/working-schedules/${id}`, data),
+  assignDepartment: (employeeId: string, departmentId: string) =>
+    req('POST', `/departments/employee/${employeeId}/assign`, { departmentId }),
   getRoles: () => req('GET', '/roles'),
   createRole: (data: any) => req('POST', '/roles', data),
+  updateRole: (id: string, data: any) => req('PUT', `/roles/${id}`, data),
+  deleteRole: (id: string) => req('DELETE', `/roles/${id}`),
   getEmployees: () => req('GET', '/employees'),
   getMyProfile: () => req('GET', '/employees/me'), // { employee, activeContract }
 };
@@ -83,4 +88,11 @@ export const timeOffApi = {
   raiseRequest: (data: any) => req('POST', '/time-off/request', data),
   review: (id: string, data: { status: 'APPROVED' | 'REJECTED'; reviewNote?: string }) =>
     req('POST', `/time-off/${id}/review`, data),
+  adminOverride: (id: string, data: { newStatus: 'APPROVED' | 'REJECTED'; reason: string }) =>
+    req('POST', `/time-off/${id}/admin-override`, data),
+};
+
+// ---- Audit / business logs ----
+export const auditApi = {
+  getLogs: (params = '') => req('GET', `/business-logs${params}`),
 };

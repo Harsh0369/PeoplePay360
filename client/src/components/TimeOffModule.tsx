@@ -31,6 +31,7 @@ export const TimeOffModule: React.FC = () => {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState<any>(null); // { kind, ...fields }
+  const [override, setOverride] = useState<any | null>(null); // { _id, employeeName, current, newStatus, reason }
 
   const reqList = useClientList(requests, { searchFields: ['employeeId.name', 'timeOffTypeId.name', 'status'], pageSize: 15 });
   const allocList = useClientList(allocations, { searchFields: ['employeeId.name', 'timeOffTypeId.name'], pageSize: 15 });
@@ -56,6 +57,17 @@ export const TimeOffModule: React.FC = () => {
     setBusy(id + status);
     try { await timeOffApi.review(id, { status }); notify.success(`Request ${status.toLowerCase()}.`); load(); }
     catch (e: any) { notify.error(e.message); }
+    finally { setBusy(''); }
+  };
+
+  const submitOverride = async () => {
+    if (!override.reason.trim()) { notify.error('A reason is required for an admin override.'); return; }
+    setBusy('override');
+    try {
+      await timeOffApi.adminOverride(override._id, { newStatus: override.newStatus, reason: override.reason.trim() });
+      notify.success(`Request forcibly ${override.newStatus.toLowerCase()}.`);
+      setOverride(null); load();
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 
@@ -121,6 +133,10 @@ export const TimeOffModule: React.FC = () => {
                       <button onClick={() => review(r._id, 'APPROVED')} disabled={!!busy} className="p-1.5 rounded bg-brand-activeBg text-brand-activeText hover:opacity-80" title="Approve"><Check className="w-4 h-4" /></button>
                       <button onClick={() => review(r._id, 'REJECTED')} disabled={!!busy} className="p-1.5 rounded bg-brand-warningBg text-brand-warningText hover:opacity-80" title="Reject"><X className="w-4 h-4" /></button>
                     </div>
+                  )}
+                  {r.status !== 'PENDING' && canWrite && (
+                    <button onClick={() => setOverride({ _id: r._id, employeeName: nameOf(r.employeeId), current: r.status, newStatus: r.status === 'APPROVED' ? 'REJECTED' : 'APPROVED', reason: '' })}
+                      className="text-xs font-semibold text-brand-teal hover:underline" title="Force-change this decision">Override</button>
                   )}
                 </td>
               </tr>
@@ -188,6 +204,27 @@ export const TimeOffModule: React.FC = () => {
               <Field label="End Date"><input type="date" className="inp" value={form.endDate || ''} onChange={set('endDate')} /></Field>
             </div>
           )}
+        </Drawer>
+      )}
+
+      {override && (
+        <Drawer title="Admin Override" onClose={() => setOverride(null)}
+          footer={<>
+            <button onClick={() => setOverride(null)} className="px-4 py-2 text-sm text-brand-mutedSlate">Cancel</button>
+            <button onClick={submitOverride} disabled={busy === 'override' || !override.reason.trim()} className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{busy === 'override' && <Loader2 className="w-4 h-4 animate-spin" />} Force {override.newStatus === 'APPROVED' ? 'Approve' : 'Reject'}</button>
+          </>}>
+          <p className="text-sm text-brand-mutedSlate mb-4">Forcibly change <span className="font-semibold text-brand-darkCharcoal">{override.employeeName}</span>'s request (currently <span className="font-semibold">{override.current}</span>). Balances are adjusted and the action is audit-logged.</p>
+          <Field label="New Status">
+            <select className="inp" value={override.newStatus} onChange={(e) => setOverride((o: any) => ({ ...o, newStatus: e.target.value }))}>
+              <option value="APPROVED">APPROVED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </Field>
+          <div className="mt-4">
+            <Field label="Reason (required)">
+              <textarea className="inp" rows={3} value={override.reason} onChange={(e) => setOverride((o: any) => ({ ...o, reason: e.target.value }))} placeholder="Why is this decision being overridden?" />
+            </Field>
+          </div>
         </Drawer>
       )}
     </div>

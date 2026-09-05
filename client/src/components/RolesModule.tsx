@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, ShieldCheck, Plus } from 'lucide-react';
+import { Loader2, RefreshCw, ShieldCheck, Plus, Pencil, Trash2 } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { useAuth } from '../hooks/useAuth';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
@@ -52,16 +52,37 @@ export const RolesModule: React.FC = () => {
 
   const togglePerm = (key: string) => setForm((f: any) => ({ ...f, perms: { ...f.perms, [key]: !f.perms[key] } }));
 
+  const editRole = (r: any) => {
+    const perms: Record<string, boolean> = {};
+    grantedPerms(r.permissions).forEach((p) => { if (p !== 'admin') perms[p] = true; });
+    setForm({ _id: r._id, name: r.name, dataScope: r.dataScope || 'self', isAdmin: !!r.isAdmin, perms });
+  };
+
   const saveRole = async () => {
     setSaving(true); setError('');
     try {
       const permissions: Record<string, boolean> = {};
       Object.entries(form.perms).forEach(([k, v]) => { if (v) permissions[k] = true; });
-      await masterApi.createRole({ name: form.name, dataScope: form.dataScope, isAdmin: !!form.isAdmin, permissions });
-      notify.success(`Role "${form.name}" created.`);
+      const body = { name: form.name, dataScope: form.dataScope, isAdmin: !!form.isAdmin, permissions };
+      if (form._id) {
+        await masterApi.updateRole(form._id, body);
+        notify.success(`Role "${form.name}" updated.`);
+      } else {
+        await masterApi.createRole(body);
+        notify.success(`Role "${form.name}" created.`);
+      }
       setForm(null); load();
     } catch (e: any) { notify.error(e.message); }
     finally { setSaving(false); }
+  };
+
+  const deleteRole = async (r: any) => {
+    if (!window.confirm(`Delete role "${r.name}"? Users assigned to it may lose access.`)) return;
+    try {
+      await masterApi.deleteRole(r._id);
+      notify.success(`Role "${r.name}" deleted.`);
+      load();
+    } catch (e: any) { notify.error(e.message); }
   };
 
   return (
@@ -94,7 +115,14 @@ export const RolesModule: React.FC = () => {
                 <td className="td font-medium text-brand-darkCharcoal flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-brand-teal" /> {r.name}</td>
                 <td className="td">{r.dataScope || '—'}</td>
                 <td className="td">{r.isAdmin || perms.includes('admin') ? <span className="badge bg-brand-activeBg text-brand-activeText">All (admin)</span> : `${perms.length} granted`}</td>
-                <td className="td text-brand-teal text-xs">View</td>
+                <td className="td" onClick={(e) => e.stopPropagation()}>
+                  {canWrite ? (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => editRole(r)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg" title="Edit"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={() => deleteRole(r)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-rose-600 hover:bg-rose-50" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  ) : <span className="text-brand-teal text-xs">View</span>}
+                </td>
               </tr>
             );
           })}
@@ -114,12 +142,12 @@ export const RolesModule: React.FC = () => {
         </Drawer>
       )}
 
-      {/* Create drawer */}
+      {/* Create / edit drawer */}
       {form && (
-        <Drawer title="New Role" onClose={() => setForm(null)}
+        <Drawer title={form._id ? 'Edit Role' : 'New Role'} onClose={() => setForm(null)}
           footer={<>
             <button onClick={() => setForm(null)} className="px-4 py-2 text-sm text-brand-mutedSlate">Cancel</button>
-            <button onClick={saveRole} disabled={!form.name || saving} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{saving && <Loader2 className="w-4 h-4 animate-spin" />} Create Role</button>
+            <button onClick={saveRole} disabled={!form.name || saving} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{saving && <Loader2 className="w-4 h-4 animate-spin" />} {form._id ? 'Save Changes' : 'Create Role'}</button>
           </>}>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Role Name"><input className="inp" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Team Lead" /></Field>

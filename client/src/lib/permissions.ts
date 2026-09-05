@@ -17,10 +17,12 @@ export const TAB_PERMS: Record<ActiveTab, string[] | null> = {
   JOB_POSITIONS: ['admin', 'Organization.Read'],
   ATTENDANCE: ['admin', 'Attendance.Read'],
   TIMEOFF: ['admin', 'TimeOff.Read'],
-  PAYROLL: ['admin', 'Payroll.Read'],
-  CONFIG: ['admin', 'Payroll.Write'],
+  PAYROLL: ['admin', 'Payroll.Read', 'Payroll.Write'],
+  // Salary rules/structures GET requires Payroll.Read, so payroll readers can view Config too.
+  CONFIG: ['admin', 'Payroll.Read', 'Payroll.Write'],
   ORG: ['admin', 'Organization.Read'],
   SETTINGS: ['admin', 'Settings.Read'],
+  AUDIT: ['admin', 'Audit.Read'],
 };
 
 // Write / action permission sets (mirror requireAnyPermission on the backend).
