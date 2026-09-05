@@ -11,7 +11,8 @@ import React, { FormEvent, useMemo, useState } from "react";
  * - Admin-only user management
  * - Create/Edit user panel
  * - Search + role filtering
- *
+ *Email: admin@company.com
+Password: anything
  * IMPORTANT:
  * This component demonstrates the frontend authentication flow.
  * Real authentication and RBAC MUST also be enforced by your backend/API.
