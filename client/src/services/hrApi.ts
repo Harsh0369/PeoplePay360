@@ -3,12 +3,15 @@ import { authHeaders } from './auth';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 // Unwraps { success, message, data } and throws a clean error on failure.
+// GET requests carry a high limit so paginated list endpoints return the full set.
 async function req<T = any>(method: string, path: string, body?: any): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  let url = `${API_BASE_URL}${path}`;
+  if (method === 'GET') url += (path.includes('?') ? '&' : '?') + 'limit=100000';
+  const res = await fetch(url, {
     method,
     headers: authHeaders(body ? { 'Content-Type': 'application/json' } : {}),
     body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(12000),
+    signal: AbortSignal.timeout(20000),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
