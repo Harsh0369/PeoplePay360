@@ -13,6 +13,11 @@ const employeeSchema = new Schema(
       required: true,
       trim: true,
     },
+    bankAccount: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     workEmail: {
       type: String,
       required: true,
