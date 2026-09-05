@@ -28,7 +28,7 @@ export const assignEmployeeDepartmentService = async (
         entity: "EMPLOYEE",
         action: "UPDATE",
         content: `Assigned to department: ${department.name} (was: ${oldDeptId || 'None'})`,
-        performedBy: adminUserId,
+        actorId: adminUserId,
       });
     } catch (err) {
       console.error("Failed to write business log for department assignment:", err);

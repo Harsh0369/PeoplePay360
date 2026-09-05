@@ -34,7 +34,7 @@ export const assignEmployeeJobPositionService = async (
         entity: "EMPLOYEE",
         action: "UPDATE",
         content: `Assigned to Job Title: ${jobPosition.title} (was: ${oldJobId || 'None'})`,
-        performedBy: adminUserId,
+        actorId: adminUserId,
       });
     } catch (err) {
       console.error("Failed to write business log for job position assignment:", err);
