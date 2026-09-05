@@ -8,6 +8,7 @@ import { PERM } from '../lib/permissions';
 import { useClientList } from '../hooks/usePagedList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { notify } from '../lib/toast';
 
 type Tab = 'REQUESTS' | 'ALLOCATIONS' | 'TYPES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
@@ -52,14 +53,14 @@ export const TimeOffModule: React.FC = () => {
   useEffect(() => { load(); }, []);
 
   const review = async (id: string, status: 'APPROVED' | 'REJECTED') => {
-    setBusy(id + status); setError('');
-    try { await timeOffApi.review(id, { status }); load(); }
-    catch (e: any) { setError(e.message); }
+    setBusy(id + status);
+    try { await timeOffApi.review(id, { status }); notify.success(`Request ${status.toLowerCase()}.`); load(); }
+    catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 
   const submit = async () => {
-    setBusy('save'); setError('');
+    setBusy('save');
     try {
       if (form.kind === 'TYPE') {
         await timeOffApi.createType({ name: form.name, description: form.description || '', isPaid: !!form.isPaid, requiresAllocation: !!form.requiresAllocation });
@@ -68,8 +69,9 @@ export const TimeOffModule: React.FC = () => {
       } else if (form.kind === 'REQUEST') {
         await timeOffApi.raiseRequest({ timeOffTypeId: form.timeOffTypeId, startDate: form.startDate, endDate: form.endDate });
       }
+      notify.success(`${form.kind.charAt(0) + form.kind.slice(1).toLowerCase()} created.`);
       setForm(null); load();
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 

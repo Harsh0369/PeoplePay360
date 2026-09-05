@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Employee, EmployeeStatus, EmployeeType } from '../types';
 import { FileText, Clock, CalendarCheck, CheckCircle2, ArrowLeft, Save, X, Building, Mail, Phone, User, Landmark, AlertCircle } from 'lucide-react';
+import { notify } from '../lib/toast';
 
 interface EmployeeFormProps {
   employee: Employee | null;
@@ -48,7 +49,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      alert('Employee Name is required');
+      notify.error('Employee Name is required');
       return;
     }
     onSave(formData);

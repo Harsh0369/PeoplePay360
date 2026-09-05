@@ -7,6 +7,7 @@ import { PERM } from '../lib/permissions';
 import { useClientList } from '../hooks/usePagedList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { notify } from '../lib/toast';
 
 type Tab = 'RULES' | 'STRUCTURES';
 
@@ -63,9 +64,10 @@ export const ConfigModule: React.FC = () => {
       else payload.value = Number(form.value);
       await configApi.createRule(payload);
       setShowRuleForm(false); setForm(emptyRule);
+      notify.success(`Salary rule "${payload.name}" created.`);
       load();
     } catch (e: any) {
-      setError(e.message);
+      notify.error(e.message);
     } finally {
       setSaving(false);
     }

@@ -4,6 +4,7 @@ import { attendanceApi } from '../services/hrApi';
 import { Card, Table, EmptyRow } from './ConfigModule';
 import { Paginator } from './ui/Paginator';
 import { useAuth } from '../hooks/useAuth';
+import { notify } from '../lib/toast';
 
 const STATUS_BADGE: Record<string, string> = {
   Present: 'bg-brand-activeBg text-brand-activeText',
@@ -23,43 +24,42 @@ export const AttendanceModule: React.FC = () => {
   const [pageInfo, setPageInfo] = useState({ page: 1, totalPages: 1, totalItems: 0 });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
-  const [error, setError] = useState('');
-  const [msg, setMsg] = useState('');
 
-  // The signed-in user's currently open session (null = they are clocked out).
-  const [openSession, setOpenSession] = useState<any | null>(null);
+  // The signed-in user's most recent session (open or closed).
+  const [latest, setLatest] = useState<any | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
+  const isOpen = !!latest && latest.sessionState === 'OPEN' && !latest.checkOut?.time;
 
   const loadPage = useCallback(async (page: number) => {
-    setLoading(true); setError('');
+    setLoading(true);
     try {
       const res: any = await attendanceApi.getAll(`?page=${page}&limit=${PAGE_SIZE}`);
       const data = Array.isArray(res) ? res : res?.data ?? [];
       setRows(data);
       setPageInfo({ page, totalPages: Math.max(1, Math.ceil((data.length < PAGE_SIZE && page === 1 ? data.length : page * PAGE_SIZE + (data.length === PAGE_SIZE ? PAGE_SIZE : 0)) / PAGE_SIZE)), totalItems: 0 });
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setLoading(false); }
   }, []);
 
   const refreshSession = useCallback(async () => {
     if (!employeeId) { setSessionLoading(false); return; }
     setSessionLoading(true);
-    try { setOpenSession(await attendanceApi.myOpenSession(employeeId)); }
-    catch { setOpenSession(null); }
+    try { setLatest(await attendanceApi.myLatest(employeeId)); }
+    catch { setLatest(null); }
     finally { setSessionLoading(false); }
   }, [employeeId]);
 
   useEffect(() => { loadPage(1); refreshSession(); }, [loadPage, refreshSession]);
 
   const punch = async (kind: 'in' | 'out') => {
-    setBusy(kind); setError(''); setMsg('');
+    setBusy(kind);
     const payload = { location: { lat: 19.076, lng: 72.8777, address: 'Office HQ' } };
     try {
       if (kind === 'in') await attendanceApi.clockIn(payload);
       else await attendanceApi.clockOut(payload);
-      setMsg(`Clock ${kind === 'in' ? 'in' : 'out'} recorded.`);
+      notify.success(kind === 'in' ? 'Clocked in successfully.' : 'Clocked out successfully.');
       await Promise.all([loadPage(1), refreshSession()]);
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 
@@ -81,10 +81,12 @@ export const AttendanceModule: React.FC = () => {
             <h3 className="font-semibold text-brand-darkCharcoal">Attendance Kiosk</h3>
             {sessionLoading ? (
               <p className="text-sm text-brand-mutedSlate">Checking your status…</p>
-            ) : openSession ? (
-              <p className="text-sm text-emerald-700 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Clocked in at {fmtTime(openSession.checkIn?.time)} — you have an open session.</p>
+            ) : isOpen ? (
+              <p className="text-sm text-emerald-700 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Clocked in at {fmtTime(latest.checkIn?.time)} — you have an open session.</p>
+            ) : latest ? (
+              <p className="text-sm text-brand-mutedSlate flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-slate-400" /> Last clocked out at {fmtTime(latest.checkOut?.time)}. Start a new session below.</p>
             ) : (
-              <p className="text-sm text-brand-mutedSlate">You are clocked out. Start a new session below.</p>
+              <p className="text-sm text-brand-mutedSlate">No sessions yet. Clock in to start.</p>
             )}
           </div>
         </div>
@@ -92,7 +94,7 @@ export const AttendanceModule: React.FC = () => {
         <div>
           {sessionLoading ? (
             <div className="px-4 py-2"><Loader2 className="w-4 h-4 animate-spin text-brand-teal" /></div>
-          ) : openSession ? (
+          ) : isOpen ? (
             <button onClick={() => punch('out')} disabled={busy === 'out'} className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50">
               {busy === 'out' ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />} Clock Out
             </button>
@@ -104,8 +106,6 @@ export const AttendanceModule: React.FC = () => {
         </div>
       </div>
 
-      {msg && <div className="mb-4 rounded-lg bg-brand-activeBg text-brand-activeText px-3 py-2.5 text-sm">{msg}</div>}
-      {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
