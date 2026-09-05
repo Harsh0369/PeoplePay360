@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-brand-warmCream text-brand-darkCharcoal font-sans min-h-screen;
+  }
+}
+
+.smart-button {
+  @apply flex flex-col items-center justify-center px-4 py-2 bg-brand-offWhite border border-brand-sandBorder rounded-lg hover:bg-brand-softSand transition-all cursor-pointer text-xs shadow-sm text-brand-darkCharcoal font-semibold;
+}
+
+.stage-step {
+  @apply px-4 py-1.5 text-xs font-bold uppercase tracking-wider relative flex items-center justify-center transition-colors;
+}
+
+.stage-step-active {
+  @apply bg-brand-darkTeal text-brand-offWhite font-bold shadow-sm;
+}
+
+.stage-step-inactive {
+  @apply bg-brand-softSand text-brand-mutedSlate hover:bg-brand-sandBorder;
+}

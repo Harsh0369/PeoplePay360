@@ -1,0 +1,40 @@
+{
+  "theme": "Warm Cream & Deep Teal",
+  "colors": {
+    "deepTeal": "#063F3B",
+    "darkTeal": "#0B5D57",
+    "teal": "#159A91",
+    "warmCream": "#F5F0E6",
+    "softSand": "#EAE2D5",
+    "offWhite": "#FFFDF8",
+    "darkCharcoal": "#1F2933",
+    "mutedSlate": "#667085",
+    "sageGreen": "#6FAF8B",
+    "coral": "#E98272",
+    "goldenAmber": "#D9A441",
+    "mutedLavender": "#8B7BB8",
+    "sandBorder": "#D8D0C3",
+    "activeBg": "#DCEFEB",
+    "activeText": "#0B5D57",
+    "leaveBg": "#F8EFD8",
+    "leaveText": "#9A6700",
+    "warningBg": "#FBE5E0",
+    "warningText": "#B5473A",
+    "draftBg": "#EAE2D5",
+    "draftText": "#667085",
+    "hoverRow": "#E2F0EC"
+  },
+  "usage": {
+    "sidebarHeader": "DeepTeal (#063F3B)",
+    "primaryButtons": "DarkTeal (#0B5D57)",
+    "mainBackground": "WarmCream (#F5F0E6)",
+    "cardsAndModals": "OffWhite (#FFFDF8)",
+    "secondaryCards": "SoftSand (#EAE2D5)",
+    "tableHeaders": "SoftSand (#EAE2D5)",
+    "tableSelectedRow": "Mint (#E2F0EC)",
+    "activeBadge": "Soft Sage (#DCEFEB / #0B5D57)",
+    "leaveBadge": "Amber (#F8EFD8 / #9A6700)",
+    "warningBadge": "Coral (#FBE5E0 / #B5473A)",
+    "draftBadge": "Soft Sand (#EAE2D5 / #667085)"
+  }
+}
