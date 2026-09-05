@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { config } from './src/config/environment';
 import * as Models from './src/models';
 import { getProfileService } from './src/services/employee.service';
-import { clockInService, clockOutService } from './src/services/attendance.service';
+import { clockInService, clockOutService, adminUpdateAttendanceService } from './src/services/attendance.service';
 
 const testHR = async () => {
   try {
@@ -16,6 +16,7 @@ const testHR = async () => {
     await Models.Contract.collection.drop().catch(() => {});
     await Models.AttendanceException.collection.drop().catch(() => {});
     await Models.IdempotencyRecord.collection.drop().catch(() => {});
+    await Models.BusinessLog.collection.drop().catch(() => {});
     // Give Mongo a moment to rebuild indexes
     await new Promise(res => setTimeout(res, 500));
     
@@ -144,8 +145,23 @@ const testHR = async () => {
 
     // Test Admin Update
     console.log("\n--- Testing Admin Update ---");
-    const updated = await Models.Attendance.findByIdAndUpdate(clockOut._id, { isEditedByAdmin: true }, { new: true });
+    const updated = await adminUpdateAttendanceService(
+      clockOut._id.toString(), 
+      { status: "Present" }, 
+      adminUser._id.toString()
+    );
     console.log("Admin Edit flagged:", updated?.isEditedByAdmin);
+
+    // Wait for setImmediate log to be written
+    await new Promise(res => setTimeout(res, 50));
+
+    // Verify Business Log
+    const logs = await Models.BusinessLog.find({ affectedEmployeeId: employee._id });
+    if (logs.length > 0) {
+      console.log(`SUCCESS: Found ${logs.length} business log(s). First action:`, logs[0].action, "by User:", logs[0].actorId);
+    } else {
+      console.log("FAIL: No business log generated for admin override.");
+    }
 
   } catch (error) {
     console.error("Test failed:", error);
