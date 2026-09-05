@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { TimeOffType, TimeOffAllocation, TimeOffRequest } from "../../models";
 import { ConflictError, NotFoundError } from "../../errors";
+import { createBusinessLog } from "../business-log.service";
 
 interface ReviewRequestParams {
   requestId: string;
@@ -60,6 +61,14 @@ export const reviewTimeOffRequestService = async (params: ReviewRequestParams) =
   request.reviewReason = reviewReason;
   
   await request.save();
+
+  createBusinessLog({
+    actorId: reviewerId,
+    affectedEmployeeId: request.employeeId.toString(),
+    action: status === "APPROVED" ? "APPROVE" : "REJECT",
+    entity: "LEAVE",
+    content: `Time off request ${status.toLowerCase()}. ${reviewReason ? `Reason: ${reviewReason}` : ""}`.trim(),
+  });
 
   return request;
 };

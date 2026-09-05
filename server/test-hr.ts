@@ -10,6 +10,7 @@ import { createDepartmentService, assignEmployeeDepartmentService } from './src/
 import { createJobPositionService, assignEmployeeJobPositionService } from './src/services/job-position.service';
 import { createWorkingScheduleService } from './src/services/working-schedule.service';
 import { createContractService, updateContractService, getApplicableContractService } from './src/services/contract.service/index';
+import { createPayrunService, computePayrunService, validatePayrunService, markPaidPayrunService, cancelPayrunService } from './src/services/payrun.service';
 import { Parser } from 'expr-eval';
 
 const testHR = async () => {
@@ -30,6 +31,8 @@ const testHR = async () => {
     await Models.TimeOffRequest.collection.drop().catch(() => {});
     await Models.SalaryRule.collection.drop().catch(() => {});
     await Models.SalaryStructure.collection.drop().catch(() => {});
+    await Models.Payrun.collection.drop().catch(() => {});
+    await Models.Payslip.collection.drop().catch(() => {});
     await Models.Department.collection.drop().catch(() => {});
     await Models.JobPosition.collection.drop().catch(() => {});
     // Give Mongo a moment to rebuild indexes
@@ -406,6 +409,134 @@ const testHR = async () => {
       console.log("SUCCESS: Mathematical evaluation is strictly correct.");
     } else {
       console.log("FAIL: Mathematical evaluation incorrect. Expected NET 31500, got", context["NET"]);
+    }
+
+    // ============================================================
+    // PAYRUN & PAYSLIP BATCH ENGINE TESTS
+    // ============================================================
+    console.log("\n--- Testing Payrun Batch Processing Engine ---");
+
+    // Step 1: Create Payrun (Draft)
+    const payrun = await createPayrunService({
+      periodStart: "2026-08-01",
+      periodEnd: "2026-08-31",
+      createdBy: adminUser._id.toString(),
+    });
+    console.log(`Created Payrun: ${payrun.name}, Status: ${payrun.status}`);
+
+    // Step 1b: Duplicate payrun prevention
+    try {
+      await createPayrunService({
+        periodStart: "2026-08-01",
+        periodEnd: "2026-08-31",
+        createdBy: adminUser._id.toString(),
+      });
+      console.log("FAIL: Duplicate payrun creation succeeded incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Duplicate payrun prevented:", e.message);
+    }
+
+    // Step 1c: Future period prevention
+    try {
+      await createPayrunService({
+        periodStart: "2030-01-01",
+        periodEnd: "2030-01-31",
+        createdBy: adminUser._id.toString(),
+      });
+      console.log("FAIL: Future payrun creation succeeded incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Future period payrun prevented:", e.message);
+    }
+
+    // Step 2: Compute Payrun (generates payslips)
+    const computeResult = await computePayrunService(payrun._id.toString());
+    console.log(`Computed Payrun. Status: ${computeResult.payrun.status}`);
+    console.log(`  Payslips generated: ${computeResult.summary.payslipsGenerated}`);
+    console.log(`  Warnings: ${computeResult.summary.warningCount}`);
+
+    // Verify MISSING_BANK_DETAILS warning was generated (our test employee has no bankAccount)
+    const bankWarning = computeResult.payrun.warnings.find((w: any) => w.type === "MISSING_BANK_DETAILS");
+    if (bankWarning) {
+      console.log("SUCCESS: Missing bank details warning surfaced:", bankWarning.message);
+    } else {
+      console.log("FAIL: Missing bank details warning not generated");
+    }
+
+    // Verify payslip line items are correct
+    const payslips = await Models.Payslip.find({ payrunId: payrun._id });
+    if (payslips.length === 1) {
+      const ps = payslips[0];
+      console.log(`Payslip breakdown: Gross=${ps.grossSalary}, Deductions=${ps.totalDeductions}, Net=${ps.netSalary}`);
+      if (ps.netSalary === 31500 && ps.grossSalary === 35000 && ps.totalDeductions === 3500) {
+        console.log("SUCCESS: Payslip salary computation is mathematically correct");
+      } else {
+        console.log("FAIL: Payslip salary computation is incorrect");
+      }
+
+      // Verify line items count
+      if (ps.lineItems.length === 5) {
+        console.log("SUCCESS: All 5 salary rule line items present in payslip");
+      } else {
+        console.log(`FAIL: Expected 5 line items, got ${ps.lineItems.length}`);
+      }
+    } else {
+      console.log(`FAIL: Expected 1 payslip, got ${payslips.length}`);
+    }
+
+    // Step 2b: Cannot re-compute (must be Draft)
+    try {
+      await computePayrunService(payrun._id.toString());
+      console.log("FAIL: Re-computing an already computed payrun succeeded");
+    } catch (e: any) {
+      console.log("SUCCESS: Re-compute prevented:", e.message);
+    }
+
+    // Step 3: Validate Payrun
+    const validateResult = await validatePayrunService(payrun._id.toString());
+    console.log(`Validated Payrun. Status: ${validateResult.payrun.status}`);
+    console.log(`  Validation warnings: ${validateResult.validationSummary.warningCount}`);
+
+    // Step 4: Mark Paid
+    const paidResult = await markPaidPayrunService(payrun._id.toString(), adminUser._id.toString());
+    console.log(`Marked Payrun as Paid. Status: ${paidResult.payrun.status}`);
+    console.log(`  Payslips finalized: ${paidResult.payslipsFinalized}`);
+
+    // Verify payslip status is now Paid
+    const paidPayslip = await Models.Payslip.findOne({ payrunId: payrun._id });
+    if (paidPayslip?.status === "Paid") {
+      console.log("SUCCESS: Payslip status transitioned to Paid");
+    } else {
+      console.log("FAIL: Payslip status is", paidPayslip?.status);
+    }
+
+    // Step 5: Cannot cancel a Paid payrun
+    try {
+      await cancelPayrunService(payrun._id.toString(), adminUser._id.toString());
+      console.log("FAIL: Cancelling a paid payrun succeeded incorrectly");
+    } catch (e: any) {
+      console.log("SUCCESS: Cancel of paid payrun prevented:", e.message);
+    }
+
+    // Step 6: Test cancel on a Draft payrun
+    const cancelTestPayrun = await createPayrunService({
+      periodStart: "2026-07-01",
+      periodEnd: "2026-07-31",
+      createdBy: adminUser._id.toString(),
+    });
+    const cancelledPayrun = await cancelPayrunService(cancelTestPayrun._id.toString(), adminUser._id.toString());
+    if (cancelledPayrun.status === "Cancelled") {
+      console.log("SUCCESS: Draft payrun cancelled successfully");
+    } else {
+      console.log("FAIL: Draft payrun cancellation failed, status:", cancelledPayrun.status);
+    }
+
+    // Wait for async business logs
+    await new Promise(res => setTimeout(res, 100));
+    const payrollLog = await Models.BusinessLog.findOne({ entity: "PAYROLL", action: "APPROVE" });
+    if (payrollLog) {
+      console.log("SUCCESS: Payroll audit log created:", payrollLog.content);
+    } else {
+      console.log("FAIL: No payroll audit log found");
     }
 
   } catch (error) {

@@ -11,9 +11,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Only HR/Admin can manage working schedules
-router.post("/", requireAnyPermission("admin", "org.manage"), createWorkingScheduleController);
-router.get("/", getWorkingSchedulesController);
-router.put("/:id", requireAnyPermission("admin", "org.manage"), updateWorkingScheduleController);
+// Read — requires Organization.Read
+router.get("/", requireAnyPermission("Organization.Read"), getWorkingSchedulesController);
+
+// Write — requires Organization.Write
+router.post("/", requireAnyPermission("Organization.Write"), createWorkingScheduleController);
+router.put("/:id", requireAnyPermission("Organization.Write"), updateWorkingScheduleController);
 
 export default router;

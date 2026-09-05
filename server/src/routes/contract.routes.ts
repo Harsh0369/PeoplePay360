@@ -12,10 +12,12 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// HR/Admin or Contract.Write permissions
-router.post("/", requireAnyPermission("admin", "org.manage", "Contract.Write"), createContractController);
-router.get("/", getContractsController);
-router.get("/applicable/:employeeId", getApplicableContractController);
-router.put("/:id", requireAnyPermission("admin", "org.manage", "Contract.Write"), updateContractController);
+// Read — requires Contract.Read
+router.get("/", requireAnyPermission("Contract.Read"), getContractsController);
+router.get("/applicable/:employeeId", requireAnyPermission("Contract.Read"), getApplicableContractController);
+
+// Write — requires Contract.Write
+router.post("/", requireAnyPermission("Contract.Write"), createContractController);
+router.put("/:id", requireAnyPermission("Contract.Write"), updateContractController);
 
 export default router;

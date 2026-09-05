@@ -1,13 +1,16 @@
 import { Router } from "express";
-import { clockInController, clockOutController, adminUpdateAttendanceController } from "../controllers/attendance.controller";
+import { clockInController, clockOutController, adminUpdateAttendanceController, getAttendanceController } from "../controllers/attendance.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
-import { requirePermission } from "../middleware/permission.middleware";
+import { requirePermission, requireAnyPermission } from "../middleware/permission.middleware";
 import { idempotencyMiddleware } from "../middleware/idempotency.middleware";
 
 const router = Router();
 
 // All attendance tracking requires auth
 router.use(authMiddleware);
+
+// List attendance records — requires Attendance.Read
+router.get("/", requireAnyPermission("Attendance.Read"), getAttendanceController);
 
 // Any user linked to an employee can clock in/out (protected by idempotency for network retries)
 router.post("/clock-in", idempotencyMiddleware, clockInController);

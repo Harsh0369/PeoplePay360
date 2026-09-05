@@ -11,9 +11,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Organization management requires admin or hr permissions
-router.post("/", requireAnyPermission("admin", "org.manage"), createJobPositionController);
-router.get("/", getJobPositionsController);
-router.post("/employee/:employeeId/assign", requireAnyPermission("admin", "org.manage"), assignEmployeeJobPositionController);
+// Read — requires Organization.Read
+router.get("/", requireAnyPermission("Organization.Read"), getJobPositionsController);
+
+// Write — requires Organization.Write
+router.post("/", requireAnyPermission("Organization.Write"), createJobPositionController);
+router.post("/employee/:employeeId/assign", requireAnyPermission("Organization.Write"), assignEmployeeJobPositionController);
 
 export default router;

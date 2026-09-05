@@ -16,19 +16,18 @@ import {
 
 const router = Router();
 
-// Only Admins or Payroll Managers can configure payroll rules
-router.use(authMiddleware, requireAnyPermission("admin", "payroll.manage"));
+router.use(authMiddleware);
 
-// Salary Rules
-router.post("/rules", createSalaryRuleController);
-router.get("/rules", getSalaryRulesController);
-router.patch("/rules/:id", updateSalaryRuleController);
-router.delete("/rules/:id", deleteSalaryRuleController);
+// Salary Rules — Read vs Write split
+router.get("/rules", requireAnyPermission("Payroll.Read"), getSalaryRulesController);
+router.post("/rules", requireAnyPermission("Payroll.Write"), createSalaryRuleController);
+router.patch("/rules/:id", requireAnyPermission("Payroll.Write"), updateSalaryRuleController);
+router.delete("/rules/:id", requireAnyPermission("Payroll.Write"), deleteSalaryRuleController);
 
-// Salary Structures
-router.post("/structures", createSalaryStructureController);
-router.get("/structures", getSalaryStructuresController);
-router.patch("/structures/:id", updateSalaryStructureController);
-router.delete("/structures/:id", deleteSalaryStructureController);
+// Salary Structures — Read vs Write split
+router.get("/structures", requireAnyPermission("Payroll.Read"), getSalaryStructuresController);
+router.post("/structures", requireAnyPermission("Payroll.Write"), createSalaryStructureController);
+router.patch("/structures/:id", requireAnyPermission("Payroll.Write"), updateSalaryStructureController);
+router.delete("/structures/:id", requireAnyPermission("Payroll.Write"), deleteSalaryStructureController);
 
 export default router;

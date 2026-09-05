@@ -11,9 +11,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Organization management requires admin or hr permissions
-router.post("/", requireAnyPermission("admin", "org.manage"), createDepartmentController);
-router.get("/", getDepartmentsController);
-router.post("/employee/:employeeId/assign", requireAnyPermission("admin", "org.manage"), assignEmployeeDepartmentController);
+// Read — requires Organization.Read
+router.get("/", requireAnyPermission("Organization.Read"), getDepartmentsController);
+
+// Write — requires Organization.Write
+router.post("/", requireAnyPermission("Organization.Write"), createDepartmentController);
+router.post("/employee/:employeeId/assign", requireAnyPermission("Organization.Write"), assignEmployeeDepartmentController);
 
 export default router;

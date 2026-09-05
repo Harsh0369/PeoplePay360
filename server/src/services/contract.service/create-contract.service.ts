@@ -2,6 +2,7 @@ import { Contract } from "../../models/contract.model";
 import { Employee, Department, JobPosition, WorkingSchedule, SalaryStructure } from "../../models";
 import { NotFoundError, ValidationError } from "../../errors";
 import { Types } from "mongoose";
+import { createBusinessLog } from "../business-log.service";
 
 export interface CreateContractDto {
   employeeId: string;
@@ -14,7 +15,7 @@ export interface CreateContractDto {
   salaryStructureId?: string;
 }
 
-export const createContractService = async (data: CreateContractDto) => {
+export const createContractService = async (data: CreateContractDto, actorId?: string) => {
   // 1. Verify all related entities exist
   const [employee, dept, job, schedule, salaryStruct] = await Promise.all([
     Employee.findById(data.employeeId),
@@ -73,6 +74,16 @@ export const createContractService = async (data: CreateContractDto) => {
     endDate,
     status: "Draft"
   });
+
+  if (actorId) {
+    createBusinessLog({
+      actorId,
+      affectedEmployeeId: data.employeeId,
+      action: "CREATE",
+      entity: "CONTRACT",
+      content: `Contract created for employee (wage: ${data.wage}, start: ${data.startDate})`,
+    });
+  }
 
   return contract;
 };

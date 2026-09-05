@@ -11,6 +11,10 @@ import workingScheduleRoutes from './working-schedule.routes';
 import contractRoutes from './contract.routes';
 import payrunRoutes from './payrun.routes';
 import payslipRoutes from './payslip.routes';
+import businessLogRoutes from './business-log.routes';
+import { authMiddleware } from '../middleware/auth.middleware';
+import { requireAnyPermission } from '../middleware/permission.middleware';
+import { getPermissionRegistryController } from '../controllers/permission.controller';
 
 export const mountRoutes = (app: Express) => {
     const router = Router();
@@ -31,6 +35,10 @@ export const mountRoutes = (app: Express) => {
     router.use('/contracts', contractRoutes);
     router.use('/payruns', payrunRoutes);
     router.use('/payslips', payslipRoutes);
+    router.use('/business-logs', businessLogRoutes);
+
+    // Permission registry — for role-creation UI
+    router.get('/permissions/registry', authMiddleware, requireAnyPermission("Settings.Read"), getPermissionRegistryController);
 
     app.use('/api/v1', router);
 };
