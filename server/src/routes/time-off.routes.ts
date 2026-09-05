@@ -10,6 +10,8 @@ import {
   getTimeOffAllocationsController,
   createTimeOffAllocationController,
   getTimeOffRequestsController,
+  getMyAllocationsController,
+  getMyRequestsController,
 } from "../controllers/time-off.controller";
 
 const router = Router();
@@ -27,7 +29,9 @@ router.post("/allocations", requireAnyPermission("TimeOff.Write"), createTimeOff
 // --- Time Off Requests ---
 router.get("/requests", requireAnyPermission("TimeOff.Read"), getTimeOffRequestsController);
 
-// Employee self-service: raise a request (any authenticated employee)
+// Employee self-service (No permissions required)
+router.get("/my/allocations", getMyAllocationsController);
+router.get("/my/requests", getMyRequestsController);
 router.post("/request", raiseTimeOffRequestController);
 
 // Manager/Admin review — requires TimeOff.Approve
