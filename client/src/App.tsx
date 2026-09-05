@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Employee, Contract } from './types';
-import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS } from './data/mockData';
+import { Employee, Contract, JobPosition, Department, ActiveTab } from './types';
+import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS, INITIAL_JOB_POSITIONS, INITIAL_DEPARTMENTS } from './data/mockData';
 import { apiService } from './services/api';
 import { Navbar } from './components/Navbar';
 import { EmployeeKanban } from './components/EmployeeKanban';
@@ -8,13 +8,17 @@ import { EmployeeList } from './components/EmployeeList';
 import { EmployeeForm } from './components/EmployeeForm';
 import { ContractList } from './components/ContractList';
 import { ContractForm } from './components/ContractForm';
-import { LayoutGrid, List, Plus, Search, Filter, Users, DollarSign, FileText, CheckCircle2 } from 'lucide-react';
+import { JobPositionList } from './components/JobPositionList';
+import { JobPositionForm } from './components/JobPositionForm';
+import { LayoutGrid, List, Plus, Search, Filter, Users, DollarSign, FileText, CheckCircle2, Briefcase } from 'lucide-react';
 
 export function App() {
   // Main State Management
-  const [activeTab, setActiveTab] = useState<'EMPLOYEES' | 'CONTRACTS'>('EMPLOYEES');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('EMPLOYEES');
   const [employees, setEmployees] = useState<Employee[]>(INITIAL_EMPLOYEES);
   const [contracts, setContracts] = useState<Contract[]>(INITIAL_CONTRACTS);
+  const [jobPositions, setJobPositions] = useState<JobPosition[]>(INITIAL_JOB_POSITIONS);
+  const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
 
   // Sub Views State
@@ -24,6 +28,8 @@ export function App() {
 
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [isEditingContract, setIsEditingContract] = useState(false);
+
+  const [isCreatingJobPosition, setIsCreatingJobPosition] = useState(false);
 
   // Filter & Search
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,17 +50,17 @@ export function App() {
       const isConnected = await apiService.checkHealth();
       setIsBackendConnected(isConnected);
 
-      const [remoteEmps, remoteCnts] = await Promise.all([
+      const [remoteEmps, remoteCnts, remoteDepts, remotePositions] = await Promise.all([
         apiService.getEmployees(),
-        apiService.getContracts()
+        apiService.getContracts(),
+        apiService.getDepartments(),
+        apiService.getJobPositions()
       ]);
 
-      if (remoteEmps && remoteEmps.length > 0) {
-        setEmployees(remoteEmps);
-      }
-      if (remoteCnts && remoteCnts.length > 0) {
-        setContracts(remoteCnts);
-      }
+      if (remoteEmps && remoteEmps.length > 0) setEmployees(remoteEmps);
+      if (remoteCnts && remoteCnts.length > 0) setContracts(remoteCnts);
+      if (remoteDepts && remoteDepts.length > 0) setDepartments(remoteDepts);
+      if (remotePositions && remotePositions.length > 0) setJobPositions(remotePositions);
     }
     init();
   }, []);
@@ -132,6 +138,38 @@ export function App() {
     setSelectedContract(null);
   };
 
+  // Handlers - Job Positions
+  const handleCreateJobPosition = async (data: { title: string; departmentId: string; expectedSalary: number }) => {
+    const newPos = await apiService.createJobPosition(data);
+    const deptMatch = departments.find((d) => (d.id || d._id) === data.departmentId);
+    newPos.departmentName = deptMatch ? deptMatch.name : 'Engineering';
+
+    setJobPositions((prev) => [newPos, ...prev]);
+    setIsCreatingJobPosition(false);
+    showToast(`Job Position "${newPos.title}" created successfully!`);
+  };
+
+  const handleAssignEmployeeJobPosition = async (employeeId: string, jobPositionId: string) => {
+    const targetPosition = jobPositions.find((j) => (j.id || j._id) === jobPositionId);
+    const targetEmployee = employees.find((e) => e.id === employeeId);
+
+    if (!targetPosition || !targetEmployee) return;
+
+    await apiService.assignEmployeeJobPosition(employeeId, jobPositionId);
+
+    // Update local employee state
+    setEmployees((prev) =>
+      prev.map((e) => {
+        if (e.id === employeeId) {
+          return { ...e, jobPosition: targetPosition.title };
+        }
+        return e;
+      })
+    );
+
+    showToast(`Assigned ${targetEmployee.name} to "${targetPosition.title}"!`);
+  };
+
   const handleSmartButtonViewContracts = (employeeId: string) => {
     setContractEmployeeFilter(employeeId);
     setActiveTab('CONTRACTS');
@@ -173,6 +211,11 @@ export function App() {
             <div className="flex items-center space-x-2">
               <FileText className="w-4 h-4 text-brand-teal" />
               <span>Active Contracts: <strong className="text-brand-darkTeal">{activeContractsList.length}</strong></span>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Briefcase className="w-4 h-4 text-brand-teal" />
+              <span>Job Positions: <strong className="text-brand-darkTeal">{jobPositions.length}</strong></span>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -341,6 +384,39 @@ export function App() {
                   }}
                 />
               </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'JOB_POSITIONS' && (
+          <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl font-bold text-brand-darkCharcoal flex items-center">
+                  <Briefcase className="w-6 h-6 mr-2 text-brand-darkTeal" />
+                  Job Position Management
+                </h1>
+                <p className="text-xs text-brand-mutedSlate">
+                  Configure organization job roles, target monthly salary benchmarks, and staff assignments.
+                </p>
+              </div>
+            </div>
+
+            <JobPositionList
+              jobPositions={jobPositions}
+              departments={departments}
+              employees={employees}
+              onOpenCreateForm={() => setIsCreatingJobPosition(true)}
+              onAssignEmployee={handleAssignEmployeeJobPosition}
+            />
+
+            {isCreatingJobPosition && (
+              <JobPositionForm
+                departments={departments}
+                existingPositions={jobPositions}
+                onSubmit={handleCreateJobPosition}
+                onClose={() => setIsCreatingJobPosition(false)}
+              />
             )}
           </div>
         )}
