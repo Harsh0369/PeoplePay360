@@ -11,6 +11,10 @@ import { ContractForm } from './components/ContractForm';
 import { LoginPage } from './components/LoginPage';
 import { PayrollModule } from './components/PayrollModule';
 import { ConfigModule } from './components/ConfigModule';
+import { AttendanceModule } from './components/AttendanceModule';
+import { TimeOffModule } from './components/TimeOffModule';
+import { OrgModule } from './components/OrgModule';
+import { RolesModule } from './components/RolesModule';
 import { useAuth } from './hooks/useAuth';
 import { JobPositionList } from './components/JobPositionList';
 import { JobPositionForm } from './components/JobPositionForm';
@@ -256,6 +260,10 @@ export function App() {
       <main className="flex-1">
         {activeTab === 'PAYROLL' && <PayrollModule />}
         {activeTab === 'CONFIG' && <ConfigModule />}
+        {activeTab === 'ATTENDANCE' && <AttendanceModule />}
+        {activeTab === 'TIMEOFF' && <TimeOffModule />}
+        {activeTab === 'ORG' && <OrgModule />}
+        {activeTab === 'SETTINGS' && <RolesModule />}
         {activeTab === 'EMPLOYEES' && (
           <div>
             {isEditingEmployee ? (

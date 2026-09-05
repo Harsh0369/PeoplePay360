@@ -48,5 +48,28 @@ export const masterApi = {
     req('POST', '/departments', data),
   getJobPositions: () => req('GET', '/job-positions'),
   getWorkingSchedules: () => req('GET', '/working-schedules'),
+  createWorkingSchedule: (data: any) => req('POST', '/working-schedules', data),
   getRoles: () => req('GET', '/roles'),
+  createRole: (data: any) => req('POST', '/roles', data),
+  getEmployees: () => req('GET', '/employees'),
+};
+
+// ---- Attendance ----
+export const attendanceApi = {
+  getAll: () => req('GET', '/attendance'),
+  clockIn: (data: any = {}) => req('POST', '/attendance/clock-in', data),
+  clockOut: (data: any = {}) => req('POST', '/attendance/clock-out', data),
+  adminUpdate: (id: string, data: any) => req('PUT', `/attendance/${id}`, data),
+};
+
+// ---- Time Off ----
+export const timeOffApi = {
+  getTypes: () => req('GET', '/time-off/types'),
+  createType: (data: any) => req('POST', '/time-off/types', data),
+  getAllocations: () => req('GET', '/time-off/allocations'),
+  createAllocation: (data: any) => req('POST', '/time-off/allocations', data),
+  getRequests: () => req('GET', '/time-off/requests'),
+  raiseRequest: (data: any) => req('POST', '/time-off/request', data),
+  review: (id: string, data: { status: 'APPROVED' | 'REJECTED'; reviewNote?: string }) =>
+    req('POST', `/time-off/${id}/review`, data),
 };
