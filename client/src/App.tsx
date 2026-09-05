@@ -95,23 +95,25 @@ export function App() {
     return matchesEmp && matchesSearch;
   });
 
-  // Handlers - Employees
+  // Handlers - Employees. The backend has no employee-update route, and creating
+  // an employee requires a linked User account (no user-create endpoint yet), so
+  // we surface the real backend response instead of faking success.
   const handleSaveEmployee = async (empData: Employee) => {
-    const savedEmp = await apiService.createEmployee(empData);
-
-    setEmployees((prev) => {
-      const idx = prev.findIndex((e) => e.id === savedEmp.id || e.id === empData.id);
-      if (idx >= 0) {
-        const updated = [...prev];
-        updated[idx] = savedEmp;
-        return updated;
-      }
-      return [savedEmp, ...prev];
-    });
-
-    showToast(`Employee "${savedEmp.name}" updated successfully!`);
-    setIsEditingEmployee(false);
-    setSelectedEmployee(null);
+    if (selectedEmployee?.id) {
+      showToast('Editing employees is not available yet — the backend has no update endpoint.');
+      setIsEditingEmployee(false);
+      setSelectedEmployee(null);
+      return;
+    }
+    try {
+      await apiService.createEmployee(empData);
+      apiService.getEmployees().then(setEmployees).catch(() => {});
+      showToast(`Employee "${empData.name}" created successfully!`);
+      setIsEditingEmployee(false);
+      setSelectedEmployee(null);
+    } catch (e: any) {
+      showToast(`Could not create employee: ${e.message}`);
+    }
   };
 
   // Handlers - Contracts. The backend only allows editing a contract's status
