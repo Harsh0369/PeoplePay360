@@ -5,6 +5,7 @@ dotenv.config();
 const REQUIRED_ENV_VARS = [
   "MONGODB_URI",
   "PORT",
+  "JWT_SECRET",
 ] as const;
 
 for (const envVar of REQUIRED_ENV_VARS) {
@@ -20,6 +21,11 @@ export const config = {
 
   mongodb: {
     uri: process.env.MONGODB_URI as string,
+  },
+
+  jwt: {
+    secret: process.env.JWT_SECRET as string,
+    expiresIn: process.env.JWT_EXPIRES_IN || "30d",
   },
 
   cors: {
