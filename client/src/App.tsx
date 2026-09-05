@@ -8,9 +8,12 @@ import { EmployeeList } from './components/EmployeeList';
 import { EmployeeForm } from './components/EmployeeForm';
 import { ContractList } from './components/ContractList';
 import { ContractForm } from './components/ContractForm';
-import { LayoutGrid, List, Plus, Search, Filter, Users, DollarSign, FileText, CheckCircle2 } from 'lucide-react';
+import { LoginPage } from './components/LoginPage';
+import { useAuth } from './hooks/useAuth';
+import { LayoutGrid, List, Plus, Search, Filter, Users, DollarSign, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 
 export function App() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   // Main State Management
   const [activeTab, setActiveTab] = useState<'EMPLOYEES' | 'CONTRACTS'>('EMPLOYEES');
   const [employees, setEmployees] = useState<Employee[]>(INITIAL_EMPLOYEES);
@@ -38,8 +41,12 @@ export function App() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Initial Data Fetching & API Health Check
+  // Initial Data Fetching & API Health Check.
+  // Runs once the user is authenticated so requests carry the Bearer token —
+  // otherwise protected routes (contracts, etc.) return 401 and fall back to mock data.
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     async function init() {
       const isConnected = await apiService.checkHealth();
       setIsBackendConnected(isConnected);
@@ -57,7 +64,7 @@ export function App() {
       }
     }
     init();
-  }, []);
+  }, [isAuthenticated]);
 
   // Dynamic Calculated Metrics
   const activeEmployeesCount = employees.filter((e) => e.status === 'ACTIVE').length;
@@ -137,6 +144,17 @@ export function App() {
     setActiveTab('CONTRACTS');
     setIsEditingEmployee(false);
   };
+
+  // --- Auth gate ---------------------------------------------------------
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-brand-deepTeal flex items-center justify-center">
+        <Loader2 className="w-7 h-7 text-brand-teal animate-spin" />
+      </div>
+    );
+  }
+  if (!isAuthenticated) return <LoginPage />;
+  // -----------------------------------------------------------------------
 
   return (
     <div className="min-h-screen bg-brand-warmCream flex flex-col font-sans relative">

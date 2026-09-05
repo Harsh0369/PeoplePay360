@@ -1,5 +1,7 @@
 import React from 'react';
-import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server } from 'lucide-react';
+import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server, LogOut } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { roleLabel } from '../services/auth';
 
 interface NavbarProps {
   activeTab: 'EMPLOYEES' | 'CONTRACTS';
@@ -8,6 +10,14 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBackendConnected = false }) => {
+  const { user, logout } = useAuth();
+  const initials = (user?.name || '?')
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   return (
     <header className="bg-brand-deepTeal text-brand-offWhite shadow-md sticky top-0 z-50 border-b border-brand-darkTeal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -111,12 +121,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBacken
           </div>
 
           <span className="text-xs bg-brand-darkTeal text-brand-offWhite px-3 py-1 rounded-full border border-[#B8D8D2]/30 font-medium hidden sm:inline-block">
-            HR Manager
+            {roleLabel(user)}
           </span>
 
-          <div className="w-9 h-9 rounded-full bg-brand-darkTeal text-brand-offWhite flex items-center justify-center font-bold text-xs shadow border border-brand-teal">
-            VK
+          <div
+            className="w-9 h-9 rounded-full bg-brand-darkTeal text-brand-offWhite flex items-center justify-center font-bold text-xs shadow border border-brand-teal"
+            title={user?.name || ''}
+          >
+            {initials}
           </div>
+
+          <button
+            onClick={logout}
+            title="Log out"
+            className="p-2 rounded-lg text-[#B8D8D2] hover:text-white hover:bg-brand-darkTeal transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
 
       </div>

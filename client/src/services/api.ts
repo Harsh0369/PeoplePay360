@@ -1,5 +1,6 @@
 import { Employee, Contract } from '../types';
 import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS } from '../data/mockData';
+import { authHeaders } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -17,7 +18,10 @@ export const apiService = {
   // Fetch all employees
   async getEmployees(): Promise<Employee[]> {
     try {
-      const res = await fetch(`${API_BASE_URL}/employees`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${API_BASE_URL}/employees`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -55,7 +59,7 @@ export const apiService = {
     try {
       const res = await fetch(`${API_BASE_URL}/employees`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data),
       });
       if (res.ok) {
@@ -93,7 +97,10 @@ export const apiService = {
   // Fetch all contracts
   async getContracts(): Promise<Contract[]> {
     try {
-      const res = await fetch(`${API_BASE_URL}/contracts`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${API_BASE_URL}/contracts`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -124,7 +131,7 @@ export const apiService = {
     try {
       const res = await fetch(`${API_BASE_URL}/contracts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data),
       });
       if (res.ok) {
