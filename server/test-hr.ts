@@ -3,6 +3,7 @@ import { config } from './src/config/environment';
 import * as Models from './src/models';
 import { getProfileService } from './src/services/employee.service';
 import { clockInService, clockOutService, adminUpdateAttendanceService } from './src/services/attendance.service';
+import { raiseTimeOffRequestService, reviewTimeOffRequestService, adminOverrideRequestService } from './src/services/time-off.service';
 
 const testHR = async () => {
   try {
@@ -17,6 +18,9 @@ const testHR = async () => {
     await Models.AttendanceException.collection.drop().catch(() => {});
     await Models.IdempotencyRecord.collection.drop().catch(() => {});
     await Models.BusinessLog.collection.drop().catch(() => {});
+    await Models.TimeOffType.collection.drop().catch(() => {});
+    await Models.TimeOffAllocation.collection.drop().catch(() => {});
+    await Models.TimeOffRequest.collection.drop().catch(() => {});
     // Give Mongo a moment to rebuild indexes
     await new Promise(res => setTimeout(res, 500));
     
@@ -162,6 +166,80 @@ const testHR = async () => {
     } else {
       console.log("FAIL: No business log generated for admin override.");
     }
+
+    // --- Testing Time Off (Leave Management) ---
+    console.log("\n--- Testing Time Off (Leave Management) ---");
+    const sickLeave = await Models.TimeOffType.create({
+      name: "Sick Leave",
+      requiresAllocation: true,
+      isPaid: true
+    });
+
+    const allocation = await Models.TimeOffAllocation.create({
+      employeeId: employee._id,
+      timeOffTypeId: sickLeave._id,
+      validityYear: new Date().getFullYear(),
+      grantedDays: 5,
+      usedDays: 0
+    });
+    console.log("Created Sick Leave Allocation: 5 days granted.");
+
+    console.log("1. Employee raises request for 3 days");
+    const today = new Date();
+    const threeDaysLater = new Date(today);
+    threeDaysLater.setDate(today.getDate() + 3);
+
+    const request1 = await raiseTimeOffRequestService({
+      employeeId: employee._id.toString(),
+      timeOffTypeId: sickLeave._id.toString(),
+      startDate: today,
+      endDate: threeDaysLater,
+      requestedDays: 3
+    });
+    console.log("SUCCESS: Request raised. Status:", request1.status);
+
+    console.log("2. Manager Approves request");
+    const approvedRequest = await reviewTimeOffRequestService({
+      requestId: request1._id.toString(),
+      status: "APPROVED",
+      reviewerId: adminUser._id.toString()
+    });
+    const updatedAllocation = await Models.TimeOffAllocation.findById(allocation._id);
+    console.log("SUCCESS: Request Approved. Allocation usedDays is now:", updatedAllocation?.usedDays);
+
+    console.log("3. Employee raises another request for 3 days (Should fail)");
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    const nextWeekEnd = new Date(nextWeek);
+    nextWeekEnd.setDate(nextWeek.getDate() + 3);
+
+    try {
+      await raiseTimeOffRequestService({
+        employeeId: employee._id.toString(),
+        timeOffTypeId: sickLeave._id.toString(),
+        startDate: nextWeek,
+        endDate: nextWeekEnd,
+        requestedDays: 3
+      });
+      console.log("FAIL: Second request incorrectly succeeded");
+    } catch (e: any) {
+      console.log("SUCCESS: Over-allocation prevented. Error:", e.message);
+    }
+
+    console.log("4. Admin Overrides Approval to Rejected");
+    await adminOverrideRequestService({
+      requestId: request1._id.toString(),
+      newStatus: "REJECTED",
+      actorId: adminUser._id.toString(),
+      reason: "Employee came to work after all"
+    });
+    
+    const finalAllocation = await Models.TimeOffAllocation.findById(allocation._id);
+    console.log("SUCCESS: Admin Override processed. Allocation usedDays refunded to:", finalAllocation?.usedDays);
+
+    await new Promise(res => setTimeout(res, 50));
+    const overrideLog = await Models.BusinessLog.findOne({ entity: "LEAVE", action: "OVERRIDE" });
+    console.log("SUCCESS: Business Log created for Leave Override. Content:", overrideLog?.content);
 
   } catch (error) {
     console.error("Test failed:", error);

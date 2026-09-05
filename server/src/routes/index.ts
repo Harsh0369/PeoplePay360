@@ -3,6 +3,7 @@ import authRoutes from './auth.routes';
 import roleRoutes from './role.routes';
 import employeeRoutes from './employee.routes';
 import attendanceRoutes from './attendance.routes';
+import timeOffRoutes from './time-off.routes';
 
 export const mountRoutes = (app: Express) => {
     const router = Router();
@@ -15,6 +16,7 @@ export const mountRoutes = (app: Express) => {
     router.use('/roles', roleRoutes);
     router.use('/employees', employeeRoutes);
     router.use('/attendance', attendanceRoutes);
+    router.use('/time-off', timeOffRoutes);
 
     app.use('/api/v1', router);
 };

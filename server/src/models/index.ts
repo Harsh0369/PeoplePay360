@@ -9,3 +9,6 @@ export * from "./attendance.model";
 export * from "./attendance-exception.model";
 export * from "./idempotency.model";
 export * from "./business-log.model";
+export * from "./time-off-type.model";
+export * from "./time-off-allocation.model";
+export * from "./time-off-request.model";
