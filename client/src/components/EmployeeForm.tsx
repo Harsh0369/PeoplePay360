@@ -23,19 +23,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
       workEmail: '',
       workPhone: '',
       jobPosition: '',
-      department: 'Engineering',
-      manager: 'Michael Scott',
-      workingSchedule: 'Standard 40h/week',
+      department: '',
+      manager: '',
+      workingSchedule: '',
       status: 'ACTIVE',
       employeeType: 'FULL_TIME',
       bankAccountNo: '',
       bankName: '',
       ifscCode: '',
       joinDate: new Date().toISOString().split('T')[0],
-      contractCount: 1,
+      contractCount: 0,
       attendanceCount: 0,
       timeOffCount: 0,
-      allocationCount: 20
+      allocationCount: 0
     }
   );
 

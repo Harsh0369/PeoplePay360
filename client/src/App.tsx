@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Employee, Contract, JobPosition, Department, ActiveTab } from './types';
-import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS, INITIAL_JOB_POSITIONS, INITIAL_DEPARTMENTS } from './data/mockData';
 import { apiService } from './services/api';
 import { Navbar } from './components/Navbar';
 import { EmployeeKanban } from './components/EmployeeKanban';
@@ -11,6 +10,11 @@ import { ContractForm } from './components/ContractForm';
 import { LoginPage } from './components/LoginPage';
 import { PayrollModule } from './components/PayrollModule';
 import { ConfigModule } from './components/ConfigModule';
+import { AttendanceModule } from './components/AttendanceModule';
+import { TimeOffModule } from './components/TimeOffModule';
+import { OrgModule } from './components/OrgModule';
+import { RolesModule } from './components/RolesModule';
+import { MyProfileModule } from './components/MyProfileModule';
 import { useAuth } from './hooks/useAuth';
 import { JobPositionList } from './components/JobPositionList';
 import { JobPositionForm } from './components/JobPositionForm';
@@ -20,10 +24,10 @@ export function App() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   // Main State Management
   const [activeTab, setActiveTab] = useState<ActiveTab>('EMPLOYEES');
-  const [employees, setEmployees] = useState<Employee[]>(INITIAL_EMPLOYEES);
-  const [contracts, setContracts] = useState<Contract[]>(INITIAL_CONTRACTS);
-  const [jobPositions, setJobPositions] = useState<JobPosition[]>(INITIAL_JOB_POSITIONS);
-  const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [jobPositions, setJobPositions] = useState<JobPosition[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
 
   // Sub Views State
@@ -56,20 +60,13 @@ export function App() {
     if (!isAuthenticated) return;
 
     async function init() {
-      const isConnected = await apiService.checkHealth();
-      setIsBackendConnected(isConnected);
-
-      const [remoteEmps, remoteCnts, remoteDepts, remotePositions] = await Promise.all([
-        apiService.getEmployees(),
-        apiService.getContracts(),
-        apiService.getDepartments(),
-        apiService.getJobPositions()
-      ]);
-
-      if (remoteEmps && remoteEmps.length > 0) setEmployees(remoteEmps);
-      if (remoteCnts && remoteCnts.length > 0) setContracts(remoteCnts);
-      if (remoteDepts && remoteDepts.length > 0) setDepartments(remoteDepts);
-      if (remotePositions && remotePositions.length > 0) setJobPositions(remotePositions);
+      setIsBackendConnected(await apiService.checkHealth());
+      // Each source loads independently so one failing endpoint (e.g. a 403 for
+      // a role that can't read contracts) doesn't blank the others.
+      apiService.getEmployees().then(setEmployees).catch(() => setEmployees([]));
+      apiService.getContracts().then(setContracts).catch(() => setContracts([]));
+      apiService.getDepartments().then(setDepartments).catch(() => setDepartments([]));
+      apiService.getJobPositions().then(setJobPositions).catch(() => setJobPositions([]));
     }
     init();
   }, [isAuthenticated]);
@@ -117,34 +114,27 @@ export function App() {
     setSelectedEmployee(null);
   };
 
-  // Handlers - Contracts
+  // Handlers - Contracts. The backend only allows editing a contract's status
+  // and end date (activate, expire, cancel, extend); creation needs the full record.
+  const STATUS_TO_API: Record<string, string> = { DRAFT: 'Draft', ACTIVE: 'Running', RUNNING: 'Running', EXPIRED: 'Expired', CANCELLED: 'Cancelled' };
   const handleSaveContract = async (cntData: Contract) => {
-    const savedCnt = await apiService.createContract(cntData);
+    try {
+      const isEdit = !!selectedContract?.id;
+      const savedCnt = isEdit
+        ? await apiService.updateContract(selectedContract!.id, {
+            status: STATUS_TO_API[String(cntData.status).toUpperCase()] as any,
+            endDate: cntData.endDate ?? null,
+          } as any)
+        : await apiService.createContract(cntData);
 
-    setContracts((prev) => {
-      const idx = prev.findIndex((c) => c.id === savedCnt.id || c.id === cntData.id);
-      if (idx >= 0) {
-        const updated = [...prev];
-        updated[idx] = savedCnt;
-        return updated;
-      }
-      return [savedCnt, ...prev];
-    });
-
-    // Dynamically re-calculate employee contract counts
-    setEmployees((prev) =>
-      prev.map((e) => {
-        if (e.id === savedCnt.employeeId) {
-          const empContracts = [...contracts.filter(c => c.id !== savedCnt.id), savedCnt].filter((c) => c.employeeId === e.id);
-          return { ...e, contractCount: empContracts.length };
-        }
-        return e;
-      })
-    );
-
-    showToast(`Contract "${savedCnt.contractRef}" saved successfully!`);
-    setIsEditingContract(false);
-    setSelectedContract(null);
+      // Refresh contracts from the source of truth.
+      apiService.getContracts().then(setContracts).catch(() => {});
+      showToast(isEdit ? 'Contract updated successfully!' : 'Contract created successfully!');
+      setIsEditingContract(false);
+      setSelectedContract(null);
+    } catch (e: any) {
+      showToast(`Error: ${e.message}`);
+    }
   };
 
   // Handlers - Job Positions
@@ -241,7 +231,7 @@ export function App() {
 
             <div className="flex items-center space-x-2">
               <DollarSign className="w-4 h-4 text-brand-darkTeal" />
-              <span>Monthly Base Budget: <strong className="text-brand-darkTeal">${totalMonthlyWageBudget.toLocaleString()}</strong></span>
+              <span>Monthly Base Budget: <strong className="text-brand-darkTeal">{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(totalMonthlyWageBudget)}</strong></span>
             </div>
           </div>
 
@@ -256,6 +246,11 @@ export function App() {
       <main className="flex-1">
         {activeTab === 'PAYROLL' && <PayrollModule />}
         {activeTab === 'CONFIG' && <ConfigModule />}
+        {activeTab === 'ATTENDANCE' && <AttendanceModule />}
+        {activeTab === 'TIMEOFF' && <TimeOffModule />}
+        {activeTab === 'ORG' && <OrgModule />}
+        {activeTab === 'SETTINGS' && <RolesModule />}
+        {activeTab === 'MY_PROFILE' && <MyProfileModule />}
         {activeTab === 'EMPLOYEES' && (
           <div>
             {isEditingEmployee ? (

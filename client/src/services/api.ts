@@ -1,264 +1,141 @@
 import { Employee, Contract, JobPosition, Department } from '../types';
-import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS, INITIAL_DEPARTMENTS, INITIAL_JOB_POSITIONS } from '../data/mockData';
 import { authHeaders } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
+// Every request is authenticated and real. No mock/offline fallback: on failure
+// we surface the error (writes) or return an empty list (reads) — never fake data.
+async function get(path: string): Promise<any[]> {
+  const res = await fetch(`${API_BASE_URL}${path}`, { headers: authHeaders(), signal: AbortSignal.timeout(12000) });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
+  return Array.isArray(json?.data) ? json.data : [];
+}
+async function send(method: string, path: string, body: any): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method, headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(body), signal: AbortSignal.timeout(12000),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
+  return json?.data ?? json;
+}
+
+const empCode = (item: any) => item.empCode || `EMP-${String(item._id || '').slice(-4).toUpperCase()}`;
+const cntRef = (item: any) => item.contractRef || `CNT-${String(item._id || '').slice(-4).toUpperCase()}`;
+
+// Backend contract statuses (Draft/Running/Expired/Cancelled) -> the UI's vocabulary
+// (DRAFT/ACTIVE/EXPIRED/CANCELLED) so "active contract" logic and badges work.
+const CONTRACT_STATUS: Record<string, string> = { RUNNING: 'ACTIVE', DRAFT: 'DRAFT', EXPIRED: 'EXPIRED', CANCELLED: 'CANCELLED' };
+const mapContractStatus = (s: any) => CONTRACT_STATUS[String(s || 'DRAFT').toUpperCase()] || String(s || 'DRAFT').toUpperCase();
+
 export const apiService = {
-  // Check backend server health
   async checkHealth(): Promise<boolean> {
     try {
-      const res = await fetch(`${API_BASE_URL}/health`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${API_BASE_URL}/health`, { signal: AbortSignal.timeout(4000) });
       return res.ok;
     } catch {
       return false;
     }
   },
 
-  // Fetch all employees
   async getEmployees(): Promise<Employee[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/employees`, {
-        headers: authHeaders(),
-        signal: AbortSignal.timeout(3000),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-          return json.data.map((item: any) => ({
-            id: item._id || item.id,
-            empCode: item.empCode || `EMP${Math.floor(100 + Math.random() * 900)}`,
-            name: item.name,
-            workEmail: item.workEmail,
-            workPhone: item.workPhone || '+1 (555) 019-2834',
-            jobPosition: item.jobPositionId?.title || item.jobPosition || 'Software Engineer',
-            department: item.departmentId?.name || item.department || 'Engineering',
-            manager: item.managerId?.name || item.manager || 'Michael Scott',
-            workingSchedule: item.workingSchedule || 'Standard 40h/week',
-            status: item.status?.toUpperCase() || 'ACTIVE',
-            employeeType: item.employeeType || 'FULL_TIME',
-            bankAccountNo: item.bankAccountNo || '987654321045',
-            bankName: item.bankName || 'JPMorgan Chase Bank',
-            ifscCode: item.ifscCode || 'CHASUS33XXX',
-            joinDate: item.joinDate ? new Date(item.joinDate).toISOString().split('T')[0] : '2024-01-01',
-            contractCount: item.contractCount || 1,
-            attendanceCount: item.attendanceCount || 120,
-            timeOffCount: item.timeOffCount || 2,
-            allocationCount: item.allocationCount || 20
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn('Backend server offline or unreachable. Using client data.', e);
-    }
-    return INITIAL_EMPLOYEES;
+    const data = await get('/employees');
+    return data.map((item: any) => ({
+      id: item._id || item.id,
+      empCode: empCode(item),
+      name: item.name,
+      workEmail: item.workEmail || '',
+      workPhone: item.workPhone || '—',
+      jobPosition: item.jobPositionId?.title || '—',
+      department: item.departmentId?.name || '—',
+      manager: item.managerId?.name || '—',
+      workingSchedule: item.workingScheduleId?.name || '—',
+      status: (item.status || 'ACTIVE').toString().toUpperCase(),
+      employeeType: item.employeeType || 'FULL_TIME',
+      bankAccountNo: item.bankAccountNo || '',
+      bankName: item.bankName || '',
+      ifscCode: item.ifscCode || '',
+      joinDate: item.joinDate ? new Date(item.joinDate).toISOString().split('T')[0] : '',
+      contractCount: item.contractCount ?? 0,
+      attendanceCount: item.attendanceCount ?? 0,
+      timeOffCount: item.timeOffCount ?? 0,
+      allocationCount: item.allocationCount ?? 0,
+    }));
   },
 
-  // Create employee on backend
   async createEmployee(data: Partial<Employee>): Promise<Employee> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/employees`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          return json.data;
-        }
-      }
-    } catch (e) {
-      console.warn('Backend create employee failed, using client state.', e);
-    }
-    return {
-      id: data.id || `emp-${Date.now()}`,
-      empCode: data.empCode || `EMP${Math.floor(100 + Math.random() * 900)}`,
-      name: data.name || '',
-      workEmail: data.workEmail || '',
-      workPhone: data.workPhone || '',
-      jobPosition: data.jobPosition || '',
-      department: data.department || 'Engineering',
-      manager: data.manager || 'Michael Scott',
-      workingSchedule: data.workingSchedule || 'Standard 40h/week',
-      status: data.status || 'ACTIVE',
-      employeeType: data.employeeType || 'FULL_TIME',
-      bankAccountNo: data.bankAccountNo || '',
-      bankName: data.bankName || '',
-      ifscCode: data.ifscCode || '',
-      joinDate: data.joinDate || new Date().toISOString().split('T')[0],
-      contractCount: 1,
-      attendanceCount: 0,
-      timeOffCount: 0,
-      allocationCount: 20
-    };
+    const d = await send('POST', '/employees', data);
+    return { ...(data as Employee), ...d, id: d._id || d.id };
   },
 
-  // Fetch all contracts
   async getContracts(): Promise<Contract[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/contracts`, {
-        headers: authHeaders(),
-        signal: AbortSignal.timeout(3000),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-          return json.data.map((item: any) => ({
-            id: item._id || item.id,
-            contractRef: item.contractRef || `CNT/2026/${Math.floor(100 + Math.random() * 900)}`,
-            employeeId: item.employeeId?._id || item.employeeId || '',
-            employeeName: item.employeeId?.name || item.employeeName || 'Sarah Jenkins',
-            department: item.departmentId?.name || item.department || 'Engineering',
-            jobPosition: item.jobPositionId?.title || item.jobPosition || 'Software Engineer',
-            startDate: item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '2024-01-01',
-            endDate: item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : null,
-            wage: item.wage || 6500,
-            salaryStructure: item.salaryStructure || 'Regular Salary Structure',
-            status: item.status?.toUpperCase() || 'ACTIVE',
-            terms: item.terms || 'Standard employment agreement terms.'
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn('Backend server offline or unreachable. Using client contracts data.', e);
-    }
-    return INITIAL_CONTRACTS;
+    const data = await get('/contracts');
+    return data.map((item: any) => ({
+      id: item._id || item.id,
+      contractRef: cntRef(item),
+      employeeId: item.employeeId?._id || item.employeeId || '',
+      employeeName: item.employeeId?.name || '—',
+      department: item.departmentId?.name || item.employeeId?.departmentId?.name || '—',
+      jobPosition: item.jobPositionId?.title || '—',
+      startDate: item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '',
+      endDate: item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : null,
+      wage: item.wage ?? 0,
+      salaryStructure: item.salaryStructureId?.name || '—',
+      status: mapContractStatus(item.status),
+      terms: item.terms || '',
+    }));
   },
 
-  // Create contract on backend
   async createContract(data: Partial<Contract>): Promise<Contract> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/contracts`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          return json.data;
-        }
-      }
-    } catch (e) {
-      console.warn('Backend create contract failed, using client state.', e);
-    }
-    return {
-      id: data.id || `cnt-${Date.now()}`,
-      contractRef: data.contractRef || `CNT/2026/${Math.floor(100 + Math.random() * 900)}`,
-      employeeId: data.employeeId || '',
-      employeeName: data.employeeName || '',
-      department: data.department || 'Engineering',
-      jobPosition: data.jobPosition || 'Software Engineer',
-      startDate: data.startDate || new Date().toISOString().split('T')[0],
-      endDate: data.endDate || null,
-      wage: data.wage || 6500,
-      salaryStructure: data.salaryStructure || 'Regular Salary Structure',
-      status: data.status || 'ACTIVE',
-      terms: data.terms || 'Standard terms.'
-    };
+    const d = await send('POST', '/contracts', data);
+    return { ...(data as Contract), ...d, id: d._id || d.id };
   },
 
-  // Fetch all departments
+  async updateContract(id: string, data: Partial<Contract>): Promise<Contract> {
+    const d = await send('PUT', `/contracts/${id}`, data);
+    return { ...(data as Contract), ...d, id: d._id || d.id || id };
+  },
+
   async getDepartments(): Promise<Department[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/departments`, {
-        headers: authHeaders(),
-        signal: AbortSignal.timeout(3000),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-          return json.data.map((item: any) => ({
-            id: item._id || item.id,
-            _id: item._id,
-            name: item.name,
-            parentDepartmentId: item.parentDepartmentId,
-            managerId: item.managerId
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn('Backend departments offline. Using client initial departments.', e);
-    }
-    return INITIAL_DEPARTMENTS;
+    const data = await get('/departments');
+    return data.map((item: any) => ({
+      id: item._id || item.id,
+      _id: item._id,
+      name: item.name,
+      parentDepartmentId: item.parentDepartmentId,
+      managerId: item.managerId,
+    }));
   },
 
-  // Fetch all job positions
   async getJobPositions(): Promise<JobPosition[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/job-positions`, {
-        headers: authHeaders(),
-        signal: AbortSignal.timeout(3000),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-          return json.data.map((item: any) => ({
-            id: item._id || item.id,
-            _id: item._id,
-            title: item.title,
-            departmentId: item.departmentId?._id || item.departmentId || null,
-            departmentName: item.departmentId?.name || 'General',
-            expectedSalary: item.expectedSalary || 0,
-            isActive: item.isActive ?? true,
-            createdAt: item.createdAt ? new Date(item.createdAt).toISOString().split('T')[0] : '2026-01-01'
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn('Backend job positions offline. Using client initial job positions.', e);
-    }
-    return INITIAL_JOB_POSITIONS;
+    const data = await get('/job-positions');
+    return data.map((item: any) => ({
+      id: item._id || item.id,
+      _id: item._id,
+      title: item.title,
+      departmentId: item.departmentId?._id || item.departmentId || null,
+      departmentName: item.departmentId?.name || '—',
+      expectedSalary: item.expectedSalary || 0,
+      isActive: item.isActive ?? true,
+      createdAt: item.createdAt ? new Date(item.createdAt).toISOString().split('T')[0] : '',
+    }));
   },
 
-  // Create job position on backend
   async createJobPosition(data: { title: string; departmentId?: string; expectedSalary?: number }): Promise<JobPosition> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/job-positions`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          return {
-            id: json.data._id || json.data.id,
-            _id: json.data._id,
-            title: json.data.title,
-            departmentId: json.data.departmentId,
-            expectedSalary: json.data.expectedSalary || 0,
-            isActive: json.data.isActive ?? true,
-            createdAt: new Date().toISOString().split('T')[0]
-          };
-        }
-      }
-    } catch (e) {
-      console.warn('Backend create job position failed. Using client state.', e);
-    }
+    const d = await send('POST', '/job-positions', data);
     return {
-      id: `jp-${Date.now()}`,
-      title: data.title,
-      departmentId: data.departmentId || null,
-      expectedSalary: data.expectedSalary || 0,
-      isActive: true,
-      createdAt: new Date().toISOString().split('T')[0]
+      id: d._id || d.id,
+      _id: d._id,
+      title: d.title,
+      departmentId: d.departmentId,
+      expectedSalary: d.expectedSalary || 0,
+      isActive: d.isActive ?? true,
+      createdAt: new Date().toISOString().split('T')[0],
     };
   },
 
-  // Assign employee to job position
   async assignEmployeeJobPosition(employeeId: string, jobPositionId: string): Promise<boolean> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/job-positions/employee/${employeeId}/assign`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ jobPositionId }),
-      });
-      return res.ok;
-    } catch (e) {
-      console.warn('Backend assign job position failed.', e);
-      return false;
-    }
-  }
+    await send('POST', `/job-positions/employee/${employeeId}/assign`, { jobPositionId });
+    return true;
+  },
 };
