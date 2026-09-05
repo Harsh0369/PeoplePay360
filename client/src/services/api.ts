@@ -1,4 +1,4 @@
-import { Employee, Contract, JobPosition, Department } from '../types';
+import { Employee, Contract, ContractStatus, JobPosition, Department } from '../types';
 import { authHeaders } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
@@ -81,7 +81,7 @@ export const apiService = {
       endDate: item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : null,
       wage: item.wage ?? 0,
       salaryStructure: item.salaryStructureId?.name || '—',
-      status: mapContractStatus(item.status),
+      status: mapContractStatus(item.status) as ContractStatus,
       terms: item.terms || '',
     }));
   },
