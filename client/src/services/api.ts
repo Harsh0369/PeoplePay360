@@ -1,5 +1,6 @@
-import { Employee, Contract } from '../types';
-import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS } from '../data/mockData';
+import { Employee, Contract, JobPosition, Department } from '../types';
+import { INITIAL_EMPLOYEES, INITIAL_CONTRACTS, INITIAL_DEPARTMENTS, INITIAL_JOB_POSITIONS } from '../data/mockData';
+import { authHeaders } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
@@ -17,7 +18,10 @@ export const apiService = {
   // Fetch all employees
   async getEmployees(): Promise<Employee[]> {
     try {
-      const res = await fetch(`${API_BASE_URL}/employees`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${API_BASE_URL}/employees`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -55,7 +59,7 @@ export const apiService = {
     try {
       const res = await fetch(`${API_BASE_URL}/employees`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data),
       });
       if (res.ok) {
@@ -93,7 +97,10 @@ export const apiService = {
   // Fetch all contracts
   async getContracts(): Promise<Contract[]> {
     try {
-      const res = await fetch(`${API_BASE_URL}/contracts`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${API_BASE_URL}/contracts`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.data && Array.isArray(json.data) && json.data.length > 0) {
@@ -124,7 +131,7 @@ export const apiService = {
     try {
       const res = await fetch(`${API_BASE_URL}/contracts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data),
       });
       if (res.ok) {
@@ -150,5 +157,108 @@ export const apiService = {
       status: data.status || 'ACTIVE',
       terms: data.terms || 'Standard terms.'
     };
+  },
+
+  // Fetch all departments
+  async getDepartments(): Promise<Department[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/departments`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+          return json.data.map((item: any) => ({
+            id: item._id || item.id,
+            _id: item._id,
+            name: item.name,
+            parentDepartmentId: item.parentDepartmentId,
+            managerId: item.managerId
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn('Backend departments offline. Using client initial departments.', e);
+    }
+    return INITIAL_DEPARTMENTS;
+  },
+
+  // Fetch all job positions
+  async getJobPositions(): Promise<JobPosition[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/job-positions`, {
+        headers: authHeaders(),
+        signal: AbortSignal.timeout(3000),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+          return json.data.map((item: any) => ({
+            id: item._id || item.id,
+            _id: item._id,
+            title: item.title,
+            departmentId: item.departmentId?._id || item.departmentId || null,
+            departmentName: item.departmentId?.name || 'General',
+            expectedSalary: item.expectedSalary || 0,
+            isActive: item.isActive ?? true,
+            createdAt: item.createdAt ? new Date(item.createdAt).toISOString().split('T')[0] : '2026-01-01'
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn('Backend job positions offline. Using client initial job positions.', e);
+    }
+    return INITIAL_JOB_POSITIONS;
+  },
+
+  // Create job position on backend
+  async createJobPosition(data: { title: string; departmentId?: string; expectedSalary?: number }): Promise<JobPosition> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/job-positions`, {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          return {
+            id: json.data._id || json.data.id,
+            _id: json.data._id,
+            title: json.data.title,
+            departmentId: json.data.departmentId,
+            expectedSalary: json.data.expectedSalary || 0,
+            isActive: json.data.isActive ?? true,
+            createdAt: new Date().toISOString().split('T')[0]
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Backend create job position failed. Using client state.', e);
+    }
+    return {
+      id: `jp-${Date.now()}`,
+      title: data.title,
+      departmentId: data.departmentId || null,
+      expectedSalary: data.expectedSalary || 0,
+      isActive: true,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+  },
+
+  // Assign employee to job position
+  async assignEmployeeJobPosition(employeeId: string, jobPositionId: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/job-positions/employee/${employeeId}/assign`, {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ jobPositionId }),
+      });
+      return res.ok;
+    } catch (e) {
+      console.warn('Backend assign job position failed.', e);
+      return false;
+    }
   }
 };

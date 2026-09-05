@@ -163,3 +163,64 @@ export const INITIAL_CONTRACTS: Contract[] = [
     terms: 'Fixed-term 12-month contractor agreement.'
   }
 ];
+
+export const INITIAL_DEPARTMENTS = [
+  { id: 'dept-1', name: 'Engineering' },
+  { id: 'dept-2', name: 'Human Resources' },
+  { id: 'dept-3', name: 'Finance & Payroll' },
+  { id: 'dept-4', name: 'Product & Design' },
+  { id: 'dept-5', name: 'Marketing & Sales' }
+];
+
+export const INITIAL_JOB_POSITIONS = [
+  {
+    id: 'jp-1',
+    title: 'Senior Software Engineer',
+    departmentId: 'dept-1',
+    departmentName: 'Engineering',
+    expectedSalary: 8500,
+    isActive: true,
+    employeeCount: 1,
+    createdAt: '2024-01-10'
+  },
+  {
+    id: 'jp-2',
+    title: 'HR Specialist',
+    departmentId: 'dept-2',
+    departmentName: 'Human Resources',
+    expectedSalary: 5900,
+    isActive: true,
+    employeeCount: 1,
+    createdAt: '2024-01-12'
+  },
+  {
+    id: 'jp-3',
+    title: 'Payroll Coordinator',
+    departmentId: 'dept-3',
+    departmentName: 'Finance & Payroll',
+    expectedSalary: 6200,
+    isActive: true,
+    employeeCount: 1,
+    createdAt: '2024-01-15'
+  },
+  {
+    id: 'jp-4',
+    title: 'Product Designer',
+    departmentId: 'dept-4',
+    departmentName: 'Product & Design',
+    expectedSalary: 5400,
+    isActive: true,
+    employeeCount: 1,
+    createdAt: '2024-02-01'
+  },
+  {
+    id: 'jp-5',
+    title: 'DevOps Lead',
+    departmentId: 'dept-1',
+    departmentName: 'Engineering',
+    expectedSalary: 9200,
+    isActive: true,
+    employeeCount: 0,
+    createdAt: '2024-03-01'
+  }
+];

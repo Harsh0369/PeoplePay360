@@ -1,13 +1,26 @@
 import React from 'react';
-import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server } from 'lucide-react';
+import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server, LogOut, Briefcase } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { roleLabel } from '../services/auth';
+import { ActiveTab } from '../types';
 
 interface NavbarProps {
-  activeTab: 'EMPLOYEES' | 'CONTRACTS';
-  onTabChange: (tab: 'EMPLOYEES' | 'CONTRACTS') => void;
+  activeTab: ActiveTab;
+  onTabChange: (tab: ActiveTab) => void;
   isBackendConnected?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBackendConnected = false }) => {
+  const { user, logout, can } = useAuth();
+  const showPayroll = can('admin', 'Payroll.Read', 'Payroll.Write', 'payroll.manage');
+  const showConfig = can('admin', 'payroll.manage');
+  const initials = (user?.name || '?')
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   return (
     <header className="bg-brand-deepTeal text-brand-offWhite shadow-md sticky top-0 z-50 border-b border-brand-darkTeal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -74,25 +87,56 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBacken
             <span>Contracts</span>
           </button>
 
-          {/* Module Placeholders */}
+          <button
+            onClick={() => onTabChange('JOB_POSITIONS')}
+            className={`flex items-center space-x-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+              activeTab === 'JOB_POSITIONS'
+                ? 'bg-brand-teal text-white shadow-sm ring-1 ring-white/20'
+                : 'text-[#E5F0ED] hover:bg-brand-darkTeal hover:text-white'
+            }`}
+          >
+            <Briefcase className="w-4 h-4 text-[#B8D8D2]" />
+            <span>Job Positions</span>
+          </button>
+
+          {/* Payroll (RBAC-gated) */}
+          {showPayroll && (
+            <button
+              onClick={() => onTabChange('PAYROLL')}
+              className={`flex items-center space-x-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'PAYROLL'
+                  ? 'bg-brand-teal text-white shadow-sm ring-1 ring-white/20'
+                  : 'text-[#E5F0ED] hover:bg-brand-darkTeal hover:text-white'
+              }`}
+            >
+              <DollarSign className="w-4 h-4 text-[#B8D8D2]" />
+              <span>Payroll</span>
+            </button>
+          )}
+
+          {/* Configuration (RBAC-gated) */}
+          {showConfig && (
+            <button
+              onClick={() => onTabChange('CONFIG')}
+              className={`flex items-center space-x-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'CONFIG'
+                  ? 'bg-brand-teal text-white shadow-sm ring-1 ring-white/20'
+                  : 'text-[#E5F0ED] hover:bg-brand-darkTeal hover:text-white'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 text-[#B8D8D2]" />
+              <span>Config</span>
+            </button>
+          )}
+
+          {/* Not built yet */}
           <div className="opacity-40 flex items-center space-x-1 cursor-not-allowed text-[#E5F0ED] text-xs px-2.5 py-2" title="Module coming soon">
             <Clock className="w-3.5 h-3.5 mr-1" />
             <span>Attendance</span>
           </div>
-
           <div className="opacity-40 flex items-center space-x-1 cursor-not-allowed text-[#E5F0ED] text-xs px-2.5 py-2" title="Module coming soon">
             <CalendarCheck className="w-3.5 h-3.5 mr-1" />
             <span>Time Off</span>
-          </div>
-
-          <div className="opacity-40 flex items-center space-x-1 cursor-not-allowed text-[#E5F0ED] text-xs px-2.5 py-2" title="Module coming soon">
-            <DollarSign className="w-3.5 h-3.5 mr-1" />
-            <span>Payroll</span>
-          </div>
-
-          <div className="opacity-40 flex items-center space-x-1 cursor-not-allowed text-[#E5F0ED] text-xs px-2.5 py-2" title="Module coming soon">
-            <BarChart3 className="w-3.5 h-3.5 mr-1" />
-            <span>Reports</span>
           </div>
         </nav>
 
@@ -111,12 +155,23 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBacken
           </div>
 
           <span className="text-xs bg-brand-darkTeal text-brand-offWhite px-3 py-1 rounded-full border border-[#B8D8D2]/30 font-medium hidden sm:inline-block">
-            HR Manager
+            {roleLabel(user)}
           </span>
 
-          <div className="w-9 h-9 rounded-full bg-brand-darkTeal text-brand-offWhite flex items-center justify-center font-bold text-xs shadow border border-brand-teal">
-            VK
+          <div
+            className="w-9 h-9 rounded-full bg-brand-darkTeal text-brand-offWhite flex items-center justify-center font-bold text-xs shadow border border-brand-teal"
+            title={user?.name || ''}
+          >
+            {initials}
           </div>
+
+          <button
+            onClick={logout}
+            title="Log out"
+            className="p-2 rounded-lg text-[#B8D8D2] hover:text-white hover:bg-brand-darkTeal transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
 
       </div>
