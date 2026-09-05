@@ -8,3 +8,4 @@ export * from "./contract.model";
 export * from "./attendance.model";
 export * from "./attendance-exception.model";
 export * from "./idempotency.model";
+export * from "./business-log.model";

@@ -1,7 +1,8 @@
 import { Attendance } from "../../models/attendance.model";
 import { NotFoundError } from "../../errors/index";
+import { createBusinessLog } from "../business-log.service";
 
-export const adminUpdateAttendanceService = async (attendanceId: string, data: any) => {
+export const adminUpdateAttendanceService = async (attendanceId: string, data: any, actorId?: string) => {
   const attendance = await Attendance.findById(attendanceId);
   if (!attendance) {
     throw new NotFoundError("Attendance record not found");
@@ -38,5 +39,18 @@ export const adminUpdateAttendanceService = async (attendanceId: string, data: a
   attendance.isEditedByAdmin = true;
 
   await attendance.save();
+
+  // Create Business Log if actorId was provided
+  if (actorId) {
+    createBusinessLog({
+      actorId,
+      affectedEmployeeId: attendance.employeeId.toString(),
+      action: "OVERRIDE",
+      entity: "ATTENDANCE",
+      content: "Admin manually updated attendance record.",
+      metadata: { newValues: data },
+    });
+  }
+
   return attendance;
 };
