@@ -2,24 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-brand-warmCream text-brand-darkCharcoal font-sans min-h-screen;
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #f6f7fb;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reusable component classes built on the theme tokens. */
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition;
   }
-}
-
-.smart-button {
-  @apply flex flex-col items-center justify-center px-4 py-2 bg-brand-offWhite border border-brand-sandBorder rounded-lg hover:bg-brand-softSand transition-all cursor-pointer text-xs shadow-sm text-brand-darkCharcoal font-semibold;
-}
-
-.stage-step {
-  @apply px-4 py-1.5 text-xs font-bold uppercase tracking-wider relative flex items-center justify-center transition-colors;
-}
-
-.stage-step-active {
-  @apply bg-brand-darkTeal text-brand-offWhite font-bold shadow-sm;
-}
-
-.stage-step-inactive {
-  @apply bg-brand-softSand text-brand-mutedSlate hover:bg-brand-sandBorder;
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-brand-dark shadow-sm;
+  }
+  .btn-ghost {
+    @apply btn text-ink hover:bg-black/5;
+  }
+  .card {
+    @apply rounded-xl bg-white shadow-card border border-line;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20;
+  }
 }

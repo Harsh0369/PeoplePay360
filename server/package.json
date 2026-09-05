@@ -1,32 +1,25 @@
 {
-  "name": "peoplepay360-backend",
+  "name": "peoplepay360-server",
   "version": "1.0.0",
-  "description": "PeoplePay360 Backend - HR & Payroll System",
-  "main": "dist/server.js",
+  "description": "PeoplePay360 - Integrated HR & Payroll Operations Platform (Odoo Hackathon)",
+  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon --watch src --exec tsx src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "type-check": "tsc --noEmit"
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed/seed.js",
+    "test": "node tests/engine.test.js"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^8.4.0",
-    "winston": "^3.13.0",
-    "zod": "^3.23.8"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.6.0",
+    "morgan": "^1.10.0"
   },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.12.12",
-    "nodemon": "^3.1.0",
-    "tsx": "^4.10.5",
-    "typescript": "^5.4.5"
+  "optionalDependencies": {
+    "mongodb-memory-server": "^10.4.3"
   }
 }

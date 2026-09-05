@@ -1,1 +1,0 @@
-// Sample style file

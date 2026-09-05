@@ -2,3 +2,9 @@ rulebook.md
 PeoplePay360 HR & Payroll.pdf
 codereview.md
 peoplepay360_ai_agent.md
+# build & deps
+node_modules/
+dist/
+.env
+*.log
+vite.log
