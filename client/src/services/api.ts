@@ -5,8 +5,11 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/
 
 // Every request is authenticated and real. No mock/offline fallback: on failure
 // we surface the error (writes) or return an empty list (reads) — never fake data.
+// The backend now paginates list endpoints (default 15/page). We request a high
+// limit so lists, KPIs and lookups keep working with the full dataset as before.
 async function get(path: string): Promise<any[]> {
-  const res = await fetch(`${API_BASE_URL}${path}`, { headers: authHeaders(), signal: AbortSignal.timeout(12000) });
+  const sep = path.includes('?') ? '&' : '?';
+  const res = await fetch(`${API_BASE_URL}${path}${sep}limit=100000`, { headers: authHeaders(), signal: AbortSignal.timeout(20000) });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
   return Array.isArray(json?.data) ? json.data : [];

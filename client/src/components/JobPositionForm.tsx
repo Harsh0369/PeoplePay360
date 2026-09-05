@@ -116,17 +116,17 @@ export const JobPositionForm: React.FC<JobPositionFormProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-brand-charcoal uppercase tracking-wider mb-1.5">
-              Expected Base Monthly Target Salary ($)
+              Expected Base Monthly Target Salary (₹)
             </label>
             <div className="relative">
-              <DollarSign className="w-4 h-4 text-brand-teal/60 absolute left-3 top-3" />
+              <span className="absolute left-3 top-2.5 text-sm font-bold text-brand-teal/70">₹</span>
               <input
                 type="number"
                 min="0"
                 step="100"
                 value={expectedSalary}
                 onChange={(e) => setExpectedSalary(Number(e.target.value))}
-                placeholder="6500"
+                placeholder="50000"
                 className="w-full pl-9 pr-3 py-2.5 bg-white text-sm border border-brand-teal/30 rounded-xl focus:ring-2 focus:ring-brand-teal focus:border-brand-teal outline-none transition-all font-semibold"
               />
             </div>

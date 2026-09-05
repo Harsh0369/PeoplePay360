@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-brand-warmCream text-brand-darkCharcoal font-sans min-h-screen;
+    @apply bg-canvas text-slate-800 font-sans min-h-screen;
   }
 }
 

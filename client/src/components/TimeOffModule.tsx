@@ -3,6 +3,8 @@ import { Loader2, RefreshCw, Plus, Check, X } from 'lucide-react';
 import { timeOffApi, masterApi } from '../services/hrApi';
 import { fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
+import { useAuth } from '../hooks/useAuth';
+import { PERM } from '../lib/permissions';
 
 type Tab = 'REQUESTS' | 'ALLOCATIONS' | 'TYPES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
@@ -13,6 +15,9 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export const TimeOffModule: React.FC = () => {
+  const { can } = useAuth();
+  const canWrite = can(...PERM.timeOffWrite);
+  const canApprove = can(...PERM.timeOffApprove);
   const [tab, setTab] = useState<Tab>('REQUESTS');
   const [requests, setRequests] = useState<any[]>([]);
   const [allocations, setAllocations] = useState<any[]>([]);
@@ -74,7 +79,7 @@ export const TimeOffModule: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow"><RefreshCw className="w-4 h-4" /></button>
-          <button onClick={openNew} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm"><Plus className="w-4 h-4" /> {newLabel}</button>
+          {(tab === 'REQUESTS' || canWrite) && <button onClick={openNew} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm"><Plus className="w-4 h-4" /> {newLabel}</button>}
         </div>
       </div>
 
@@ -99,7 +104,7 @@ export const TimeOffModule: React.FC = () => {
                 <td className="td">{r.requestedDays}</td>
                 <td className="td"><span className={`badge ${STATUS_BADGE[r.status] || ''}`}>{r.status}</span></td>
                 <td className="td">
-                  {r.status === 'PENDING' && (
+                  {r.status === 'PENDING' && canApprove && (
                     <div className="flex gap-1.5">
                       <button onClick={() => review(r._id, 'APPROVED')} disabled={!!busy} className="p-1.5 rounded bg-brand-activeBg text-brand-activeText hover:opacity-80" title="Approve"><Check className="w-4 h-4" /></button>
                       <button onClick={() => review(r._id, 'REJECTED')} disabled={!!busy} className="p-1.5 rounded bg-brand-warningBg text-brand-warningText hover:opacity-80" title="Reject"><X className="w-4 h-4" /></button>

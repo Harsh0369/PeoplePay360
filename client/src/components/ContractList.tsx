@@ -6,12 +6,14 @@ interface ContractListProps {
   contracts: Contract[];
   onSelectContract: (cnt: Contract) => void;
   onNewContract: () => void;
+  canWrite?: boolean;
 }
 
 export const ContractList: React.FC<ContractListProps> = ({
   contracts,
   onSelectContract,
-  onNewContract
+  onNewContract,
+  canWrite = false
 }) => {
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-5">
@@ -27,13 +29,15 @@ export const ContractList: React.FC<ContractListProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onNewContract}
-          className="bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center space-x-1.5"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Contract</span>
-        </button>
+        {canWrite && (
+          <button
+            onClick={onNewContract}
+            className="bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center space-x-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Contract</span>
+          </button>
+        )}
       </div>
 
       {/* Contracts Table */}
@@ -86,7 +90,7 @@ export const ContractList: React.FC<ContractListProps> = ({
                       </div>
                     </td>
                     <td className="py-3.5 px-4 font-bold text-brand-darkCharcoal">
-                      ${cnt.wage.toLocaleString()} / mo
+                      ₹{cnt.wage.toLocaleString('en-IN')} / mo
                     </td>
                     <td className="py-3.5 px-4 text-brand-mutedSlate text-[11px]">
                       {cnt.salaryStructure}
@@ -107,15 +111,19 @@ export const ContractList: React.FC<ContractListProps> = ({
                       </span>
                     </td>
                     <td className="py-3.5 px-5 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectContract(cnt);
-                        }}
-                        className="text-brand-darkTeal hover:text-brand-teal hover:underline font-bold text-xs"
-                      >
-                        Edit Contract
-                      </button>
+                      {canWrite ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectContract(cnt);
+                          }}
+                          className="text-brand-darkTeal hover:text-brand-teal hover:underline font-bold text-xs"
+                        >
+                          Edit Contract
+                        </button>
+                      ) : (
+                        <span className="text-slate-300 text-xs">—</span>
+                      )}
                     </td>
                   </tr>
                 );
