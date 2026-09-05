@@ -60,7 +60,13 @@ export const masterApi = {
 
 // ---- Attendance ----
 export const attendanceApi = {
-  getAll: () => req('GET', '/attendance'),
+  getAll: (params = '') => req('GET', `/attendance${params}`),
+  // The signed-in user's currently OPEN session (if any) -> drives the clock in/out toggle.
+  myOpenSession: async (employeeId: string) => {
+    if (!employeeId) return null;
+    const rows = await req<any[]>('GET', `/attendance?employeeId=${employeeId}&sessionState=OPEN`);
+    return Array.isArray(rows) && rows.length ? rows[0] : null;
+  },
   clockIn: (data: any = {}) => req('POST', '/attendance/clock-in', data),
   clockOut: (data: any = {}) => req('POST', '/attendance/clock-out', data),
   adminUpdate: (id: string, data: any) => req('PUT', `/attendance/${id}`, data),

@@ -3,6 +3,9 @@ import { Loader2, RefreshCw, ShieldCheck, Plus } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { useAuth } from '../hooks/useAuth';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
+import { useClientList } from '../hooks/usePagedList';
+import { SearchBar } from './ui/SearchBar';
+import { Paginator } from './ui/Paginator';
 
 // Canonical permission groups (mirrors the backend registry).
 const PERMISSION_GROUPS: { label: string; keys: string[] }[] = [
@@ -36,6 +39,7 @@ export const RolesModule: React.FC = () => {
   const [view, setView] = useState<any>(null);
   const [form, setForm] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const cl = useClientList(roles, { searchFields: ['name', 'dataScope'], pageSize: 15 });
 
   const load = async () => {
     setLoading(true); setError('');
@@ -77,9 +81,11 @@ export const RolesModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder="Search roles…" className="w-64" /></div>
+
       {loading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div> : (
         <Card><Table head={['Role', 'Data Scope', 'Permissions', '']}>
-          {roles.map((r) => {
+          {cl.items.map((r) => {
             const perms = grantedPerms(r.permissions);
             return (
               <tr key={r._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow cursor-pointer" onClick={() => setView({ ...r, _perms: perms })}>
@@ -91,6 +97,7 @@ export const RolesModule: React.FC = () => {
             );
           })}
           {roles.length === 0 && <EmptyRow cols={4} msg="No roles found." />}
+          <tr><td colSpan={4} className="p-0"><Paginator page={cl.page} totalPages={cl.totalPages} totalItems={cl.totalItems} pageSize={cl.pageSize} onPage={cl.setPage} /></td></tr>
         </Table></Card>
       )}
 

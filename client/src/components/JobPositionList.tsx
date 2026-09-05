@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Briefcase, Building2, Search, Plus, UserPlus, CheckCircle, Users, X, DollarSign } from 'lucide-react';
+import { Paginator } from './ui/Paginator';
 import { JobPosition, Department, Employee } from '../types';
 
 interface JobPositionListProps {
@@ -25,6 +26,8 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   // Assignment Modal State
   const [assigningPosition, setAssigningPosition] = useState<JobPosition | null>(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const PAGE = 12;
 
   // Filtered Job Positions
   const filteredPositions = jobPositions.filter((pos) => {
@@ -115,7 +118,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
 
       {/* Job Positions Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredPositions.map((pos) => {
+        {filteredPositions.slice((page - 1) * PAGE, page * PAGE).map((pos) => {
           const deptName = getDepartmentName(pos);
           const activeStaffCount = getEmployeeCount(pos.title);
 
@@ -188,6 +191,12 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
           );
         })}
       </div>
+
+      {filteredPositions.length > PAGE && (
+        <div className="bg-brand-offWhite rounded-2xl border border-brand-sandBorder">
+          <Paginator page={Math.min(page, Math.max(1, Math.ceil(filteredPositions.length / PAGE)))} totalPages={Math.max(1, Math.ceil(filteredPositions.length / PAGE))} totalItems={filteredPositions.length} pageSize={PAGE} onPage={setPage} />
+        </div>
+      )}
 
       {filteredPositions.length === 0 && (
         <div className="bg-brand-offWhite p-12 rounded-2xl border border-dashed border-brand-teal/30 text-center">

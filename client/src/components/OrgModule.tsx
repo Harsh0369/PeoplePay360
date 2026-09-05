@@ -4,6 +4,9 @@ import { masterApi } from '../services/hrApi';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useAuth } from '../hooks/useAuth';
 import { PERM } from '../lib/permissions';
+import { useClientList } from '../hooks/usePagedList';
+import { SearchBar } from './ui/SearchBar';
+import { Paginator } from './ui/Paginator';
 
 type Tab = 'DEPARTMENTS' | 'SCHEDULES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
@@ -18,6 +21,10 @@ export const OrgModule: React.FC = () => {
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
+
+  const deptList = useClientList(departments, { searchFields: ['name'], pageSize: 15 });
+  const schedList = useClientList(schedules, { searchFields: ['name'], pageSize: 15 });
+  const cl = tab === 'DEPARTMENTS' ? deptList : schedList;
   const [error, setError] = useState('');
   const [form, setForm] = useState<any>(null);
 
@@ -79,10 +86,12 @@ export const OrgModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder={tab === 'DEPARTMENTS' ? 'Search departments…' : 'Search schedules…'} className="w-64" /></div>
+
       {loading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
         : tab === 'DEPARTMENTS' ? (
           <Card><Table head={['Department', 'Parent', 'Manager']}>
-            {departments.map((d) => (
+            {deptList.items.map((d) => (
               <tr key={d._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{d.name}</td>
                 <td className="td">{nameOf(d.parentDepartmentId)}</td>
@@ -90,10 +99,11 @@ export const OrgModule: React.FC = () => {
               </tr>
             ))}
             {departments.length === 0 && <EmptyRow cols={3} msg="No departments yet." />}
+            <tr><td colSpan={3} className="p-0"><Paginator page={deptList.page} totalPages={deptList.totalPages} totalItems={deptList.totalItems} pageSize={deptList.pageSize} onPage={deptList.setPage} /></td></tr>
           </Table></Card>
         ) : (
           <Card><Table head={['Schedule', 'Working Days', 'Weekly Hours']}>
-            {schedules.map((s) => (
+            {schedList.items.map((s) => (
               <tr key={s._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{s.name}</td>
                 <td className="td">{(s.workingDays || []).length} days</td>
@@ -101,6 +111,7 @@ export const OrgModule: React.FC = () => {
               </tr>
             ))}
             {schedules.length === 0 && <EmptyRow cols={3} msg="No working schedules yet." />}
+            <tr><td colSpan={3} className="p-0"><Paginator page={schedList.page} totalPages={schedList.totalPages} totalItems={schedList.totalItems} pageSize={schedList.pageSize} onPage={schedList.setPage} /></td></tr>
           </Table></Card>
         )}
 

@@ -5,6 +5,9 @@ import { fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useAuth } from '../hooks/useAuth';
 import { PERM } from '../lib/permissions';
+import { useClientList } from '../hooks/usePagedList';
+import { SearchBar } from './ui/SearchBar';
+import { Paginator } from './ui/Paginator';
 
 type Tab = 'REQUESTS' | 'ALLOCATIONS' | 'TYPES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
@@ -27,6 +30,11 @@ export const TimeOffModule: React.FC = () => {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState<any>(null); // { kind, ...fields }
+
+  const reqList = useClientList(requests, { searchFields: ['employeeId.name', 'timeOffTypeId.name', 'status'], pageSize: 15 });
+  const allocList = useClientList(allocations, { searchFields: ['employeeId.name', 'timeOffTypeId.name'], pageSize: 15 });
+  const typeList = useClientList(types, { searchFields: ['name', 'code'], pageSize: 15 });
+  const cl = tab === 'REQUESTS' ? reqList : tab === 'ALLOCATIONS' ? allocList : typeList;
 
   const load = async () => {
     setLoading(true); setError('');
@@ -93,10 +101,12 @@ export const TimeOffModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder="Search…" className="w-64" /></div>
+
       {loading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
         : tab === 'REQUESTS' ? (
           <Card><Table head={['Employee', 'Type', 'Dates', 'Days', 'Status', '']}>
-            {requests.map((r) => (
+            {reqList.items.map((r) => (
               <tr key={r._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{nameOf(r.employeeId)}</td>
                 <td className="td">{nameOf(r.timeOffTypeId)}</td>
@@ -114,10 +124,11 @@ export const TimeOffModule: React.FC = () => {
               </tr>
             ))}
             {requests.length === 0 && <EmptyRow cols={6} msg="No time-off requests yet." />}
+            <tr><td colSpan={6} className="p-0"><Paginator page={reqList.page} totalPages={reqList.totalPages} totalItems={reqList.totalItems} pageSize={reqList.pageSize} onPage={reqList.setPage} /></td></tr>
           </Table></Card>
         ) : tab === 'ALLOCATIONS' ? (
           <Card><Table head={['Employee', 'Type', 'Year', 'Granted', 'Used', 'Remaining']}>
-            {allocations.map((a) => (
+            {allocList.items.map((a) => (
               <tr key={a._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{nameOf(a.employeeId)}</td>
                 <td className="td">{nameOf(a.timeOffTypeId)}</td>
@@ -128,10 +139,11 @@ export const TimeOffModule: React.FC = () => {
               </tr>
             ))}
             {allocations.length === 0 && <EmptyRow cols={6} msg="No allocations yet." />}
+            <tr><td colSpan={6} className="p-0"><Paginator page={allocList.page} totalPages={allocList.totalPages} totalItems={allocList.totalItems} pageSize={allocList.pageSize} onPage={allocList.setPage} /></td></tr>
           </Table></Card>
         ) : (
           <Card><Table head={['Name', 'Paid', 'Allocation Required', 'Status']}>
-            {types.map((t) => (
+            {typeList.items.map((t) => (
               <tr key={t._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{t.name}</td>
                 <td className="td">{t.isPaid ? <span className="badge bg-brand-activeBg text-brand-activeText">Paid</span> : <span className="badge bg-brand-warningBg text-brand-warningText">Unpaid</span>}</td>
@@ -140,6 +152,7 @@ export const TimeOffModule: React.FC = () => {
               </tr>
             ))}
             {types.length === 0 && <EmptyRow cols={4} msg="No leave types yet." />}
+            <tr><td colSpan={4} className="p-0"><Paginator page={typeList.page} totalPages={typeList.totalPages} totalItems={typeList.totalItems} pageSize={typeList.pageSize} onPage={typeList.setPage} /></td></tr>
           </Table></Card>
         )}
 

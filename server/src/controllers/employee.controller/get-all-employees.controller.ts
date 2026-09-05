@@ -6,8 +6,9 @@ import { getPaginationParams } from "../../utils/pagination.util";
 export const getAllEmployeesController = async (req: Request, res: Response) => {
   try {
     const pagination = getPaginationParams(req);
-    const { data, offsetPagination } = await getAllEmployeesService(pagination);
-    
+    const search = (req.query.search as string) || "";
+    const { data, offsetPagination } = await getAllEmployeesService(pagination, search);
+
     return ResponseUtil.paginatedOffset(res, "Employees fetched successfully", data, offsetPagination);
   } catch (error: any) {
     return ResponseUtil.error(res, error.message, 500);

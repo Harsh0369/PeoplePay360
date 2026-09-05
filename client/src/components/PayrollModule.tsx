@@ -7,6 +7,9 @@ import { inr, fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useAuth } from '../hooks/useAuth';
 import { PERM } from '../lib/permissions';
+import { useClientList } from '../hooks/usePagedList';
+import { SearchBar } from './ui/SearchBar';
+import { Paginator } from './ui/Paginator';
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'bg-brand-draftBg text-brand-draftText',
@@ -24,6 +27,7 @@ export const PayrollModule: React.FC = () => {
   const { can } = useAuth();
   const canWrite = can(...PERM.payrollWrite);
   const [payruns, setPayruns] = useState<any[]>([]);
+  const cl = useClientList(payruns, { searchFields: ['status', 'createdBy.name'], pageSize: 15 });
   const [detail, setDetail] = useState<any>(null); // { payrun, payslips, totals }
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
@@ -149,12 +153,14 @@ export const PayrollModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder="Search by status…" className="w-64" /></div>
+
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
       ) : (
         <Card>
           <Table head={['Period', 'Department', 'Status', 'Created By']}>
-            {payruns.map((p) => (
+            {cl.items.map((p) => (
               <tr key={p._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow cursor-pointer" onClick={() => openDetail(p._id)}>
                 <td className="td font-medium text-brand-darkCharcoal">{fmtDate(p.periodStart)} – {fmtDate(p.periodEnd)}</td>
                 <td className="td">{nameOf(p.departmentId) === '—' ? 'All' : nameOf(p.departmentId)}</td>
@@ -163,6 +169,7 @@ export const PayrollModule: React.FC = () => {
               </tr>
             ))}
             {payruns.length === 0 && <EmptyRow cols={4} msg="No payruns yet. Create one to generate payslips." />}
+            <tr><td colSpan={4} className="p-0"><Paginator page={cl.page} totalPages={cl.totalPages} totalItems={cl.totalItems} pageSize={cl.pageSize} onPage={cl.setPage} /></td></tr>
           </Table>
         </Card>
       )}

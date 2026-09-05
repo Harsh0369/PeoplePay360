@@ -4,6 +4,9 @@ import { configApi } from '../services/hrApi';
 import { inr } from '../lib/format';
 import { useAuth } from '../hooks/useAuth';
 import { PERM } from '../lib/permissions';
+import { useClientList } from '../hooks/usePagedList';
+import { SearchBar } from './ui/SearchBar';
+import { Paginator } from './ui/Paginator';
 
 type Tab = 'RULES' | 'STRUCTURES';
 
@@ -29,6 +32,10 @@ export const ConfigModule: React.FC = () => {
   const [error, setError] = useState('');
   const [showRuleForm, setShowRuleForm] = useState(false);
   const [form, setForm] = useState<any>(emptyRule);
+
+  const ruleList = useClientList(rules, { searchFields: ['name', 'code', 'category'], pageSize: 15 });
+  const structList = useClientList(structures, { searchFields: ['name', 'code'], pageSize: 15 });
+  const cl = tab === 'RULES' ? ruleList : structList;
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
@@ -99,12 +106,17 @@ export const ConfigModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder={tab === 'RULES' ? 'Search rules…' : 'Search structures…'} className="w-64" /></div>
+
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
-      ) : tab === 'RULES' ? (
-        <RuleTable rules={rules} />
       ) : (
-        <StructureTable structures={structures} rules={rules} />
+        <>
+          {tab === 'RULES' ? <RuleTable rules={cl.items} /> : <StructureTable structures={cl.items} rules={rules} />}
+          <div className="mt-3 bg-white rounded-xl border border-slate-200/90">
+            <Paginator page={cl.page} totalPages={cl.totalPages} totalItems={cl.totalItems} pageSize={cl.pageSize} onPage={cl.setPage} />
+          </div>
+        </>
       )}
 
       {showRuleForm && (

@@ -5,7 +5,7 @@ import { Sidebar } from './components/Sidebar';
 import { TopHeader } from './components/TopHeader';
 import { EmployeesModule } from './components/EmployeesModule';
 import { EmployeeForm } from './components/EmployeeForm';
-import { ContractList } from './components/ContractList';
+import { ContractsModule } from './components/ContractsModule';
 import { ContractForm } from './components/ContractForm';
 import { LoginPage } from './components/LoginPage';
 import { PayrollModule } from './components/PayrollModule';
@@ -67,10 +67,11 @@ export function App() {
 
     async function init() {
       setIsBackendConnected(await apiService.checkHealth());
-      // Only fetch what this role is allowed to read — avoids needless 403s and
-      // keeps each source independent so one failure doesn't blank the others.
+      // Lists (Employees, Contracts, Attendance…) now fetch their own paginated
+      // pages. Here we only load the small reference lists the FORMS need for
+      // their dropdowns (employees for contract/assign pickers, departments,
+      // job positions), and only what this role may read.
       apiService.getEmployees().then(setEmployees).catch(() => setEmployees([]));
-      if (canView('CONTRACTS')) apiService.getContracts().then(setContracts).catch(() => setContracts([]));
       if (canView('ORG')) apiService.getDepartments().then(setDepartments).catch(() => setDepartments([]));
       if (canView('JOB_POSITIONS')) apiService.getJobPositions().then(setJobPositions).catch(() => setJobPositions([]));
     }
@@ -259,10 +260,6 @@ export function App() {
         {activeTab === 'MY_PROFILE' && <MyProfileModule />}
         {activeTab === 'EMPLOYEES' && (
           <EmployeesModule
-            employees={employees}
-            contracts={contractsResolved}
-            departments={departments}
-            jobPositionsCount={jobPositions.length}
             onEditContract={(cnt) => { setSelectedContract(cnt); setActiveTab('CONTRACTS'); setIsEditingContract(true); }}
             onGoToContracts={() => setActiveTab('CONTRACTS')}
           />
@@ -274,40 +271,16 @@ export function App() {
               <ContractForm
                 contract={selectedContract}
                 employees={employees}
-                allContracts={contracts}
+                allContracts={[]}
                 onSave={handleSaveContract}
                 onCancel={() => setIsEditingContract(false)}
               />
             ) : (
-              <div>
-                {/* Active Filter Indicator banner if filtered from Employee Smart Button */}
-                {contractEmployeeFilter && (
-                  <div className="max-w-7xl mx-auto px-4 pt-3 flex items-center justify-between text-xs bg-brand-softSand border border-brand-sandBorder text-brand-deepTeal rounded-lg p-3">
-                    <span>
-                      Filtering contracts for employee ID: <strong>{contractEmployeeFilter}</strong>
-                    </span>
-                    <button
-                      onClick={() => setContractEmployeeFilter(null)}
-                      className="font-bold text-brand-darkTeal hover:underline ml-2"
-                    >
-                      Clear Filter
-                    </button>
-                  </div>
-                )}
-
-                <ContractList
-                  contracts={filteredContracts}
-                  canWrite={can(...PERM.contractWrite)}
-                  onSelectContract={(cnt) => {
-                    setSelectedContract(cnt);
-                    setIsEditingContract(true);
-                  }}
-                  onNewContract={() => {
-                    setSelectedContract(null);
-                    setIsEditingContract(true);
-                  }}
-                />
-              </div>
+              <ContractsModule
+                canWrite={can(...PERM.contractWrite)}
+                onSelectContract={(cnt) => { setSelectedContract(cnt); setIsEditingContract(true); }}
+                onNewContract={() => { setSelectedContract(null); setIsEditingContract(true); }}
+              />
             )}
           </div>
         )}
