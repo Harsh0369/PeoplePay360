@@ -39,3 +39,26 @@ export interface Contract {
   status: ContractStatus;
   terms?: string;
 }
+
+export interface Department {
+  _id?: string;
+  id?: string;
+  name: string;
+  parentDepartmentId?: string | null;
+  managerId?: string | null;
+  createdAt?: string;
+}
+
+export interface JobPosition {
+  _id?: string;
+  id?: string;
+  title: string;
+  departmentId?: string | Department | null;
+  departmentName?: string;
+  expectedSalary?: number;
+  isActive?: boolean;
+  employeeCount?: number;
+  createdAt?: string;
+}
+
+export type ActiveTab = 'EMPLOYEES' | 'CONTRACTS' | 'JOB_POSITIONS';

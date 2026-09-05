@@ -1,11 +1,12 @@
 import React from 'react';
-import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server, LogOut } from 'lucide-react';
+import { Users, FileText, CalendarCheck, Clock, DollarSign, BarChart3, Server, LogOut, Briefcase } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { roleLabel } from '../services/auth';
+import { ActiveTab } from '../types';
 
 interface NavbarProps {
-  activeTab: 'EMPLOYEES' | 'CONTRACTS';
-  onTabChange: (tab: 'EMPLOYEES' | 'CONTRACTS') => void;
+  activeTab: ActiveTab;
+  onTabChange: (tab: ActiveTab) => void;
   isBackendConnected?: boolean;
 }
 
@@ -82,6 +83,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBacken
           >
             <FileText className="w-4 h-4 text-[#B8D8D2]" />
             <span>Contracts</span>
+          </button>
+
+          <button
+            onClick={() => onTabChange('JOB_POSITIONS')}
+            className={`flex items-center space-x-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+              activeTab === 'JOB_POSITIONS'
+                ? 'bg-brand-teal text-white shadow-sm ring-1 ring-white/20'
+                : 'text-[#E5F0ED] hover:bg-brand-darkTeal hover:text-white'
+            }`}
+          >
+            <Briefcase className="w-4 h-4 text-[#B8D8D2]" />
+            <span>Job Positions</span>
           </button>
 
           {/* Module Placeholders */}
