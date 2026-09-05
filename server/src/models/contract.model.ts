@@ -36,6 +36,12 @@ const contractSchema = new Schema(
       ref: "WorkingSchedule",
       required: true,
     },
+    salaryStructureId: {
+      type: Schema.Types.ObjectId,
+      ref: "SalaryStructure",
+      // Initially optional, but highly recommended for payroll to work
+      default: null,
+    },
     status: {
       type: String,
       enum: ["Draft", "Running", "Expired", "Cancelled"],

@@ -12,3 +12,5 @@ export * from "./business-log.model";
 export * from "./time-off-type.model";
 export * from "./time-off-allocation.model";
 export * from "./time-off-request.model";
+export * from "./salary-rule.model";
+export * from "./salary-structure.model";

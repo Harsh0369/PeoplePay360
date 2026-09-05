@@ -4,6 +4,11 @@ import * as Models from './src/models';
 import { getProfileService } from './src/services/employee.service';
 import { clockInService, clockOutService, adminUpdateAttendanceService } from './src/services/attendance.service';
 import { raiseTimeOffRequestService, reviewTimeOffRequestService, adminOverrideRequestService } from './src/services/time-off.service';
+import { createSalaryRuleService } from './src/services/salary-rule.service';
+import { createSalaryStructureService } from './src/services/salary-structure.service';
+import { createDepartmentService, assignEmployeeDepartmentService } from './src/services/department.service';
+import { createJobPositionService, assignEmployeeJobPositionService } from './src/services/job-position.service';
+import { Parser } from 'expr-eval';
 
 const testHR = async () => {
   try {
@@ -21,6 +26,10 @@ const testHR = async () => {
     await Models.TimeOffType.collection.drop().catch(() => {});
     await Models.TimeOffAllocation.collection.drop().catch(() => {});
     await Models.TimeOffRequest.collection.drop().catch(() => {});
+    await Models.SalaryRule.collection.drop().catch(() => {});
+    await Models.SalaryStructure.collection.drop().catch(() => {});
+    await Models.Department.collection.drop().catch(() => {});
+    await Models.JobPosition.collection.drop().catch(() => {});
     // Give Mongo a moment to rebuild indexes
     await new Promise(res => setTimeout(res, 500));
     
@@ -90,7 +99,24 @@ const testHR = async () => {
     });
 
     // Test getProfileService
-    console.log("\n--- Testing Get Profile ---");
+    console.log("\n--- Testing Organization (Department & Job Title) ---");
+    const dept = await createDepartmentService({
+      name: "Engineering"
+    });
+    console.log("Created Department:", dept.name);
+
+    const jobPos = await createJobPositionService({
+      title: "Senior Backend Developer",
+      departmentId: dept._id.toString(),
+      expectedSalary: 120000
+    });
+    console.log("Created Job Position:", jobPos.title);
+
+    await assignEmployeeDepartmentService(employee._id.toString(), dept._id.toString(), adminUser._id.toString());
+    await assignEmployeeJobPositionService(employee._id.toString(), jobPos._id.toString(), adminUser._id.toString());
+    console.log("SUCCESS: Assigned Employee to Department and Job Position");
+
+    // --- Testing Get Profile ---
     const profile = await getProfileService(adminUser._id.toString());
     console.log("Profile retrieved:", profile.employee.name);
 
@@ -240,6 +266,101 @@ const testHR = async () => {
     await new Promise(res => setTimeout(res, 50));
     const overrideLog = await Models.BusinessLog.findOne({ entity: "LEAVE", action: "OVERRIDE" });
     console.log("SUCCESS: Business Log created for Leave Override. Content:", overrideLog?.content);
+
+    // --- Testing Payroll Engine Configuration ---
+    console.log("\n--- Testing Payroll Engine Configuration ---");
+    const ruleBasic = await createSalaryRuleService({
+      name: "Basic Salary",
+      code: "BASIC",
+      category: "EARNING",
+      sequence: 10,
+      amountType: "FORMULA",
+      formula: "wage * 0.5"
+    });
+
+    const ruleHra = await createSalaryRuleService({
+      name: "House Rent Allowance",
+      code: "HRA",
+      category: "EARNING",
+      sequence: 20,
+      amountType: "FORMULA",
+      formula: "BASIC * 0.4"
+    });
+
+    const ruleGross = await createSalaryRuleService({
+      name: "Gross Salary",
+      code: "GROSS",
+      category: "GROSS",
+      sequence: 100,
+      amountType: "FORMULA",
+      formula: "BASIC + HRA"
+    });
+
+    const ruleTax = await createSalaryRuleService({
+      name: "Taxes",
+      code: "TAX",
+      category: "DEDUCTION",
+      sequence: 150,
+      amountType: "FORMULA",
+      formula: "GROSS * 0.1"
+    });
+
+    const ruleNet = await createSalaryRuleService({
+      name: "Net Salary",
+      code: "NET",
+      category: "NET",
+      sequence: 200,
+      amountType: "FORMULA",
+      formula: "GROSS - TAX"
+    });
+
+    const structure = await createSalaryStructureService({
+      name: "Standard Full-Time Structure",
+      ruleIds: [
+        ruleBasic._id.toString(),
+        ruleHra._id.toString(),
+        ruleGross._id.toString(),
+        ruleTax._id.toString(),
+        ruleNet._id.toString()
+      ]
+    });
+    console.log("SUCCESS: Created Salary Rules & Structure");
+
+    // Update contract with structure
+    contract.salaryStructureId = structure._id;
+    await contract.save();
+    console.log("SUCCESS: Linked structure to contract");
+
+    // Simulate Payroll Engine calculation for this contract
+    console.log("Simulating Payroll Engine Formula Evaluation:");
+    const populatedStructure = await Models.SalaryStructure.findById(structure._id).populate({
+      path: "ruleIds",
+      options: { sort: { sequence: 1 } }
+    });
+
+    const context: Record<string, number> = {
+      wage: contract.wage // 50000
+    };
+
+    const parser = new Parser();
+    const rulesList = populatedStructure?.ruleIds as any[];
+
+    for (const rule of rulesList) {
+      if (rule.amountType === "FORMULA" && rule.formula) {
+        const val = parser.evaluate(rule.formula, context);
+        context[rule.code] = val;
+        console.log(`Evaluated ${rule.code} [seq ${rule.sequence}]: ${rule.formula} -> ${val}`);
+      } else if (rule.amountType === "FIXED") {
+        context[rule.code] = rule.fixedAmount;
+        console.log(`Evaluated ${rule.code} [seq ${rule.sequence}]: FIXED -> ${rule.fixedAmount}`);
+      }
+    }
+
+    if (context["NET"] === 31500) {
+      console.log("SUCCESS: Mathematical evaluation is strictly correct.");
+    } else {
+      console.log("FAIL: Mathematical evaluation incorrect. Expected NET 31500, got", context["NET"]);
+    }
 
   } catch (error) {
     console.error("Test failed:", error);
