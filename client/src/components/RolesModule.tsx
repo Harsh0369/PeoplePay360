@@ -6,6 +6,7 @@ import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useClientList } from '../hooks/usePagedList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { notify } from '../lib/toast';
 
 // Canonical permission groups (mirrors the backend registry).
 const PERMISSION_GROUPS: { label: string; keys: string[] }[] = [
@@ -57,8 +58,9 @@ export const RolesModule: React.FC = () => {
       const permissions: Record<string, boolean> = {};
       Object.entries(form.perms).forEach(([k, v]) => { if (v) permissions[k] = true; });
       await masterApi.createRole({ name: form.name, dataScope: form.dataScope, isAdmin: !!form.isAdmin, permissions });
+      notify.success(`Role "${form.name}" created.`);
       setForm(null); load();
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setSaving(false); }
   };
 

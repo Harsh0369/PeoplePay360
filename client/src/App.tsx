@@ -17,6 +17,9 @@ import { RolesModule } from './components/RolesModule';
 import { MyProfileModule } from './components/MyProfileModule';
 import { AccessDenied } from './components/AccessDenied';
 import { TAB_PERMS, PERM } from './lib/permissions';
+import { notify } from './lib/toast';
+import { fetchPaged } from './lib/paged';
+import { masterApi } from './services/hrApi';
 import { useAuth } from './hooks/useAuth';
 import { JobPositionList } from './components/JobPositionList';
 import { JobPositionForm } from './components/JobPositionForm';
@@ -35,6 +38,8 @@ export function App() {
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
+  // Total record counts shown as badges next to every sidebar module.
+  const [navCounts, setNavCounts] = useState<Partial<Record<ActiveTab, number>>>({});
 
   // Sub Views State
   const [employeeViewMode, setEmployeeViewMode] = useState<'KANBAN' | 'LIST'>('KANBAN');
@@ -52,11 +57,10 @@ export function App() {
   const [contractEmployeeFilter, setContractEmployeeFilter] = useState<string | null>(null);
 
   // Toast Notification
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
+  // Routes to a themed react-hot-toast; error-ish messages become error toasts.
   const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (/^(error|could not|failed|not available)/i.test(msg)) notify.error(msg.replace(/^Error:\s*/i, ''));
+    else notify.success(msg);
   };
 
   // Initial Data Fetching & API Health Check.
@@ -77,6 +81,32 @@ export function App() {
     }
     init();
   }, [isAuthenticated]);
+
+  // Sidebar count badges — one lightweight total per module the role can see, so
+  // every nav item shows a number (not just Employees). Uses the paginated
+  // endpoints' offsetPagination.totalItems; Roles isn't paginated so we count it.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let alive = true;
+    const put = (tab: ActiveTab, n: number) => { if (alive) setNavCounts((c) => ({ ...c, [tab]: n })); };
+    const total = (path: string) => fetchPaged(path, { limit: 1 }).then((r) => r.pagination.totalItems);
+    const len = (p: Promise<any>) => p.then((r) => (Array.isArray(r) ? r.length : 0));
+
+    const tasks: [ActiveTab, Promise<number>][] = [];
+    if (canView('EMPLOYEES')) tasks.push(['EMPLOYEES', total('/employees')]);
+    if (canView('CONTRACTS')) tasks.push(['CONTRACTS', total('/contracts')]);
+    if (canView('JOB_POSITIONS')) tasks.push(['JOB_POSITIONS', total('/job-positions')]);
+    if (canView('ATTENDANCE')) tasks.push(['ATTENDANCE', total('/attendance')]);
+    if (canView('TIMEOFF')) tasks.push(['TIMEOFF', total('/time-off/requests')]);
+    if (canView('PAYROLL')) tasks.push(['PAYROLL', total('/payruns')]);
+    if (canView('CONFIG')) tasks.push(['CONFIG', total('/payroll-config/rules')]);
+    if (canView('ORG')) tasks.push(['ORG', total('/departments')]);
+    if (canView('SETTINGS')) tasks.push(['SETTINGS', len(masterApi.getRoles())]);
+
+    tasks.forEach(([tab, p]) => p.then((n) => put(tab, n)).catch(() => {}));
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, permissions]);
 
   // If the current tab isn't allowed for this role (e.g. after login), land the
   // user on the first section they can actually see.
@@ -232,18 +262,10 @@ export function App() {
           if (tab === 'EMPLOYEES') setContractEmployeeFilter(null);
         }}
         isBackendConnected={isBackendConnected}
-        counts={{ EMPLOYEES: employees.length, CONTRACTS: contracts.length }}
+        counts={navCounts}
       />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopHeader title={TAB_TITLE[activeTab] || 'PeoplePay360'} />
-
-        {/* Toast */}
-        {toastMessage && (
-          <div className="fixed bottom-5 right-5 z-50 bg-brand-850 text-white px-4 py-3 rounded-xl shadow-xl border border-brand-700 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <span className="text-xs font-bold">{toastMessage}</span>
-          </div>
-        )}
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-canvas">

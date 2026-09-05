@@ -10,6 +10,7 @@ import { PERM } from '../lib/permissions';
 import { useClientList } from '../hooks/usePagedList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { notify } from '../lib/toast';
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'bg-brand-draftBg text-brand-draftText',
@@ -54,25 +55,27 @@ export const PayrollModule: React.FC = () => {
   };
 
   const act = async (fn: () => Promise<any>, label: string) => {
-    setBusy(label); setError('');
+    setBusy(label);
     try {
       await fn();
+      notify.success(`Payrun ${label === 'markpaid' ? 'marked paid' : label + 'd'} successfully.`);
       if (detail?.payrun?._id) await openDetail(detail.payrun._id);
       else await loadList();
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 
   const createPayrun = async () => {
-    setBusy('create'); setError('');
+    setBusy('create');
     try {
       const run: any = await payrollApi.createPayrun({
         periodStart: form.periodStart, periodEnd: form.periodEnd,
       });
+      notify.success('Payrun created.');
       setShowNew(false); setForm({ periodStart: '', periodEnd: '' });
       const id = run?._id || run?.payrun?._id;
       if (id) await openDetail(id); else await loadList();
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 

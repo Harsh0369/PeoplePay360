@@ -7,6 +7,7 @@ import { PERM } from '../lib/permissions';
 import { useClientList } from '../hooks/usePagedList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { notify } from '../lib/toast';
 
 type Tab = 'DEPARTMENTS' | 'SCHEDULES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
@@ -51,8 +52,9 @@ export const OrgModule: React.FC = () => {
         }));
         await masterApi.createWorkingSchedule({ name: form.name, workingDays });
       }
+      notify.success(`${form.kind === 'DEPT' ? 'Department' : 'Working schedule'} "${form.name}" created.`);
       setForm(null); load();
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
 
