@@ -9,11 +9,15 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
 
-  // Handle Mongoose Validation Error
+  // Handle Mongoose Validation Error vs Custom Validation Error
   if (err.name === 'ValidationError') {
-    statusCode = 400;
-    const errors = Object.values(err.errors).map((el: any) => el.message);
-    message = `Invalid input data. ${errors.join('. ')}`;
+    statusCode = err.statusCode || 400;
+    if (err.errors) {
+      const errors = Object.values(err.errors).map((el: any) => el.message);
+      message = `Invalid input data. ${errors.join('. ')}`;
+    } else {
+      message = err.message || 'Validation failed';
+    }
   }
 
   // Handle Mongoose CastError (Invalid ID)
