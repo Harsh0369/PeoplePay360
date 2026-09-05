@@ -17,20 +17,20 @@ export const TAB_PERMS: Record<ActiveTab, string[] | null> = {
   JOB_POSITIONS: ['admin', 'Organization.Read'],
   ATTENDANCE: ['admin', 'Attendance.Read'],
   TIMEOFF: ['admin', 'TimeOff.Read'],
-  PAYROLL: ['admin', 'Payroll.Read', 'Payroll.Write'],
-  CONFIG: ['admin', 'payroll.manage'],
+  PAYROLL: ['admin', 'Payroll.Read'],
+  CONFIG: ['admin', 'Payroll.Write'],
   ORG: ['admin', 'Organization.Read'],
   SETTINGS: ['admin', 'Settings.Read'],
 };
 
 // Write / action permission sets (mirror requireAnyPermission on the backend).
 export const PERM = {
-  employeeWrite: ['admin'], // backend: authMiddleware only, but create needs a user account -> admin-only in practice
-  contractWrite: ['admin', 'org.manage', 'Contract.Write'],
-  orgWrite: ['admin', 'org.manage', 'Organization.Write'],
-  jobPositionWrite: ['admin', 'org.manage', 'Organization.Write'],
+  employeeWrite: ['admin', 'Employee.Write'],
+  contractWrite: ['admin', 'Contract.Write'],
+  orgWrite: ['admin', 'Organization.Write'],
+  jobPositionWrite: ['admin', 'Organization.Write'],
   payrollWrite: ['admin', 'Payroll.Write'],
-  configWrite: ['admin', 'payroll.manage'],
+  configWrite: ['admin', 'Payroll.Write'],
   attendanceWrite: ['admin', 'Attendance.Write'],
   timeOffWrite: ['admin', 'TimeOff.Write'],
   timeOffApprove: ['admin', 'TimeOff.Approve'],
