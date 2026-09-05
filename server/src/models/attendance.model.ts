@@ -38,6 +38,11 @@ const attendanceSchema = new Schema(
       enum: ["Present", "Absent", "Half-Day", "Late"],
       default: "Present",
     },
+    sessionState: {
+      type: String,
+      enum: ["OPEN", "CLOSED", "AUTO_CLOSED"],
+      default: "OPEN",
+    },
     isEditedByAdmin: {
       type: Boolean,
       default: false,
@@ -49,7 +54,11 @@ const attendanceSchema = new Schema(
 );
 
 // Indexes
-attendanceSchema.index({ employeeId: 1, date: -1 }, { unique: true }); // One attendance record per employee per day
+// One OPEN attendance session per employee at a time
+attendanceSchema.index(
+  { employeeId: 1 }, 
+  { unique: true, partialFilterExpression: { sessionState: "OPEN" }, name: "unique_open_session_per_employee" }
+);
 attendanceSchema.index({ date: 1 });
 
 export type AttendanceModel = InferSchemaType<typeof attendanceSchema>;

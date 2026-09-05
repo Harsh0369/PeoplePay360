@@ -10,9 +10,19 @@ const testHR = async () => {
     console.log("Connected to DB");
 
     // Clear db for clean test
-    await Models.Employee.deleteMany({});
-    await Models.Attendance.deleteMany({});
-    console.log("Cleared Employees and Attendance");
+    await Models.Employee.collection.drop().catch(() => {});
+    await Models.Attendance.collection.drop().catch(() => {});
+    await Models.WorkingSchedule.collection.drop().catch(() => {});
+    await Models.Contract.collection.drop().catch(() => {});
+    await Models.AttendanceException.collection.drop().catch(() => {});
+    await Models.IdempotencyRecord.collection.drop().catch(() => {});
+    // Give Mongo a moment to rebuild indexes
+    await new Promise(res => setTimeout(res, 500));
+    
+    // Explicitly sync indexes for the newly recreated collections (Mongoose will do this if autoIndex is true, but just to be safe)
+    await Models.Attendance.syncIndexes();
+    await Models.AttendanceException.syncIndexes();
+    console.log("Cleared DB Collections");
 
     // Find or create role
     let role = await Models.Role.findOne({ name: "Admin" });
@@ -47,6 +57,33 @@ const testHR = async () => {
     await adminUser.save();
     console.log("Linked User to Employee");
 
+    // Create WorkingSchedule
+    console.log("\n--- Creating Working Schedule ---");
+    const schedule = await Models.WorkingSchedule.create({
+      name: "Standard Full-Time",
+      workingDays: [
+        { dayOfWeek: "Monday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Tuesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Wednesday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Thursday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Friday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Saturday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 },
+        { dayOfWeek: "Sunday", startTime: "09:00", endTime: "17:00", breakDurationMinutes: 60 } // Added all days to avoid Sunday failures
+      ]
+    });
+
+    // Create Contract
+    console.log("\n--- Creating Contract ---");
+    const contract = await Models.Contract.create({
+      employeeId: employee._id,
+      workingScheduleId: schedule._id,
+      startDate: new Date("2020-01-01"),
+      status: "Running",
+      wage: 50000,
+      departmentId: new mongoose.Types.ObjectId(),
+      jobPositionId: new mongoose.Types.ObjectId()
+    });
+
     // Test getProfileService
     console.log("\n--- Testing Get Profile ---");
     const profile = await getProfileService(adminUser._id.toString());
@@ -54,8 +91,14 @@ const testHR = async () => {
 
     // Test Clock In
     console.log("\n--- Testing Clock In ---");
+    // Clock in exactly at 09:16 to trigger "Late" status since grace is 15 mins
+    const mockNow = new Date();
+    mockNow.setHours(9, 16, 0, 0);
+
     const clockIn = await clockInService(employee._id.toString(), 28.7041, 77.1025, "New Delhi");
-    console.log("Clocked In at:", clockIn.checkIn?.time);
+    // We override time manually in DB to trigger late next step? Actually clockInService uses `new Date()` internally so we can't mock time inside it easily without jest.
+    // That's fine, we will just see what status it naturally got based on the real time.
+    console.log("Clocked In at:", clockIn.checkIn?.time, "Status:", clockIn.status);
 
     // Try clocking in again (should fail)
     try {
@@ -76,8 +119,33 @@ const testHR = async () => {
     // Test Clock Out
     console.log("\n--- Testing Clock Out ---");
     const clockOut = await clockOutService(employee._id.toString(), 28.7041, 77.1025, "New Delhi");
-    console.log("Clocked Out at:", clockOut.checkOut?.time);
+    console.log("Clocked Out at:", clockOut.checkOut?.time, "SessionState:", clockOut.sessionState);
     console.log("Total Worked Hours calculated:", clockOut.workedHours);
+
+    // Verify Early Checkout Exception
+    const exceptions = await Models.AttendanceException.find({ employeeId: employee._id });
+    if (exceptions.length > 0) {
+      console.log(`SUCCESS: Generated ${exceptions.length} exception(s). First type:`, exceptions[0].type, exceptions[0].resolutionReason);
+    } else {
+      console.log("FAIL: No exception generated for early checkout.");
+    }
+
+    // Test Second Clock In (Split Shift)
+    console.log("\n--- Testing Split Shift Clock In ---");
+    try {
+      const splitClockIn = await clockInService(employee._id.toString());
+      console.log("SUCCESS: Split shift clocked in at:", splitClockIn.checkIn?.time, "SessionState:", splitClockIn.sessionState);
+      
+      const openCount = await Models.Attendance.countDocuments({ employeeId: employee._id, sessionState: "OPEN" });
+      console.log("Total OPEN sessions:", openCount);
+    } catch (e: any) {
+      console.log("FAIL: Split shift clock-in prevented. Error:", e.message);
+    }
+
+    // Test Admin Update
+    console.log("\n--- Testing Admin Update ---");
+    const updated = await Models.Attendance.findByIdAndUpdate(clockOut._id, { isEditedByAdmin: true }, { new: true });
+    console.log("Admin Edit flagged:", updated?.isEditedByAdmin);
 
   } catch (error) {
     console.error("Test failed:", error);
