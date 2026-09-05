@@ -9,6 +9,8 @@ import departmentRoutes from './department.routes';
 import jobPositionRoutes from './job-position.routes';
 import workingScheduleRoutes from './working-schedule.routes';
 import contractRoutes from './contract.routes';
+import payrunRoutes from './payrun.routes';
+import payslipRoutes from './payslip.routes';
 
 export const mountRoutes = (app: Express) => {
     const router = Router();
@@ -27,6 +29,8 @@ export const mountRoutes = (app: Express) => {
     router.use('/job-positions', jobPositionRoutes);
     router.use('/working-schedules', workingScheduleRoutes);
     router.use('/contracts', contractRoutes);
+    router.use('/payruns', payrunRoutes);
+    router.use('/payslips', payslipRoutes);
 
     app.use('/api/v1', router);
 };

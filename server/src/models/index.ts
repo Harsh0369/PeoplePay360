@@ -14,3 +14,5 @@ export * from "./time-off-allocation.model";
 export * from "./time-off-request.model";
 export * from "./salary-rule.model";
 export * from "./salary-structure.model";
+export * from "./payrun.model";
+export * from "./payslip.model";
