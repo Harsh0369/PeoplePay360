@@ -3,6 +3,7 @@ import { AuthRequest } from "../../types/auth.type";
 import { ResponseUtil } from "../../utils/response.util";
 import { catchAsync } from "../../utils/catch-async.util";
 import { getPayslipsService } from "../../services/payslip.service";
+import { getPaginationParams } from "../../utils/pagination.util";
 
 export const getPayslipsController = catchAsync(async (req: AuthRequest, res: Response) => {
   const filters = {
@@ -12,6 +13,8 @@ export const getPayslipsController = catchAsync(async (req: AuthRequest, res: Re
     periodStart: req.query.periodStart as string | undefined,
     periodEnd: req.query.periodEnd as string | undefined,
   };
-  const payslips = await getPayslipsService(filters);
-  return ResponseUtil.success(res, "Payslips retrieved", payslips);
+  const pagination = getPaginationParams(req);
+  const { data, offsetPagination } = await getPayslipsService(pagination, filters);
+  
+  return ResponseUtil.paginatedOffset(res, "Payslips retrieved", data, offsetPagination);
 });

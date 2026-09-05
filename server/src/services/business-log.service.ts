@@ -21,25 +21,36 @@ export const createBusinessLog = (params: CreateLogParams) => {
   });
 };
 
-export const getBusinessLogsService = async (filters?: {
-  entity?: string;
-  action?: string;
-  affectedEmployeeId?: string;
-  actorId?: string;
-  limit?: number;
-}) => {
+export const getBusinessLogsService = async (
+  pagination: import("../utils/pagination.util").PaginationParams,
+  filters?: {
+    entity?: string;
+    action?: string;
+    affectedEmployeeId?: string;
+    actorId?: string;
+  }
+) => {
   const query: any = {};
+  const { page, limit, skip } = pagination;
 
   if (filters?.entity) query.entity = filters.entity;
   if (filters?.action) query.action = filters.action;
   if (filters?.affectedEmployeeId) query.affectedEmployeeId = filters.affectedEmployeeId;
   if (filters?.actorId) query.actorId = filters.actorId;
 
-  const limit = filters?.limit || 100;
+  const [data, totalItems] = await Promise.all([
+    BusinessLog.find(query)
+      .populate("actorId", "name email")
+      .populate("affectedEmployeeId", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    BusinessLog.countDocuments(query)
+  ]);
 
-  return BusinessLog.find(query)
-    .populate("actorId", "name email")
-    .populate("affectedEmployeeId", "name")
-    .sort({ createdAt: -1 })
-    .limit(limit);
+  return {
+    data,
+    offsetPagination: import("../utils/pagination.util").then(m => m.buildOffsetPagination(totalItems, page, limit)),
+  };
 };

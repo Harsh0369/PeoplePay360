@@ -1,8 +1,10 @@
 export interface OffsetPagination {
-  page: number;
-  limit: number;
-  total: number;
+  totalItems: number;
   totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 export interface CursorPagination {

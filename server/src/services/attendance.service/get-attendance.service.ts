@@ -1,13 +1,18 @@
 import { Attendance } from "../../models";
+import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
 
-export const getAttendanceService = async (filters?: {
-  employeeId?: string;
-  startDate?: string;
-  endDate?: string;
-  status?: string;
-  sessionState?: string;
-}) => {
+export const getAttendanceService = async (
+  pagination: PaginationParams,
+  filters?: {
+    employeeId?: string;
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    sessionState?: string;
+  }
+) => {
   const query: any = {};
+  const { page, limit, skip } = pagination;
 
   if (filters?.employeeId) query.employeeId = filters.employeeId;
   if (filters?.status) query.status = filters.status;
@@ -19,8 +24,18 @@ export const getAttendanceService = async (filters?: {
     if (filters.endDate) query.date.$lte = new Date(filters.endDate);
   }
 
-  return Attendance.find(query)
-    .populate("employeeId", "name workEmail")
-    .sort({ date: -1, "checkIn.time": -1 })
-    .limit(500); // Safety cap
+  const [data, totalItems] = await Promise.all([
+    Attendance.find(query)
+      .populate("employeeId", "name workEmail")
+      .sort({ date: -1, "checkIn.time": -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Attendance.countDocuments(query)
+  ]);
+
+  return {
+    data,
+    offsetPagination: buildOffsetPagination(totalItems, page, limit),
+  };
 };

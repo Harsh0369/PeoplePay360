@@ -1,13 +1,18 @@
 import { Payslip } from "../../models/payslip.model";
+import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
 
-export const getPayslipsService = async (filters?: {
-  employeeId?: string;
-  payrunId?: string;
-  status?: string;
-  periodStart?: string;
-  periodEnd?: string;
-}) => {
+export const getPayslipsService = async (
+  pagination: PaginationParams,
+  filters?: {
+    employeeId?: string;
+    payrunId?: string;
+    status?: string;
+    periodStart?: string;
+    periodEnd?: string;
+  }
+) => {
   const query: any = {};
+  const { page, limit, skip } = pagination;
 
   if (filters?.employeeId) {
     query.employeeId = filters.employeeId;
@@ -29,8 +34,19 @@ export const getPayslipsService = async (filters?: {
     query.periodEnd = { $lte: new Date(filters.periodEnd) };
   }
 
-  return Payslip.find(query)
-    .populate("employeeId", "name workEmail")
-    .populate("payrunId", "name status")
-    .sort({ createdAt: -1 });
+  const [data, totalItems] = await Promise.all([
+    Payslip.find(query)
+      .populate("employeeId", "name workEmail")
+      .populate("payrunId", "name status")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Payslip.countDocuments(query)
+  ]);
+
+  return {
+    data,
+    offsetPagination: buildOffsetPagination(totalItems, page, limit),
+  };
 };
