@@ -6,8 +6,21 @@ export const notFoundHandler = (req: Request, res: Response, next: NextFunction)
 };
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
+
+  // Handle Mongoose Validation Error
+  if (err.name === 'ValidationError') {
+    statusCode = 400;
+    const errors = Object.values(err.errors).map((el: any) => el.message);
+    message = `Invalid input data. ${errors.join('. ')}`;
+  }
+
+  // Handle Mongoose CastError (Invalid ID)
+  if (err.name === 'CastError') {
+    statusCode = 400;
+    message = `Invalid ${err.path}: ${err.value}.`;
+  }
 
   if (statusCode === 500) {
     Logger.error('Unhandled Exception', { error: err.message, stack: err.stack });

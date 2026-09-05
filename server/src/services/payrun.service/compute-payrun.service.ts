@@ -50,9 +50,12 @@ export const computePayrunService = async (payrunId: string, employeeIds?: strin
     );
   }
 
+  // 3. Prevent duplicate payslips by cleaning up any previous draft computations
+  await Payslip.deleteMany({ payrunId: payrun._id });
+
   let payslipsCreated = 0;
 
-  // 3. Process each employee
+  // 4. Process each employee
   for (const employee of employees) {
     const empId = employee._id as Types.ObjectId;
     const empName = employee.name;
@@ -206,6 +209,10 @@ export const computePayrunService = async (payrunId: string, employeeIds?: strin
           amount = parser.evaluate(rule.formula, context);
         } else if (rule.amountType === "FIXED") {
           amount = rule.fixedAmount || 0;
+        }
+
+        if (typeof amount !== 'number' || !isFinite(amount) || isNaN(amount)) {
+          throw new Error(`Formula evaluated to an invalid mathematical value: ${amount}. (Check for divide-by-zero or missing variables)`);
         }
 
         // Round to 2 decimal places to avoid floating point drift

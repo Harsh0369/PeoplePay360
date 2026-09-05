@@ -2,11 +2,11 @@
   "collection": {
     "item": [
       {
-        "id": "cfd9ed13-b6a7-4cd8-9381-dcca157e3096",
+        "id": "1813e204-bb70-485c-aef3-0ac4d278bcaf",
         "name": "1. Setup & Auth",
         "item": [
           {
-            "id": "62b82cad-8ad4-4e5e-ba20-23e4c17ccfcf",
+            "id": "c9a3bac9-d686-481d-83be-6a5c84e9e3bd",
             "name": "Admin Login",
             "request": {
               "url": {
@@ -39,7 +39,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "24e91084-1ee5-4e5c-bfb1-e422f76aeb57",
+                  "id": "0a94cb6a-f3c3-4732-aa5f-15eb57ddd487",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Status is 200\", function () {",
@@ -59,13 +59,13 @@
                     "    }",
                     "}"
                   ],
-                  "_lastExecutionId": "40886c4e-2b17-4e00-8cae-6a4c39979d5d"
+                  "_lastExecutionId": "244d48c4-b544-4529-91ae-33ffb7e187e4"
                 }
               }
             ]
           },
           {
-            "id": "c342aa5d-28a4-4f68-8499-42e0d41272db",
+            "id": "a243079b-acd3-48aa-84f7-993e44d5b1e6",
             "name": "Employee Login",
             "request": {
               "url": {
@@ -98,7 +98,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "716ba279-6dee-448e-822e-e160d134ad57",
+                  "id": "02e9d358-893d-446e-9840-d50e4022f1bb",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Status is 200\", function () {",
@@ -118,7 +118,7 @@
                     "    }",
                     "}"
                   ],
-                  "_lastExecutionId": "f6de92f2-e7e1-4662-a309-d079bd36fb8f"
+                  "_lastExecutionId": "8b9d3f26-62a7-4dcd-b97d-946abfb7d6db"
                 }
               }
             ]
@@ -127,11 +127,11 @@
         "event": []
       },
       {
-        "id": "4a125782-af23-4cb5-87a3-e890fe7b6c4a",
+        "id": "cbb7249c-8db5-488b-bc31-706bd4bf55da",
         "name": "2. RBAC Security Tests",
         "item": [
           {
-            "id": "ac75ec62-de6a-4bbe-b627-84e30ff317ad",
+            "id": "18841652-f2ad-4a50-87f4-7505ae7eba1d",
             "name": "Employee accessing Payruns (Should Fail)",
             "request": {
               "url": {
@@ -163,7 +163,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "f8f5c24b-2174-42dd-b22f-fa292094c0a6",
+                  "id": "81a053c0-6adc-46ac-a21f-363d7d0d6b9a",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -173,13 +173,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                     "});"
                   ],
-                  "_lastExecutionId": "029d2d05-6ce8-4110-a4b4-56f1c0792007"
+                  "_lastExecutionId": "e6c4e3fa-e089-46a3-b2f2-a447720f8a8b"
                 }
               }
             ]
           },
           {
-            "id": "2898fab7-cf3d-4158-b5c0-ea3358e9e8af",
+            "id": "0ab846d9-368d-4ff5-832d-9ada1fd50076",
             "name": "Employee accessing All Employees (Should Pass)",
             "request": {
               "url": {
@@ -211,7 +211,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "008606db-e9d3-4511-8dda-d4c7737ac1de",
+                  "id": "676cbaf6-634f-4b7b-956b-e34784e83395",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -221,13 +221,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200]);",
                     "});"
                   ],
-                  "_lastExecutionId": "9da143ad-441d-4005-97fc-36d0c39493af"
+                  "_lastExecutionId": "84281e78-e94d-40ae-9b6e-5f2831d50747"
                 }
               }
             ]
           },
           {
-            "id": "537c90db-4401-4e44-823f-8cda00d34776",
+            "id": "cec9bbe6-94e6-407d-a3e0-46a394a8de64",
             "name": "Employee updating Dept (Should Fail)",
             "request": {
               "url": {
@@ -260,7 +260,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "8c770abe-f35e-4ba0-89bf-d582fadcf44a",
+                  "id": "7a1b5537-5c6b-42cc-ae83-2a6047dfd4fd",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -270,7 +270,7 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                     "});"
                   ],
-                  "_lastExecutionId": "e0745af3-9cdf-4c4b-ac29-8b86fc80dda2"
+                  "_lastExecutionId": "131300ce-2b3b-45a1-a79d-9b794aaec788"
                 }
               }
             ]
@@ -279,11 +279,11 @@
         "event": []
       },
       {
-        "id": "38d27a43-f69c-42c1-bb66-7efe04be0ebe",
+        "id": "a1779785-d405-4440-8095-ddb93fc091ba",
         "name": "3. Feature Tests (Admin)",
         "item": [
           {
-            "id": "4db930ca-5746-42e7-8b35-5cb906c0f4ba",
+            "id": "046d21f1-8a7c-4b83-a8e7-12481404c8db",
             "name": "List Employees",
             "request": {
               "url": {
@@ -315,7 +315,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "92a95b63-84a6-412d-8e9f-0fbe9c6984c4",
+                  "id": "fc51d65a-f23f-4747-aba6-be0b46799da7",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -325,13 +325,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "ea4fbb77-d701-4f24-88ec-7430780d1184"
+                  "_lastExecutionId": "5aa2f563-d9ca-4110-8bf7-b228a87067d1"
                 }
               }
             ]
           },
           {
-            "id": "99564207-d85e-417f-bd63-64445a10eb5a",
+            "id": "a4b994aa-59b3-4542-a699-eba96f487cfe",
             "name": "List Departments",
             "request": {
               "url": {
@@ -363,7 +363,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "3366f42e-6e24-434a-a02c-72c321871907",
+                  "id": "c26b2285-0aeb-47b4-ada0-5bc4489f3d5d",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -373,13 +373,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "e142c810-32a2-4a1e-be85-bdeb30aee65d"
+                  "_lastExecutionId": "dfbdeae1-6a78-4d9b-8378-1081d9c77d79"
                 }
               }
             ]
           },
           {
-            "id": "0f2fff0f-b956-4370-91a8-7e4e0743a72d",
+            "id": "cfb39d62-0b85-490d-8e9d-76e794337811",
             "name": "List Contracts",
             "request": {
               "url": {
@@ -411,7 +411,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "ca088d48-6f79-4e20-bb70-bc777801b794",
+                  "id": "e864d18b-e049-46b0-ab5b-56e1f2c77bc1",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -421,13 +421,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "c97a88eb-c17a-430c-8ba9-b078b91a89af"
+                  "_lastExecutionId": "8f900e87-ec48-4352-813f-2d4a7abc2214"
                 }
               }
             ]
           },
           {
-            "id": "b218ae2b-092c-40fd-88af-fa90074d79c3",
+            "id": "7b0064b7-d33a-43c1-a99d-459691161cb3",
             "name": "List Attendance",
             "request": {
               "url": {
@@ -459,7 +459,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "e0bcb14b-33a6-4f9a-9245-0d12ceda9c3a",
+                  "id": "bc350771-239d-4168-94ef-cb5fac4b0033",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -469,13 +469,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "a0dc696b-eca6-4f4d-90bd-46ef6b359552"
+                  "_lastExecutionId": "af2ba92a-471e-4521-9ec4-5c071a4a2e4b"
                 }
               }
             ]
           },
           {
-            "id": "5cd52bda-f35e-4631-8955-264dbffa5a08",
+            "id": "274d77e2-f6ec-42d5-a57a-83f700548eb9",
             "name": "List Time Off",
             "request": {
               "url": {
@@ -508,7 +508,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "0dc59fa5-1335-4b6c-992a-3754d8781acb",
+                  "id": "31b687b8-f033-4305-88e2-9e22710ec4c6",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -518,13 +518,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "467a778e-8063-4b2b-b9ea-13dbad96e044"
+                  "_lastExecutionId": "99272686-2c9d-4186-ae2a-90669df3a258"
                 }
               }
             ]
           },
           {
-            "id": "9515df55-2e25-4477-ad8e-9c538f44e576",
+            "id": "f916d974-2115-4edc-b602-6637dd25d212",
             "name": "List Payruns",
             "request": {
               "url": {
@@ -556,7 +556,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "44182e59-080a-41ea-8b6f-04d7f0ff6e83",
+                  "id": "e95a9cb1-ec0b-4ece-9a05-e612ab199599",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -566,13 +566,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "bd83203d-f152-48de-83d6-bc893437f7f2"
+                  "_lastExecutionId": "7f8c1f1b-44b5-495d-a276-b49ef5579163"
                 }
               }
             ]
           },
           {
-            "id": "a5d635f1-e841-4c4f-a7a1-a29c15f1c9d5",
+            "id": "37d755df-d5fe-40fa-87e1-a46f3f0d4516",
             "name": "List Payslips",
             "request": {
               "url": {
@@ -604,7 +604,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "d89904c6-1dac-4be0-b17c-63effe68771a",
+                  "id": "4b2a4c12-845e-46dc-821b-e427972eccc3",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -614,13 +614,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "b6645331-259f-40de-a322-98f0b6ac1917"
+                  "_lastExecutionId": "490bc038-93ae-4a05-a12e-d7b5f345de7a"
                 }
               }
             ]
           },
           {
-            "id": "fea81822-e7a6-4660-ba7a-6e6a7d9a7055",
+            "id": "509f3f20-1d43-482f-86d5-ea426829a9c6",
             "name": "List Business Logs",
             "request": {
               "url": {
@@ -652,7 +652,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "eb8eee6c-8dbb-4f4b-9d09-8f6f304811ee",
+                  "id": "1577a0f2-6369-488d-a96c-40f7bce099e5",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -662,13 +662,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "b236f78a-12b0-4caf-83e0-fb3882b3a7de"
+                  "_lastExecutionId": "b62fac1e-9791-4eb8-bdca-13cef9fcacf0"
                 }
               }
             ]
           },
           {
-            "id": "9b46f5a4-ebec-4b48-92df-5b111f5f5465",
+            "id": "b52b1d03-85fe-49f5-a4b7-66ffabc43c44",
             "name": "Dashboard Stats",
             "request": {
               "url": {
@@ -701,7 +701,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "9857708d-5290-4d09-b998-e1524f4fbab3",
+                  "id": "4add38c1-9632-4302-a9d0-334f33604561",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -711,7 +711,7 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "fa33b65a-5a0c-4fd5-8984-cbffed51f75f"
+                  "_lastExecutionId": "1a838332-fa06-42e1-a29e-627959a7f4ee"
                 }
               }
             ]
@@ -720,11 +720,11 @@
         "event": []
       },
       {
-        "id": "c76be6ba-8b78-42c1-9472-32480da4a0c5",
+        "id": "3cd96d88-2da0-40bd-acf3-bb3a773cba8c",
         "name": "4. Edge Cases & Error Handling",
         "item": [
           {
-            "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
+            "id": "94fb4985-3290-4592-8ef7-f2f6091fbec6",
             "name": "Create Employee (Missing Data)",
             "request": {
               "url": {
@@ -760,7 +760,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
+                  "id": "71417e6a-dea7-41c2-8a47-77563a7d1153",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -770,13 +770,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "b958e177-6dda-43a5-91d1-d218159c9162"
+                  "_lastExecutionId": "44d39f46-eacd-4b52-9d97-1301acda4bc8"
                 }
               }
             ]
           },
           {
-            "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
+            "id": "287bf892-6be7-4879-ada9-668a1a65fe20",
             "name": "Get invalid Payrun",
             "request": {
               "url": {
@@ -809,7 +809,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "bc5dda7e-0d96-4f16-b509-03052918525f",
+                  "id": "d75743aa-50ed-4c48-af03-01319d84be3b",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -819,13 +819,13 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
+                  "_lastExecutionId": "b2ae4ce4-b65c-426e-b7c6-99bab9ef94a8"
                 }
               }
             ]
           },
           {
-            "id": "6909313a-6064-4244-bceb-05600fb72f02",
+            "id": "cfcd9437-57c2-47a8-bd3e-3e00517dffa8",
             "name": "Invalid Pagination",
             "request": {
               "url": {
@@ -857,7 +857,7 @@
               {
                 "listen": "test",
                 "script": {
-                  "id": "ec077c72-8706-4eb6-82ff-ba4d68ec4cf7",
+                  "id": "63483251-87a8-4c65-a5e9-51de09bf7be0",
                   "type": "text/javascript",
                   "exec": [
                     "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -867,7 +867,7 @@
                     "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                     "});"
                   ],
-                  "_lastExecutionId": "1be368f1-42fa-42d7-837e-40c51da4ad75"
+                  "_lastExecutionId": "b43803de-26fe-4f32-a3a3-f1dd982f8a9d"
                 }
               }
             ]
@@ -895,7 +895,7 @@
       }
     ],
     "info": {
-      "_postman_id": "5f5fd354-cc13-4315-841f-a37caedda96e",
+      "_postman_id": "049be040-c65b-4401-87a5-d785d89874c6",
       "name": "PeoplePay360 API Comprehensive Test Suite",
       "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
       "description": {
@@ -905,22 +905,22 @@
     }
   },
   "environment": {
-    "id": "a791a397-b8e8-4199-b14f-27ae5c14be88",
+    "id": "56c13fdd-e899-4e7c-b8e2-81e9b617f0ba",
     "values": [
       {
         "type": "any",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM",
         "key": "admin_token"
       },
       {
         "type": "any",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzI1MzUsImV4cCI6MTc5MTIyNDUzNX0.wvBTCoGBjRL-1Q_PD_OtRyFqThq4hNaFNlLSuYWIl0g",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.-SPQ6bnAyrer9Imu6c0dWI2fizewfiOrd5QO0ggUhag",
         "key": "emp_token"
       }
     ]
   },
   "globals": {
-    "id": "1bcfc09d-046f-4ad2-877d-654754d5e0eb",
+    "id": "1932223e-0eae-4fc3-89b5-c53eabd4087f",
     "values": []
   },
   "run": {
@@ -958,7 +958,7 @@
       "assertions": {
         "total": 34,
         "pending": 0,
-        "failed": 3
+        "failed": 1
       },
       "testScripts": {
         "total": 17,
@@ -972,10 +972,10 @@
       }
     },
     "timings": {
-      "responseAverage": 94.70588235294117,
-      "responseMin": 9,
-      "responseMax": 779,
-      "responseSd": 184.49829098710543,
+      "responseAverage": 60.88235294117647,
+      "responseMin": 6,
+      "responseMax": 368,
+      "responseSd": 101.98378322813137,
       "dnsAverage": 0,
       "dnsMin": 0,
       "dnsMax": 0,
@@ -984,8 +984,8 @@
       "firstByteMin": 0,
       "firstByteMax": 0,
       "firstByteSd": 0,
-      "started": 1788632533833,
-      "completed": 1788632536952
+      "started": 1788634104139,
+      "completed": 1788634106614
     },
     "executions": [
       {
@@ -998,11 +998,11 @@
           "eof": false,
           "bof": true,
           "cr": false,
-          "ref": "fb203625-d7bf-417e-a181-514769ccc82e",
-          "httpRequestId": "bda7819e-11d8-46b9-82ea-99323f419e7e"
+          "ref": "0cb76e14-3fde-459d-a7f7-9f4fff95a7c3",
+          "httpRequestId": "c19aee8e-ff7c-4155-af19-25c6add10d4c"
         },
         "item": {
-          "id": "62b82cad-8ad4-4e5e-ba20-23e4c17ccfcf",
+          "id": "c9a3bac9-d686-481d-83be-6a5c84e9e3bd",
           "name": "Admin Login",
           "request": {
             "url": {
@@ -1035,7 +1035,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "24e91084-1ee5-4e5c-bfb1-e422f76aeb57",
+                "id": "0a94cb6a-f3c3-4732-aa5f-15eb57ddd487",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status is 200\", function () {",
@@ -1055,7 +1055,7 @@
                   "    }",
                   "}"
                 ],
-                "_lastExecutionId": "40886c4e-2b17-4e00-8cae-6a4c39979d5d"
+                "_lastExecutionId": "244d48c4-b544-4529-91ae-33ffb7e187e4"
               }
             }
           ]
@@ -1098,7 +1098,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "80bf309f-8f20-448c-93e8-6438ca1f2752",
+              "value": "1a566a49-41fe-48d9-8f7d-62b07463164b",
               "system": true
             },
             {
@@ -1129,7 +1129,7 @@
           }
         },
         "response": {
-          "id": "3ce2fba1-602b-4f42-b4ca-e9441f5e98fb",
+          "id": "f4640ba1-3db7-47f4-a739-48c0d18aaac0",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1155,11 +1155,11 @@
             },
             {
               "key": "ETag",
-              "value": "W/\"20d-KaH/LsyiMUbDiDDi/i3iCEBLCUE\""
+              "value": "W/\"20d-UiTV6kMJIb7kEuPB9GOe9mqz4k4\""
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:14 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:24 GMT"
             },
             {
               "key": "Connection",
@@ -1622,10 +1622,10 @@
               50,
               77,
               122,
-              73,
-              49,
+              81,
+              120,
               77,
-              122,
+              68,
               81,
               115,
               73,
@@ -1645,66 +1645,66 @@
               73,
               121,
               78,
-              68,
-              85,
-              122,
+              106,
+              69,
+              119,
               78,
               72,
               48,
               46,
-              119,
-              51,
-              122,
-              74,
-              89,
-              98,
-              83,
-              65,
-              116,
-              74,
-              65,
-              83,
-              108,
-              90,
+              120,
               81,
-              65,
-              83,
-              87,
-              74,
               45,
-              102,
-              52,
-              74,
-              98,
-              112,
-              70,
-              57,
-              74,
-              110,
-              54,
-              113,
-              75,
-              68,
               106,
-              104,
+              89,
+              71,
+              85,
+              114,
+              87,
+              113,
+              84,
+              88,
+              76,
+              88,
+              74,
+              57,
+              100,
+              52,
+              89,
+              45,
+              122,
               90,
               111,
-              81,
-              52,
-              66,
-              48,
-              76,
+              74,
+              73,
+              54,
+              116,
+              87,
+              97,
+              90,
+              103,
+              72,
+              86,
+              65,
               99,
+              53,
+              101,
+              95,
+              112,
+              102,
+              120,
+              88,
+              77,
               34,
               125,
               125
             ]
           },
           "cookie": [],
-          "responseTime": 779,
+          "responseTime": 368,
           "responseSize": 525
         },
-        "id": "62b82cad-8ad4-4e5e-ba20-23e4c17ccfcf",
+        "id": "c9a3bac9-d686-481d-83be-6a5c84e9e3bd",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -1718,15 +1718,15 @@
       },
       {
         "cursor": {
-          "ref": "6761451a-f4a2-4487-bc48-3e3421543831",
+          "ref": "fbc2b740-1580-466b-bbbc-e2a485679b46",
           "length": 17,
           "cycles": 1,
           "position": 1,
           "iteration": 0,
-          "httpRequestId": "33794759-d87c-4dd3-9c28-8f6897cf2479"
+          "httpRequestId": "16d8c4e7-ee27-43a7-b978-47ceb8009442"
         },
         "item": {
-          "id": "c342aa5d-28a4-4f68-8499-42e0d41272db",
+          "id": "a243079b-acd3-48aa-84f7-993e44d5b1e6",
           "name": "Employee Login",
           "request": {
             "url": {
@@ -1759,7 +1759,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "716ba279-6dee-448e-822e-e160d134ad57",
+                "id": "02e9d358-893d-446e-9840-d50e4022f1bb",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status is 200\", function () {",
@@ -1779,7 +1779,7 @@
                   "    }",
                   "}"
                 ],
-                "_lastExecutionId": "f6de92f2-e7e1-4662-a309-d079bd36fb8f"
+                "_lastExecutionId": "8b9d3f26-62a7-4dcd-b97d-946abfb7d6db"
               }
             }
           ]
@@ -1822,7 +1822,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "15cab4a2-5fa3-4b3b-a053-3c167eca95bf",
+              "value": "586d5e41-8a39-4efe-a683-8ee9bac6f2f7",
               "system": true
             },
             {
@@ -1853,7 +1853,7 @@
           }
         },
         "response": {
-          "id": "72d21290-08fc-4363-9ec6-1bec2d24af44",
+          "id": "34cff422-ad0e-4baf-a25f-de0886055151",
           "status": "OK",
           "code": 200,
           "header": [
@@ -1879,11 +1879,11 @@
             },
             {
               "key": "ETag",
-              "value": "W/\"269-60nE1jrcXxchEw3A9G1bbWLgeiY\""
+              "value": "W/\"269-TcfLH3QyYkZkGRcazTxzqfX1JCg\""
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:24 GMT"
             },
             {
               "key": "Connection",
@@ -2438,11 +2438,11 @@
               50,
               77,
               122,
-              73,
-              49,
+              81,
+              120,
               77,
-              122,
-              85,
+              68,
+              81,
               115,
               73,
               109,
@@ -2461,55 +2461,55 @@
               73,
               121,
               78,
-              68,
-              85,
-              122,
+              106,
+              69,
+              119,
               78,
-              88,
+              72,
               48,
               46,
-              119,
-              118,
-              66,
-              84,
-              67,
-              111,
-              71,
-              66,
-              106,
-              82,
-              76,
               45,
-              49,
-              81,
-              95,
-              80,
-              68,
-              95,
-              79,
-              116,
-              82,
-              121,
-              70,
-              113,
-              84,
-              104,
-              113,
-              52,
-              104,
-              78,
-              97,
-              70,
-              78,
-              108,
-              76,
               83,
+              80,
+              81,
+              54,
+              98,
+              110,
+              65,
+              121,
+              114,
+              101,
+              114,
+              57,
+              73,
+              109,
               117,
-              89,
+              54,
+              99,
+              48,
+              100,
               87,
               73,
-              108,
+              50,
+              102,
+              105,
+              122,
+              101,
+              119,
+              102,
+              105,
+              79,
+              114,
+              100,
+              53,
+              81,
+              79,
               48,
+              103,
+              103,
+              85,
+              104,
+              97,
               103,
               34,
               125,
@@ -2517,10 +2517,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 306,
+          "responseTime": 282,
           "responseSize": 617
         },
-        "id": "c342aa5d-28a4-4f68-8499-42e0d41272db",
+        "id": "a243079b-acd3-48aa-84f7-993e44d5b1e6",
         "assertions": [
           {
             "assertion": "Status is 200",
@@ -2534,15 +2534,15 @@
       },
       {
         "cursor": {
-          "ref": "a3adaccd-7dd6-4cc0-a5b9-da49f2d85a9d",
+          "ref": "5655cf87-c5b4-477f-be39-ecff98d4ec10",
           "length": 17,
           "cycles": 1,
           "position": 2,
           "iteration": 0,
-          "httpRequestId": "d60a8626-1aa0-4601-a15f-8ff97d729e01"
+          "httpRequestId": "54612bf8-ad5a-4c47-bd77-681e040a8a8e"
         },
         "item": {
-          "id": "ac75ec62-de6a-4bbe-b627-84e30ff317ad",
+          "id": "18841652-f2ad-4a50-87f4-7505ae7eba1d",
           "name": "Employee accessing Payruns (Should Fail)",
           "request": {
             "url": {
@@ -2574,7 +2574,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "f8f5c24b-2174-42dd-b22f-fa292094c0a6",
+                "id": "81a053c0-6adc-46ac-a21f-363d7d0d6b9a",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -2584,7 +2584,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                   "});"
                 ],
-                "_lastExecutionId": "029d2d05-6ce8-4110-a4b4-56f1c0792007"
+                "_lastExecutionId": "e6c4e3fa-e089-46a3-b2f2-a447720f8a8b"
               }
             }
           ]
@@ -2607,7 +2607,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzI1MzUsImV4cCI6MTc5MTIyNDUzNX0.wvBTCoGBjRL-1Q_PD_OtRyFqThq4hNaFNlLSuYWIl0g"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.-SPQ6bnAyrer9Imu6c0dWI2fizewfiOrd5QO0ggUhag"
             },
             {
               "key": "Content-Type",
@@ -2630,7 +2630,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "82cead93-89b9-40c7-8a06-9c40d9b22717",
+              "value": "0300cbdf-0cd1-4302-aa3a-75abc922c0f3",
               "system": true
             },
             {
@@ -2652,7 +2652,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "49cae636-3c66-4808-a110-2aa7f9de49a0",
+          "id": "91460871-e932-484f-b095-e9a26aea9077",
           "status": "Forbidden",
           "code": 403,
           "header": [
@@ -2682,7 +2682,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:24 GMT"
             },
             {
               "key": "Connection",
@@ -2756,7 +2756,7 @@
           "responseTime": 12,
           "responseSize": 54
         },
-        "id": "ac75ec62-de6a-4bbe-b627-84e30ff317ad",
+        "id": "18841652-f2ad-4a50-87f4-7505ae7eba1d",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -2770,15 +2770,15 @@
       },
       {
         "cursor": {
-          "ref": "162ee2c4-c27c-4b53-a75e-4f9fe70619ef",
+          "ref": "faf7325a-7aba-486f-a5c1-02f32bf358e0",
           "length": 17,
           "cycles": 1,
           "position": 3,
           "iteration": 0,
-          "httpRequestId": "d7c5b8d8-96df-42f1-aa76-547f97b05f4f"
+          "httpRequestId": "f4fbfe1f-3746-4ec2-b902-11c2d34fcffa"
         },
         "item": {
-          "id": "2898fab7-cf3d-4158-b5c0-ea3358e9e8af",
+          "id": "0ab846d9-368d-4ff5-832d-9ada1fd50076",
           "name": "Employee accessing All Employees (Should Pass)",
           "request": {
             "url": {
@@ -2810,7 +2810,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "008606db-e9d3-4511-8dda-d4c7737ac1de",
+                "id": "676cbaf6-634f-4b7b-956b-e34784e83395",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -2820,7 +2820,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200]);",
                   "});"
                 ],
-                "_lastExecutionId": "9da143ad-441d-4005-97fc-36d0c39493af"
+                "_lastExecutionId": "84281e78-e94d-40ae-9b6e-5f2831d50747"
               }
             }
           ]
@@ -2843,7 +2843,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzI1MzUsImV4cCI6MTc5MTIyNDUzNX0.wvBTCoGBjRL-1Q_PD_OtRyFqThq4hNaFNlLSuYWIl0g"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.-SPQ6bnAyrer9Imu6c0dWI2fizewfiOrd5QO0ggUhag"
             },
             {
               "key": "Content-Type",
@@ -2866,7 +2866,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "7dec1fa3-bda5-42cc-a333-ccedcc9d2159",
+              "value": "76d3c3a6-0fe3-4587-9d32-385764201843",
               "system": true
             },
             {
@@ -2888,7 +2888,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "b093e8fc-438c-43ad-8642-5ce768b2c10e",
+          "id": "3e554786-54be-4686-9c12-0886262d8218",
           "status": "OK",
           "code": 200,
           "header": [
@@ -2918,7 +2918,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -19613,10 +19613,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 85,
+          "responseTime": 22,
           "responseSize": 16678
         },
-        "id": "2898fab7-cf3d-4158-b5c0-ea3358e9e8af",
+        "id": "0ab846d9-368d-4ff5-832d-9ada1fd50076",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -19630,15 +19630,15 @@
       },
       {
         "cursor": {
-          "ref": "cbf8bf0b-0073-463c-9a9c-234982213791",
+          "ref": "8d12ea37-16b6-485c-ba13-33b4400a4476",
           "length": 17,
           "cycles": 1,
           "position": 4,
           "iteration": 0,
-          "httpRequestId": "954139e1-a244-4102-b898-99159b3048e0"
+          "httpRequestId": "e6d0ea86-4884-4f42-bebe-48c468415ab7"
         },
         "item": {
-          "id": "537c90db-4401-4e44-823f-8cda00d34776",
+          "id": "cec9bbe6-94e6-407d-a3e0-46a394a8de64",
           "name": "Employee updating Dept (Should Fail)",
           "request": {
             "url": {
@@ -19671,7 +19671,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "8c770abe-f35e-4ba0-89bf-d582fadcf44a",
+                "id": "7a1b5537-5c6b-42cc-ae83-2a6047dfd4fd",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -19681,7 +19681,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                   "});"
                 ],
-                "_lastExecutionId": "e0745af3-9cdf-4c4b-ac29-8b86fc80dda2"
+                "_lastExecutionId": "131300ce-2b3b-45a1-a79d-9b794aaec788"
               }
             }
           ]
@@ -19705,7 +19705,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzI1MzUsImV4cCI6MTc5MTIyNDUzNX0.wvBTCoGBjRL-1Q_PD_OtRyFqThq4hNaFNlLSuYWIl0g"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlY2ZhM2RkNDEyM2I1NzdkN2IiLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.-SPQ6bnAyrer9Imu6c0dWI2fizewfiOrd5QO0ggUhag"
             },
             {
               "key": "Content-Type",
@@ -19728,7 +19728,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "dce306d2-2ad8-4c51-ae4b-94bb245587df",
+              "value": "fe2c5c4f-9762-407c-9cae-270444e2cbde",
               "system": true
             },
             {
@@ -19755,7 +19755,7 @@
           "method": "PATCH"
         },
         "response": {
-          "id": "525b7520-14ce-4c01-a633-280b02c5dfe5",
+          "id": "0023dcf1-dea7-4542-b3e5-1e13a367ad77",
           "status": "Not Found",
           "code": 404,
           "header": [
@@ -19785,7 +19785,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -19854,10 +19854,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 9,
+          "responseTime": 6,
           "responseSize": 52
         },
-        "id": "537c90db-4401-4e44-823f-8cda00d34776",
+        "id": "cec9bbe6-94e6-407d-a3e0-46a394a8de64",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -19878,15 +19878,15 @@
       },
       {
         "cursor": {
-          "ref": "a93f33eb-57c8-4f24-a194-8b2cfdaf8987",
+          "ref": "b2e4ca63-4606-4659-9acf-5d33289a3ac2",
           "length": 17,
           "cycles": 1,
           "position": 5,
           "iteration": 0,
-          "httpRequestId": "0bfbd757-677a-453f-bc1c-4f14b513c51b"
+          "httpRequestId": "89f2f91e-e1bc-4641-9bfe-a1ce4015f242"
         },
         "item": {
-          "id": "4db930ca-5746-42e7-8b35-5cb906c0f4ba",
+          "id": "046d21f1-8a7c-4b83-a8e7-12481404c8db",
           "name": "List Employees",
           "request": {
             "url": {
@@ -19918,7 +19918,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "92a95b63-84a6-412d-8e9f-0fbe9c6984c4",
+                "id": "fc51d65a-f23f-4747-aba6-be0b46799da7",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -19928,7 +19928,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "ea4fbb77-d701-4f24-88ec-7430780d1184"
+                "_lastExecutionId": "5aa2f563-d9ca-4110-8bf7-b228a87067d1"
               }
             }
           ]
@@ -19956,7 +19956,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -19979,7 +19979,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "1c14e2c9-14e6-426d-a5e5-79bc31991eb5",
+              "value": "5ee71d6e-b949-45cc-828f-9a417aa8c3e2",
               "system": true
             },
             {
@@ -20001,7 +20001,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "60cde5ed-703d-4ece-a51c-a3c5b81b5450",
+          "id": "a46c23a7-c229-4b30-a57e-d63b586d03be",
           "status": "OK",
           "code": 200,
           "header": [
@@ -20031,7 +20031,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -24623,10 +24623,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 18,
+          "responseTime": 14,
           "responseSize": 4575
         },
-        "id": "4db930ca-5746-42e7-8b35-5cb906c0f4ba",
+        "id": "046d21f1-8a7c-4b83-a8e7-12481404c8db",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -24640,15 +24640,15 @@
       },
       {
         "cursor": {
-          "ref": "15b215d4-8d69-4245-b1c3-a9c98200629e",
+          "ref": "219eac35-fb9f-4473-afa4-0e86b89d7600",
           "length": 17,
           "cycles": 1,
           "position": 6,
           "iteration": 0,
-          "httpRequestId": "5ed2afa2-b94d-43e8-a2fc-e7607e1e65d4"
+          "httpRequestId": "17830b14-a3e3-4fb3-a788-6a4215c9699d"
         },
         "item": {
-          "id": "99564207-d85e-417f-bd63-64445a10eb5a",
+          "id": "a4b994aa-59b3-4542-a699-eba96f487cfe",
           "name": "List Departments",
           "request": {
             "url": {
@@ -24680,7 +24680,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "3366f42e-6e24-434a-a02c-72c321871907",
+                "id": "c26b2285-0aeb-47b4-ada0-5bc4489f3d5d",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -24690,7 +24690,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "e142c810-32a2-4a1e-be85-bdeb30aee65d"
+                "_lastExecutionId": "dfbdeae1-6a78-4d9b-8378-1081d9c77d79"
               }
             }
           ]
@@ -24713,7 +24713,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -24736,7 +24736,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "94668ebb-7cbf-4230-acef-527c90016310",
+              "value": "933a889c-79b9-4b99-bea7-1a42a87d7b8a",
               "system": true
             },
             {
@@ -24758,7 +24758,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "de05b115-b2f6-43cc-a76d-07d0ecd68502",
+          "id": "ecf107f9-e87b-4544-987c-154348660d1b",
           "status": "OK",
           "code": 200,
           "header": [
@@ -24788,7 +24788,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -27931,10 +27931,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 19,
+          "responseTime": 12,
           "responseSize": 3126
         },
-        "id": "99564207-d85e-417f-bd63-64445a10eb5a",
+        "id": "a4b994aa-59b3-4542-a699-eba96f487cfe",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -27948,15 +27948,15 @@
       },
       {
         "cursor": {
-          "ref": "b3b7ad4e-968a-44b0-a016-ddeac05d0c8f",
+          "ref": "5f49e83c-01c2-47da-a59d-8ae0562523fa",
           "length": 17,
           "cycles": 1,
           "position": 7,
           "iteration": 0,
-          "httpRequestId": "bc168b6e-e1cb-4fc4-8995-d3c27a2598fc"
+          "httpRequestId": "5bdc8a2c-ee05-4032-9016-b0dd73873025"
         },
         "item": {
-          "id": "0f2fff0f-b956-4370-91a8-7e4e0743a72d",
+          "id": "cfb39d62-0b85-490d-8e9d-76e794337811",
           "name": "List Contracts",
           "request": {
             "url": {
@@ -27988,7 +27988,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ca088d48-6f79-4e20-bb70-bc777801b794",
+                "id": "e864d18b-e049-46b0-ab5b-56e1f2c77bc1",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -27998,7 +27998,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "c97a88eb-c17a-430c-8ba9-b078b91a89af"
+                "_lastExecutionId": "8f900e87-ec48-4352-813f-2d4a7abc2214"
               }
             }
           ]
@@ -28026,7 +28026,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -28049,7 +28049,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "a54d26bb-ad2c-41c5-89a3-df7d3db9a9e9",
+              "value": "4a359803-470c-49b9-9036-ba936f472433",
               "system": true
             },
             {
@@ -28071,7 +28071,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "3a3cd31b-6d00-4ff0-8155-f44de5e0237c",
+          "id": "23a5f37f-91d6-42c7-a252-6c94a15dffbe",
           "status": "OK",
           "code": 200,
           "header": [
@@ -28101,7 +28101,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -31328,10 +31328,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 25,
+          "responseTime": 17,
           "responseSize": 3210
         },
-        "id": "0f2fff0f-b956-4370-91a8-7e4e0743a72d",
+        "id": "cfb39d62-0b85-490d-8e9d-76e794337811",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -31345,15 +31345,15 @@
       },
       {
         "cursor": {
-          "ref": "03559989-f132-4f88-b878-64e7552c5946",
+          "ref": "d1001085-c55e-4b77-9239-9bfdc325204b",
           "length": 17,
           "cycles": 1,
           "position": 8,
           "iteration": 0,
-          "httpRequestId": "1bd354ca-98d0-4779-a66a-b6732b0f0a12"
+          "httpRequestId": "04da6d00-971d-46c8-8a8f-06f4595715dc"
         },
         "item": {
-          "id": "b218ae2b-092c-40fd-88af-fa90074d79c3",
+          "id": "7b0064b7-d33a-43c1-a99d-459691161cb3",
           "name": "List Attendance",
           "request": {
             "url": {
@@ -31385,7 +31385,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "e0bcb14b-33a6-4f9a-9245-0d12ceda9c3a",
+                "id": "bc350771-239d-4168-94ef-cb5fac4b0033",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -31395,7 +31395,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "a0dc696b-eca6-4f4d-90bd-46ef6b359552"
+                "_lastExecutionId": "af2ba92a-471e-4521-9ec4-5c071a4a2e4b"
               }
             }
           ]
@@ -31423,7 +31423,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -31446,7 +31446,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "76414500-f874-4199-a287-73c5bb163b93",
+              "value": "aed1e256-69a8-4138-a749-21fe40500541",
               "system": true
             },
             {
@@ -31468,7 +31468,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "479d9215-b32f-42fb-814f-465660d0fb86",
+          "id": "85100821-fa7e-4219-8388-b03764e3d4ea",
           "status": "OK",
           "code": 200,
           "header": [
@@ -31498,7 +31498,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:15 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -34771,10 +34771,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 40,
+          "responseTime": 131,
           "responseSize": 3256
         },
-        "id": "b218ae2b-092c-40fd-88af-fa90074d79c3",
+        "id": "7b0064b7-d33a-43c1-a99d-459691161cb3",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -34788,15 +34788,15 @@
       },
       {
         "cursor": {
-          "ref": "977f2345-29b1-4163-a1ce-4e7d19886ac3",
+          "ref": "66bb4b4c-4aeb-4df7-96fa-ac4ff7dbf612",
           "length": 17,
           "cycles": 1,
           "position": 9,
           "iteration": 0,
-          "httpRequestId": "78bf9a84-5197-4ccc-b51a-fb960dda1568"
+          "httpRequestId": "5d188997-8263-445b-9e24-5d54a9517d1b"
         },
         "item": {
-          "id": "5cd52bda-f35e-4631-8955-264dbffa5a08",
+          "id": "274d77e2-f6ec-42d5-a57a-83f700548eb9",
           "name": "List Time Off",
           "request": {
             "url": {
@@ -34829,7 +34829,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "0dc59fa5-1335-4b6c-992a-3754d8781acb",
+                "id": "31b687b8-f033-4305-88e2-9e22710ec4c6",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -34839,7 +34839,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "467a778e-8063-4b2b-b9ea-13dbad96e044"
+                "_lastExecutionId": "99272686-2c9d-4186-ae2a-90669df3a258"
               }
             }
           ]
@@ -34868,7 +34868,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -34891,7 +34891,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "76fb7aab-1770-4361-8983-255d902c405c",
+              "value": "a5a405a7-6801-4c45-8fd7-14e9339e10d3",
               "system": true
             },
             {
@@ -34913,7 +34913,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "9cd54cb2-43d8-48ad-9a82-99299303ab31",
+          "id": "e454d082-1652-41e4-a786-e1ca5f99468d",
           "status": "OK",
           "code": 200,
           "header": [
@@ -34943,7 +34943,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -37852,10 +37852,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 25,
+          "responseTime": 69,
           "responseSize": 2892
         },
-        "id": "5cd52bda-f35e-4631-8955-264dbffa5a08",
+        "id": "274d77e2-f6ec-42d5-a57a-83f700548eb9",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -37869,15 +37869,15 @@
       },
       {
         "cursor": {
-          "ref": "d29c2757-7670-4da1-b7b9-eea43a025c7f",
+          "ref": "bd6dc7f0-ed71-4ecd-8789-b08fb7df7f78",
           "length": 17,
           "cycles": 1,
           "position": 10,
           "iteration": 0,
-          "httpRequestId": "193120ef-24a3-460f-8fcf-29d4e8a33a3a"
+          "httpRequestId": "91558da0-74e7-47fa-97df-f94576c4b1ec"
         },
         "item": {
-          "id": "9515df55-2e25-4477-ad8e-9c538f44e576",
+          "id": "f916d974-2115-4edc-b602-6637dd25d212",
           "name": "List Payruns",
           "request": {
             "url": {
@@ -37909,7 +37909,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "44182e59-080a-41ea-8b6f-04d7f0ff6e83",
+                "id": "e95a9cb1-ec0b-4ece-9a05-e612ab199599",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -37919,7 +37919,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "bd83203d-f152-48de-83d6-bc893437f7f2"
+                "_lastExecutionId": "7f8c1f1b-44b5-495d-a276-b49ef5579163"
               }
             }
           ]
@@ -37947,7 +37947,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -37970,7 +37970,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "e63937c6-78dd-40c9-93b2-74f42d18cdd6",
+              "value": "42ba1410-7a2e-4bb2-a1fb-ca9619ce1b15",
               "system": true
             },
             {
@@ -37992,7 +37992,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "20561015-86f9-488e-83e6-a22d6703856d",
+          "id": "6de1b559-b852-4ff0-82a5-dcfb3849f3a6",
           "status": "OK",
           "code": 200,
           "header": [
@@ -38022,7 +38022,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:25 GMT"
             },
             {
               "key": "Connection",
@@ -38215,10 +38215,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 104,
+          "responseTime": 12,
           "responseSize": 176
         },
-        "id": "9515df55-2e25-4477-ad8e-9c538f44e576",
+        "id": "f916d974-2115-4edc-b602-6637dd25d212",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -38232,15 +38232,15 @@
       },
       {
         "cursor": {
-          "ref": "3f90fc1d-c9ad-4e71-a0f5-158fab98d0fa",
+          "ref": "7c6b6a6e-255c-4753-a2b7-321ffb2196ee",
           "length": 17,
           "cycles": 1,
           "position": 11,
           "iteration": 0,
-          "httpRequestId": "85f9623c-7aaf-4001-9ce2-f14a77e6a695"
+          "httpRequestId": "387c3504-09de-40af-97d6-6c785b76b318"
         },
         "item": {
-          "id": "a5d635f1-e841-4c4f-a7a1-a29c15f1c9d5",
+          "id": "37d755df-d5fe-40fa-87e1-a46f3f0d4516",
           "name": "List Payslips",
           "request": {
             "url": {
@@ -38272,7 +38272,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "d89904c6-1dac-4be0-b17c-63effe68771a",
+                "id": "4b2a4c12-845e-46dc-821b-e427972eccc3",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -38282,7 +38282,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "b6645331-259f-40de-a322-98f0b6ac1917"
+                "_lastExecutionId": "490bc038-93ae-4a05-a12e-d7b5f345de7a"
               }
             }
           ]
@@ -38310,7 +38310,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -38333,7 +38333,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "ba8db1e8-23c8-48c1-920f-f22d1c4c37fe",
+              "value": "2772dc25-9e4c-4553-9704-efdb08bd132b",
               "system": true
             },
             {
@@ -38355,7 +38355,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "d821708c-adf4-4b70-a1ba-d599d7d31d3e",
+          "id": "010571a6-3dc1-40cb-99d1-86a6f6553f4c",
           "status": "OK",
           "code": 200,
           "header": [
@@ -38385,7 +38385,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -38579,10 +38579,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 43,
+          "responseTime": 14,
           "responseSize": 177
         },
-        "id": "a5d635f1-e841-4c4f-a7a1-a29c15f1c9d5",
+        "id": "37d755df-d5fe-40fa-87e1-a46f3f0d4516",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -38596,15 +38596,15 @@
       },
       {
         "cursor": {
-          "ref": "af1925f8-45d7-45ac-9c88-bad48012522a",
+          "ref": "3ba6b647-6ede-472d-8e3c-2f1a1225f44d",
           "length": 17,
           "cycles": 1,
           "position": 12,
           "iteration": 0,
-          "httpRequestId": "170ce18e-efcc-492b-a230-ef21282e32b7"
+          "httpRequestId": "d598f3f5-549d-4d1a-b392-70aeeecaaea7"
         },
         "item": {
-          "id": "fea81822-e7a6-4660-ba7a-6e6a7d9a7055",
+          "id": "509f3f20-1d43-482f-86d5-ea426829a9c6",
           "name": "List Business Logs",
           "request": {
             "url": {
@@ -38636,7 +38636,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "eb8eee6c-8dbb-4f4b-9d09-8f6f304811ee",
+                "id": "1577a0f2-6369-488d-a96c-40f7bce099e5",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -38646,7 +38646,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "b236f78a-12b0-4caf-83e0-fb3882b3a7de"
+                "_lastExecutionId": "b62fac1e-9791-4eb8-bdca-13cef9fcacf0"
               }
             }
           ]
@@ -38674,7 +38674,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -38697,7 +38697,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "65f0e395-1187-4ae4-aeb5-2d89df56d500",
+              "value": "cfe1f2fb-cb3f-4ad4-9877-ee118258ac18",
               "system": true
             },
             {
@@ -38719,7 +38719,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "0083323b-738b-47fb-9a2c-1e4413288271",
+          "id": "52d713d5-2d34-4aad-95f7-64846295ce6a",
           "status": "OK",
           "code": 200,
           "header": [
@@ -38749,7 +38749,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -38948,10 +38948,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 15,
+          "responseTime": 12,
           "responseSize": 182
         },
-        "id": "fea81822-e7a6-4660-ba7a-6e6a7d9a7055",
+        "id": "509f3f20-1d43-482f-86d5-ea426829a9c6",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -38965,15 +38965,15 @@
       },
       {
         "cursor": {
-          "ref": "237a1b53-1ff0-419f-b747-b89eb266d05a",
+          "ref": "d7b0a2ad-e1f7-4579-ba09-d17b09e0c1d5",
           "length": 17,
           "cycles": 1,
           "position": 13,
           "iteration": 0,
-          "httpRequestId": "619ae298-7c22-4aa2-80a2-1a7c36c47a83"
+          "httpRequestId": "3de22751-e82c-4114-8a7d-f83fc4112676"
         },
         "item": {
-          "id": "9b46f5a4-ebec-4b48-92df-5b111f5f5465",
+          "id": "b52b1d03-85fe-49f5-a4b7-66ffabc43c44",
           "name": "Dashboard Stats",
           "request": {
             "url": {
@@ -39006,7 +39006,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "9857708d-5290-4d09-b998-e1524f4fbab3",
+                "id": "4add38c1-9632-4302-a9d0-334f33604561",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -39016,7 +39016,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "fa33b65a-5a0c-4fd5-8984-cbffed51f75f"
+                "_lastExecutionId": "1a838332-fa06-42e1-a29e-627959a7f4ee"
               }
             }
           ]
@@ -39040,7 +39040,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -39063,7 +39063,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "d819f904-33e9-488d-95fa-1c01a85cc5ab",
+              "value": "250fe825-5539-4ab4-8f28-62301f654c49",
               "system": true
             },
             {
@@ -39085,7 +39085,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "811c25db-dd83-41ad-8b71-2bb2e5084849",
+          "id": "44135ba8-7180-4f4a-8079-3c8f7f869a42",
           "status": "OK",
           "code": 200,
           "header": [
@@ -39111,11 +39111,11 @@
             },
             {
               "key": "ETag",
-              "value": "W/\"446-1p0LOCjdwTw8hApSD1pezJLn7HM\""
+              "value": "W/\"446-6q+mVCugwbJ5S7tOjpExaLVwoy4\""
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -39223,6 +39223,83 @@
               55,
               55,
               99,
+              101,
+              50,
+              34,
+              44,
+              34,
+              99,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              49,
+              50,
+              51,
+              44,
+              34,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              78,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              79,
+              112,
+              101,
+              114,
+              97,
+              116,
+              105,
+              111,
+              110,
+              115,
+              34,
+              125,
+              44,
+              123,
+              34,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              54,
+              97,
+              57,
+              99,
+              52,
+              54,
+              101,
+              98,
+              102,
+              97,
+              51,
+              100,
+              100,
+              52,
+              49,
+              50,
+              51,
+              98,
+              53,
+              55,
+              55,
+              99,
               100,
               52,
               34,
@@ -39268,83 +39345,6 @@
               105,
               110,
               103,
-              34,
-              125,
-              44,
-              123,
-              34,
-              95,
-              105,
-              100,
-              34,
-              58,
-              34,
-              54,
-              97,
-              57,
-              99,
-              52,
-              54,
-              101,
-              98,
-              102,
-              97,
-              51,
-              100,
-              100,
-              52,
-              49,
-              50,
-              51,
-              98,
-              53,
-              55,
-              55,
-              99,
-              101,
-              50,
-              34,
-              44,
-              34,
-              99,
-              111,
-              117,
-              110,
-              116,
-              34,
-              58,
-              49,
-              50,
-              51,
-              44,
-              34,
-              100,
-              101,
-              112,
-              97,
-              114,
-              116,
-              109,
-              101,
-              110,
-              116,
-              78,
-              97,
-              109,
-              101,
-              34,
-              58,
-              34,
-              79,
-              112,
-              101,
-              114,
-              97,
-              116,
-              105,
-              111,
-              110,
-              115,
               34,
               125,
               44,
@@ -40226,10 +40226,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 75,
+          "responseTime": 24,
           "responseSize": 1094
         },
-        "id": "9b46f5a4-ebec-4b48-92df-5b111f5f5465",
+        "id": "b52b1d03-85fe-49f5-a4b7-66ffabc43c44",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -40243,15 +40243,15 @@
       },
       {
         "cursor": {
-          "ref": "f9295357-ef9f-43ad-a2ae-c41bd0b4d010",
+          "ref": "c6b03dd7-5515-47b3-a61f-dbdfeea77309",
           "length": 17,
           "cycles": 1,
           "position": 14,
           "iteration": 0,
-          "httpRequestId": "6e45de9f-c983-41b2-9a7b-460d5b94cffa"
+          "httpRequestId": "d91f240c-9641-4e49-ba85-b66f674db0d2"
         },
         "item": {
-          "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
+          "id": "94fb4985-3290-4592-8ef7-f2f6091fbec6",
           "name": "Create Employee (Missing Data)",
           "request": {
             "url": {
@@ -40287,7 +40287,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
+                "id": "71417e6a-dea7-41c2-8a47-77563a7d1153",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -40297,7 +40297,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "b958e177-6dda-43a5-91d1-d218159c9162"
+                "_lastExecutionId": "44d39f46-eacd-4b52-9d97-1301acda4bc8"
               }
             }
           ]
@@ -40320,7 +40320,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -40343,7 +40343,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "523968f1-e4a5-49c7-ae42-cfd6af2c900f",
+              "value": "bc402ad5-dac7-4d8d-af40-1df6e9c20b4f",
               "system": true
             },
             {
@@ -40374,9 +40374,9 @@
           }
         },
         "response": {
-          "id": "9153cb00-fccc-4790-a35b-00431906dced",
-          "status": "Internal Server Error",
-          "code": 500,
+          "id": "713a4fc8-6b84-4af8-93c2-8b7cfa7abab2",
+          "status": "Bad Request",
+          "code": 400,
           "header": [
             {
               "key": "X-Powered-By",
@@ -40396,15 +40396,15 @@
             },
             {
               "key": "Content-Length",
-              "value": "166"
+              "value": "133"
             },
             {
               "key": "ETag",
-              "value": "W/\"a6-qrx1toE0D3edvOSymwe+i+W7Bl0\""
+              "value": "W/\"85-PUf80HwGaNBH7fKdF7aLdNAKAzs\""
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -40446,41 +40446,25 @@
               34,
               58,
               34,
-              69,
-              109,
-              112,
-              108,
-              111,
-              121,
-              101,
-              101,
-              32,
+              73,
+              110,
               118,
               97,
               108,
               105,
               100,
+              32,
+              105,
+              110,
+              112,
+              117,
+              116,
+              32,
+              100,
               97,
               116,
-              105,
-              111,
-              110,
-              32,
-              102,
               97,
-              105,
-              108,
-              101,
-              100,
-              58,
-              32,
-              117,
-              115,
-              101,
-              114,
-              73,
-              100,
-              58,
+              46,
               32,
               80,
               97,
@@ -40508,13 +40492,7 @@
               101,
               100,
               46,
-              44,
-              32,
-              110,
-              97,
-              109,
-              101,
-              58,
+              46,
               32,
               80,
               97,
@@ -40540,18 +40518,7 @@
               101,
               100,
               46,
-              44,
-              32,
-              119,
-              111,
-              114,
-              107,
-              69,
-              109,
-              97,
-              105,
-              108,
-              58,
+              46,
               32,
               80,
               97,
@@ -40587,10 +40554,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 28,
-          "responseSize": 166
+          "responseTime": 11,
+          "responseSize": 133
         },
-        "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
+        "id": "94fb4985-3290-4592-8ef7-f2f6091fbec6",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -40598,28 +40565,21 @@
           },
           {
             "assertion": "Status is 2xx or 400/404 for edge cases",
-            "skipped": false,
-            "error": {
-              "name": "AssertionError",
-              "index": 1,
-              "test": "Status is 2xx or 400/404 for edge cases",
-              "message": "expected 500 to be one of [ 200, 201, 400, 404 ]",
-              "stack": "AssertionError: expected 500 to be one of [ 200, 201, 400, 404 ]\n   at Object.eval sandbox-script.js:2:15)"
-            }
+            "skipped": false
           }
         ]
       },
       {
         "cursor": {
-          "ref": "b7ee50dd-810c-46a4-96f1-78ed81efbc76",
+          "ref": "a2a1ab95-6ecf-4b4c-bcd2-b5ce6e7a2e23",
           "length": 17,
           "cycles": 1,
           "position": 15,
           "iteration": 0,
-          "httpRequestId": "a58c5431-5588-48f3-a691-b22655da1f52"
+          "httpRequestId": "48028a3e-7215-4b6d-85f9-33db59d6f6d5"
         },
         "item": {
-          "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
+          "id": "287bf892-6be7-4879-ada9-668a1a65fe20",
           "name": "Get invalid Payrun",
           "request": {
             "url": {
@@ -40652,7 +40612,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "bc5dda7e-0d96-4f16-b509-03052918525f",
+                "id": "d75743aa-50ed-4c48-af03-01319d84be3b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -40662,7 +40622,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
+                "_lastExecutionId": "b2ae4ce4-b65c-426e-b7c6-99bab9ef94a8"
               }
             }
           ]
@@ -40686,7 +40646,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -40709,7 +40669,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "e5454eb3-7fde-4906-aa2a-e46f1abb0577",
+              "value": "256ff11d-3ff4-4a54-beec-2feab145fb5c",
               "system": true
             },
             {
@@ -40731,9 +40691,9 @@
           "method": "GET"
         },
         "response": {
-          "id": "06427c20-ad34-4dd4-aa81-281ebfc0cf6a",
-          "status": "Internal Server Error",
-          "code": 500,
+          "id": "3df2cadf-73e9-4dd4-9b1b-8f70b9809c6c",
+          "status": "Bad Request",
+          "code": 400,
           "header": [
             {
               "key": "X-Powered-By",
@@ -40753,15 +40713,15 @@
             },
             {
               "key": "Content-Length",
-              "value": "134"
+              "value": "59"
             },
             {
               "key": "ETag",
-              "value": "W/\"86-kDbm8Bp2zKmOYB5dPcpVf6SwgzU\""
+              "value": "W/\"3b-coS/TLCA5UyS+Y+8He7wCb3MUzg\""
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -40803,119 +40763,44 @@
               34,
               58,
               34,
-              67,
-              97,
-              115,
-              116,
-              32,
-              116,
-              111,
-              32,
-              79,
-              98,
-              106,
-              101,
-              99,
-              116,
               73,
-              100,
-              32,
-              102,
-              97,
-              105,
-              108,
-              101,
-              100,
-              32,
-              102,
-              111,
-              114,
-              32,
-              118,
-              97,
-              108,
-              117,
-              101,
-              32,
-              92,
-              34,
-              105,
               110,
               118,
               97,
               108,
               105,
               100,
-              45,
-              105,
-              100,
-              45,
-              104,
-              101,
-              114,
-              101,
-              92,
-              34,
               32,
-              40,
-              116,
-              121,
-              112,
-              101,
-              32,
-              115,
-              116,
-              114,
-              105,
-              110,
-              103,
-              41,
-              32,
-              97,
-              116,
-              32,
-              112,
-              97,
-              116,
-              104,
-              32,
-              92,
-              34,
               95,
               105,
               100,
-              92,
-              34,
+              58,
               32,
-              102,
-              111,
-              114,
-              32,
-              109,
-              111,
-              100,
-              101,
-              108,
-              32,
-              92,
-              34,
-              80,
-              97,
-              121,
-              114,
-              117,
+              105,
               110,
-              92,
-              34,
+              118,
+              97,
+              108,
+              105,
+              100,
+              45,
+              105,
+              100,
+              45,
+              104,
+              101,
+              114,
+              101,
+              46,
               34,
               125
             ]
           },
           "cookie": [],
-          "responseTime": 10,
-          "responseSize": 134
+          "responseTime": 9,
+          "responseSize": 59
         },
-        "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
+        "id": "287bf892-6be7-4879-ada9-668a1a65fe20",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -40923,28 +40808,21 @@
           },
           {
             "assertion": "Status is 2xx or 400/404 for edge cases",
-            "skipped": false,
-            "error": {
-              "name": "AssertionError",
-              "index": 1,
-              "test": "Status is 2xx or 400/404 for edge cases",
-              "message": "expected 500 to be one of [ 200, 201, 400, 404 ]",
-              "stack": "AssertionError: expected 500 to be one of [ 200, 201, 400, 404 ]\n   at Object.eval sandbox-script.js:2:16)"
-            }
+            "skipped": false
           }
         ]
       },
       {
         "cursor": {
-          "ref": "2c76e430-2738-4b13-a224-2c2a8432b8c6",
+          "ref": "aadeb057-5ba0-49f6-994c-0a19988ebfa8",
           "length": 17,
           "cycles": 1,
           "position": 16,
           "iteration": 0,
-          "httpRequestId": "2ec79981-9923-403d-8b84-41f715e4fc3c"
+          "httpRequestId": "424db125-07e5-44e7-a2b6-23261d17d1dc"
         },
         "item": {
-          "id": "6909313a-6064-4244-bceb-05600fb72f02",
+          "id": "cfcd9437-57c2-47a8-bd3e-3e00517dffa8",
           "name": "Invalid Pagination",
           "request": {
             "url": {
@@ -40976,7 +40854,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ec077c72-8706-4eb6-82ff-ba4d68ec4cf7",
+                "id": "63483251-87a8-4c65-a5e9-51de09bf7be0",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -40986,7 +40864,7 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
                   "});"
                 ],
-                "_lastExecutionId": "1be368f1-42fa-42d7-837e-40c51da4ad75"
+                "_lastExecutionId": "b43803de-26fe-4f32-a3a3-f1dd982f8a9d"
               }
             }
           ]
@@ -41018,7 +40896,7 @@
           "header": [
             {
               "key": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzI1MzQsImV4cCI6MTc5MTIyNDUzNH0.w3zJYbSAtJASlZQASWJ-f4JbpF9Jn6qKDjhZoQ4B0Lc"
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljNDZlYmZhM2RkNDEyM2I1NzdkNjciLCJpYXQiOjE3ODg2MzQxMDQsImV4cCI6MTc5MTIyNjEwNH0.xQ-jYGUrWqTXLXJ9d4Y-zZoJI6tWaZgHVAc5e_pfxXM"
             },
             {
               "key": "Content-Type",
@@ -41041,7 +40919,7 @@
             },
             {
               "key": "Postman-Token",
-              "value": "ca70452f-445d-4a0f-9ab9-c438fa8fbe4b",
+              "value": "8daed052-6280-4956-b577-f382f327a9c8",
               "system": true
             },
             {
@@ -41063,7 +40941,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "d3e8011d-9a5a-44d6-9a69-f909738eae97",
+          "id": "bd491734-b2f1-45ae-a189-a14b38fbff93",
           "status": "OK",
           "code": 200,
           "header": [
@@ -41093,7 +40971,7 @@
             },
             {
               "key": "Date",
-              "value": "Sat, 05 Sep 2026 18:22:16 GMT"
+              "value": "Sat, 05 Sep 2026 18:48:26 GMT"
             },
             {
               "key": "Connection",
@@ -42075,10 +41953,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 17,
+          "responseTime": 20,
           "responseSize": 965
         },
-        "id": "6909313a-6064-4244-bceb-05600fb72f02",
+        "id": "cfcd9437-57c2-47a8-bd3e-3e00517dffa8",
         "assertions": [
           {
             "assertion": "Response time is less than 1000ms",
@@ -42092,7 +41970,7 @@
       }
     ],
     "transfers": {
-      "responseTotal": 37879
+      "responseTotal": 37771
     },
     "failures": [
       {
@@ -42103,8 +41981,8 @@
           "message": "expected 404 to be one of [ 403, 401 ]",
           "stack": "AssertionError: expected 404 to be one of [ 403, 401 ]\n   at Object.eval sandbox-script.js:2:5)",
           "checksum": "89812fdb1ef1a9d7a219d827c9fc0de5",
-          "id": "cb7355b9-ed41-4058-8b22-470f1fdb23d5",
-          "timestamp": 1788632535466,
+          "id": "87d10ac9-df49-4956-ab3e-f15e3994cd4e",
+          "timestamp": 1788634105187,
           "stacktrace": [
             {
               "fileName": "sandbox-script.js",
@@ -42119,7 +41997,7 @@
         },
         "at": "assertion:1 in test-script",
         "source": {
-          "id": "537c90db-4401-4e44-823f-8cda00d34776",
+          "id": "cec9bbe6-94e6-407d-a3e0-46a394a8de64",
           "name": "Employee updating Dept (Should Fail)",
           "request": {
             "url": {
@@ -42152,7 +42030,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "8c770abe-f35e-4ba0-89bf-d582fadcf44a",
+                "id": "7a1b5537-5c6b-42cc-ae83-2a6047dfd4fd",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -42162,17 +42040,17 @@
                   "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                   "});"
                 ],
-                "_lastExecutionId": "e0745af3-9cdf-4c4b-ac29-8b86fc80dda2"
+                "_lastExecutionId": "131300ce-2b3b-45a1-a79d-9b794aaec788"
               }
             }
           ]
         },
         "parent": {
-          "id": "4a125782-af23-4cb5-87a3-e890fe7b6c4a",
+          "id": "cbb7249c-8db5-488b-bc31-706bd4bf55da",
           "name": "2. RBAC Security Tests",
           "item": [
             {
-              "id": "ac75ec62-de6a-4bbe-b627-84e30ff317ad",
+              "id": "18841652-f2ad-4a50-87f4-7505ae7eba1d",
               "name": "Employee accessing Payruns (Should Fail)",
               "request": {
                 "url": {
@@ -42204,7 +42082,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "f8f5c24b-2174-42dd-b22f-fa292094c0a6",
+                    "id": "81a053c0-6adc-46ac-a21f-363d7d0d6b9a",
                     "type": "text/javascript",
                     "exec": [
                       "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -42214,13 +42092,13 @@
                       "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                       "});"
                     ],
-                    "_lastExecutionId": "029d2d05-6ce8-4110-a4b4-56f1c0792007"
+                    "_lastExecutionId": "e6c4e3fa-e089-46a3-b2f2-a447720f8a8b"
                   }
                 }
               ]
             },
             {
-              "id": "2898fab7-cf3d-4158-b5c0-ea3358e9e8af",
+              "id": "0ab846d9-368d-4ff5-832d-9ada1fd50076",
               "name": "Employee accessing All Employees (Should Pass)",
               "request": {
                 "url": {
@@ -42252,7 +42130,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "008606db-e9d3-4511-8dda-d4c7737ac1de",
+                    "id": "676cbaf6-634f-4b7b-956b-e34784e83395",
                     "type": "text/javascript",
                     "exec": [
                       "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -42262,13 +42140,13 @@
                       "    pm.expect(pm.response.code).to.be.oneOf([200]);",
                       "});"
                     ],
-                    "_lastExecutionId": "9da143ad-441d-4005-97fc-36d0c39493af"
+                    "_lastExecutionId": "84281e78-e94d-40ae-9b6e-5f2831d50747"
                   }
                 }
               ]
             },
             {
-              "id": "537c90db-4401-4e44-823f-8cda00d34776",
+              "id": "cec9bbe6-94e6-407d-a3e0-46a394a8de64",
               "name": "Employee updating Dept (Should Fail)",
               "request": {
                 "url": {
@@ -42301,7 +42179,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "8c770abe-f35e-4ba0-89bf-d582fadcf44a",
+                    "id": "7a1b5537-5c6b-42cc-ae83-2a6047dfd4fd",
                     "type": "text/javascript",
                     "exec": [
                       "pm.test(\"Response time is less than 1000ms\", function () {",
@@ -42311,7 +42189,7 @@
                       "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
                       "});"
                     ],
-                    "_lastExecutionId": "e0745af3-9cdf-4c4b-ac29-8b86fc80dda2"
+                    "_lastExecutionId": "131300ce-2b3b-45a1-a79d-9b794aaec788"
                   }
                 }
               ]
@@ -42320,495 +42198,14 @@
           "event": []
         },
         "cursor": {
-          "ref": "cbf8bf0b-0073-463c-9a9c-234982213791",
+          "ref": "8d12ea37-16b6-485c-ba13-33b4400a4476",
           "length": 17,
           "cycles": 1,
           "position": 4,
           "iteration": 0,
-          "httpRequestId": "954139e1-a244-4102-b898-99159b3048e0",
-          "scriptId": "8c770abe-f35e-4ba0-89bf-d582fadcf44a",
-          "execution": "e0745af3-9cdf-4c4b-ac29-8b86fc80dda2"
-        }
-      },
-      {
-        "error": {
-          "name": "AssertionError",
-          "index": 1,
-          "test": "Status is 2xx or 400/404 for edge cases",
-          "message": "expected 500 to be one of [ 200, 201, 400, 404 ]",
-          "stack": "AssertionError: expected 500 to be one of [ 200, 201, 400, 404 ]\n   at Object.eval sandbox-script.js:2:15)",
-          "checksum": "b955401d067a412bf1811006b83cfad7",
-          "id": "6f4c5fce-83d5-48a4-b26b-8114f6016362",
-          "timestamp": 1788632536721,
-          "stacktrace": [
-            {
-              "fileName": "sandbox-script.js",
-              "lineNumber": 2,
-              "functionName": "Object.eval",
-              "typeName": "Object",
-              "methodName": "eval",
-              "columnNumber": 15,
-              "native": false
-            }
-          ]
-        },
-        "at": "assertion:1 in test-script",
-        "source": {
-          "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
-          "name": "Create Employee (Missing Data)",
-          "request": {
-            "url": {
-              "path": [
-                "api",
-                "v1",
-                "employees"
-              ],
-              "host": [
-                "{{base_url}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "id": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Response time is less than 1000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                  "});",
-                  "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                  "});"
-                ],
-                "_lastExecutionId": "b958e177-6dda-43a5-91d1-d218159c9162"
-              }
-            }
-          ]
-        },
-        "parent": {
-          "id": "c76be6ba-8b78-42c1-9472-32480da4a0c5",
-          "name": "4. Edge Cases & Error Handling",
-          "item": [
-            {
-              "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
-              "name": "Create Employee (Missing Data)",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "employees"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "POST",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "b958e177-6dda-43a5-91d1-d218159c9162"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
-              "name": "Get invalid Payrun",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "payruns",
-                    "invalid-id-here"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET"
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "bc5dda7e-0d96-4f16-b509-03052918525f",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "6909313a-6064-4244-bceb-05600fb72f02",
-              "name": "Invalid Pagination",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "employees?page=abc&limit=-5"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET"
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "ec077c72-8706-4eb6-82ff-ba4d68ec4cf7",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "1be368f1-42fa-42d7-837e-40c51da4ad75"
-                  }
-                }
-              ]
-            }
-          ],
-          "event": []
-        },
-        "cursor": {
-          "ref": "f9295357-ef9f-43ad-a2ae-c41bd0b4d010",
-          "length": 17,
-          "cycles": 1,
-          "position": 14,
-          "iteration": 0,
-          "httpRequestId": "6e45de9f-c983-41b2-9a7b-460d5b94cffa",
-          "scriptId": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
-          "execution": "b958e177-6dda-43a5-91d1-d218159c9162"
-        }
-      },
-      {
-        "error": {
-          "name": "AssertionError",
-          "index": 1,
-          "test": "Status is 2xx or 400/404 for edge cases",
-          "message": "expected 500 to be one of [ 200, 201, 400, 404 ]",
-          "stack": "AssertionError: expected 500 to be one of [ 200, 201, 400, 404 ]\n   at Object.eval sandbox-script.js:2:16)",
-          "checksum": "1d23d583e45ea9da4e25c4563e7a18bd",
-          "id": "88707fa7-27b4-479b-bdbb-82209a9450fc",
-          "timestamp": 1788632536810,
-          "stacktrace": [
-            {
-              "fileName": "sandbox-script.js",
-              "lineNumber": 2,
-              "functionName": "Object.eval",
-              "typeName": "Object",
-              "methodName": "eval",
-              "columnNumber": 16,
-              "native": false
-            }
-          ]
-        },
-        "at": "assertion:1 in test-script",
-        "source": {
-          "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
-          "name": "Get invalid Payrun",
-          "request": {
-            "url": {
-              "path": [
-                "api",
-                "v1",
-                "payruns",
-                "invalid-id-here"
-              ],
-              "host": [
-                "{{base_url}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{admin_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "method": "GET"
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "id": "bc5dda7e-0d96-4f16-b509-03052918525f",
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Response time is less than 1000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                  "});",
-                  "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                  "});"
-                ],
-                "_lastExecutionId": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
-              }
-            }
-          ]
-        },
-        "parent": {
-          "id": "c76be6ba-8b78-42c1-9472-32480da4a0c5",
-          "name": "4. Edge Cases & Error Handling",
-          "item": [
-            {
-              "id": "e9e523a0-01ab-4ff4-b2e7-d3f2a712cb05",
-              "name": "Create Employee (Missing Data)",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "employees"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "POST",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "ef4ffd7c-8269-417d-8ffa-3201f697d5bd",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "b958e177-6dda-43a5-91d1-d218159c9162"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "c69cad22-1697-49e0-9741-0f8d110a7fbe",
-              "name": "Get invalid Payrun",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "payruns",
-                    "invalid-id-here"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET"
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "bc5dda7e-0d96-4f16-b509-03052918525f",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "6909313a-6064-4244-bceb-05600fb72f02",
-              "name": "Invalid Pagination",
-              "request": {
-                "url": {
-                  "path": [
-                    "api",
-                    "v1",
-                    "employees?page=abc&limit=-5"
-                  ],
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "query": [],
-                  "variable": []
-                },
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{admin_token}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET"
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "ec077c72-8706-4eb6-82ff-ba4d68ec4cf7",
-                    "type": "text/javascript",
-                    "exec": [
-                      "pm.test(\"Response time is less than 1000ms\", function () {",
-                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
-                      "});",
-                      "pm.test(\"Status is 2xx or 400/404 for edge cases\", function () {",
-                      "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404]);",
-                      "});"
-                    ],
-                    "_lastExecutionId": "1be368f1-42fa-42d7-837e-40c51da4ad75"
-                  }
-                }
-              ]
-            }
-          ],
-          "event": []
-        },
-        "cursor": {
-          "ref": "b7ee50dd-810c-46a4-96f1-78ed81efbc76",
-          "length": 17,
-          "cycles": 1,
-          "position": 15,
-          "iteration": 0,
-          "httpRequestId": "a58c5431-5588-48f3-a691-b22655da1f52",
-          "scriptId": "bc5dda7e-0d96-4f16-b509-03052918525f",
-          "execution": "f057ee16-fef1-47ff-8ca6-cbcb386c9a61"
+          "httpRequestId": "e6d0ea86-4884-4f42-bebe-48c468415ab7",
+          "scriptId": "7a1b5537-5c6b-42cc-ae83-2a6047dfd4fd",
+          "execution": "131300ce-2b3b-45a1-a79d-9b794aaec788"
         }
       }
     ],
