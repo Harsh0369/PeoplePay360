@@ -8,6 +8,7 @@ interface JobPositionListProps {
   employees: Employee[];
   onOpenCreateForm: () => void;
   onAssignEmployee: (employeeId: string, jobPositionId: string) => void;
+  canWrite?: boolean;
 }
 
 export const JobPositionList: React.FC<JobPositionListProps> = ({
@@ -16,6 +17,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   employees,
   onOpenCreateForm,
   onAssignEmployee,
+  canWrite = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('ALL');
@@ -99,13 +101,15 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
             </select>
           </div>
 
-          <button
-            onClick={onOpenCreateForm}
-            className="flex items-center space-x-1.5 px-4 py-2 bg-brand-teal hover:bg-brand-darkTeal text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Job Position</span>
-          </button>
+          {canWrite && (
+            <button
+              onClick={onOpenCreateForm}
+              className="flex items-center space-x-1.5 px-4 py-2 bg-brand-teal hover:bg-brand-darkTeal text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Job Position</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -147,8 +151,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
                   <div className="bg-white/80 p-2.5 rounded-xl border border-brand-teal/10">
                     <span className="text-[10px] text-gray-500 font-semibold block uppercase">Target Salary</span>
                     <span className="font-extrabold text-brand-deepTeal text-sm flex items-center mt-0.5">
-                      <DollarSign className="w-3.5 h-3.5 text-brand-teal mr-0.5" />
-                      {pos.expectedSalary ? pos.expectedSalary.toLocaleString() : '6,500'}/mo
+                      ₹{pos.expectedSalary ? pos.expectedSalary.toLocaleString('en-IN') : '0'}/mo
                     </span>
                   </div>
 
@@ -165,19 +168,21 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
               {/* Card Footer Actions */}
               <div className="mt-5 pt-3 border-t border-brand-softSand flex items-center justify-between">
                 <span className="text-[10px] text-gray-400 font-medium">
-                  Created {pos.createdAt || '2026-01-15'}
+                  Created {pos.createdAt || '—'}
                 </span>
 
-                <button
-                  onClick={() => {
-                    setAssigningPosition(pos);
-                    setSelectedEmployeeId(employees[0]?.id || '');
-                  }}
-                  className="px-3 py-1.5 text-xs font-bold text-brand-deepTeal bg-brand-softSand hover:bg-brand-teal hover:text-white rounded-lg transition-all flex items-center space-x-1"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>Assign Employee</span>
-                </button>
+                {canWrite && (
+                  <button
+                    onClick={() => {
+                      setAssigningPosition(pos);
+                      setSelectedEmployeeId(employees[0]?.id || '');
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold text-brand-deepTeal bg-brand-softSand hover:bg-brand-teal hover:text-white rounded-lg transition-all flex items-center space-x-1"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Assign Employee</span>
+                  </button>
+                )}
               </div>
             </div>
           );

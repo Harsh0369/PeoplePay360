@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Loader2, RefreshCw, Plus, Trash2 } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
+import { useAuth } from '../hooks/useAuth';
+import { PERM } from '../lib/permissions';
 
 type Tab = 'DEPARTMENTS' | 'SCHEDULES';
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export const OrgModule: React.FC = () => {
+  const { can } = useAuth();
+  const canWrite = can(...PERM.orgWrite);
   const [tab, setTab] = useState<Tab>('DEPARTMENTS');
   const [departments, setDepartments] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -61,7 +65,7 @@ export const OrgModule: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow"><RefreshCw className="w-4 h-4" /></button>
-          <button onClick={openNew} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm"><Plus className="w-4 h-4" /> {tab === 'DEPARTMENTS' ? 'New Department' : 'New Schedule'}</button>
+          {canWrite && <button onClick={openNew} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm"><Plus className="w-4 h-4" /> {tab === 'DEPARTMENTS' ? 'New Department' : 'New Schedule'}</button>}
         </div>
       </div>
 

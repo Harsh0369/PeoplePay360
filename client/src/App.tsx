@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Employee, Contract, JobPosition, Department, ActiveTab } from './types';
 import { apiService } from './services/api';
-import { Navbar } from './components/Navbar';
-import { EmployeeKanban } from './components/EmployeeKanban';
-import { EmployeeList } from './components/EmployeeList';
+import { Sidebar } from './components/Sidebar';
+import { TopHeader } from './components/TopHeader';
+import { EmployeesModule } from './components/EmployeesModule';
 import { EmployeeForm } from './components/EmployeeForm';
 import { ContractList } from './components/ContractList';
 import { ContractForm } from './components/ContractForm';
@@ -15,13 +15,19 @@ import { TimeOffModule } from './components/TimeOffModule';
 import { OrgModule } from './components/OrgModule';
 import { RolesModule } from './components/RolesModule';
 import { MyProfileModule } from './components/MyProfileModule';
+import { AccessDenied } from './components/AccessDenied';
+import { TAB_PERMS, PERM } from './lib/permissions';
 import { useAuth } from './hooks/useAuth';
 import { JobPositionList } from './components/JobPositionList';
 import { JobPositionForm } from './components/JobPositionForm';
 import { LayoutGrid, List, Plus, Search, Filter, Users, DollarSign, FileText, CheckCircle2, Briefcase, Loader2 } from 'lucide-react';
 
 export function App() {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, can, permissions } = useAuth();
+  const canView = (tab: ActiveTab) => {
+    const perms = TAB_PERMS[tab];
+    return !perms || can(...perms);
+  };
   // Main State Management
   const [activeTab, setActiveTab] = useState<ActiveTab>('EMPLOYEES');
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -61,15 +67,26 @@ export function App() {
 
     async function init() {
       setIsBackendConnected(await apiService.checkHealth());
-      // Each source loads independently so one failing endpoint (e.g. a 403 for
-      // a role that can't read contracts) doesn't blank the others.
+      // Only fetch what this role is allowed to read — avoids needless 403s and
+      // keeps each source independent so one failure doesn't blank the others.
       apiService.getEmployees().then(setEmployees).catch(() => setEmployees([]));
-      apiService.getContracts().then(setContracts).catch(() => setContracts([]));
-      apiService.getDepartments().then(setDepartments).catch(() => setDepartments([]));
-      apiService.getJobPositions().then(setJobPositions).catch(() => setJobPositions([]));
+      if (canView('CONTRACTS')) apiService.getContracts().then(setContracts).catch(() => setContracts([]));
+      if (canView('ORG')) apiService.getDepartments().then(setDepartments).catch(() => setDepartments([]));
+      if (canView('JOB_POSITIONS')) apiService.getJobPositions().then(setJobPositions).catch(() => setJobPositions([]));
     }
     init();
   }, [isAuthenticated]);
+
+  // If the current tab isn't allowed for this role (e.g. after login), land the
+  // user on the first section they can actually see.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!canView(activeTab)) {
+      const order: ActiveTab[] = ['EMPLOYEES', 'ATTENDANCE', 'TIMEOFF', 'PAYROLL', 'CONTRACTS', 'ORG', 'CONFIG', 'SETTINGS', 'JOB_POSITIONS', 'MY_PROFILE'];
+      setActiveTab(order.find(canView) || 'MY_PROFILE');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, permissions, activeTab]);
 
   // Dynamic Calculated Metrics
   const activeEmployeesCount = employees.filter((e) => e.status === 'ACTIVE').length;
@@ -86,7 +103,16 @@ export function App() {
     return matchesSearch && matchesDept;
   });
 
-  const filteredContracts = contracts.filter((cnt) => {
+  // The backend populates contract.employeeId with fields that don't exist on the
+  // model, so names arrive empty. Resolve them from the loaded employees instead.
+  const empById = new Map(employees.map((e) => [e.id, e]));
+  const contractsResolved = contracts.map((c) =>
+    c.employeeName && c.employeeName !== '—'
+      ? c
+      : { ...c, employeeName: empById.get(c.employeeId)?.name || '—' }
+  );
+
+  const filteredContracts = contractsResolved.filter((cnt) => {
     const matchesEmp = !contractEmployeeFilter || cnt.employeeId === contractEmployeeFilter;
     const matchesSearch =
       cnt.contractRef.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -188,10 +214,15 @@ export function App() {
   if (!isAuthenticated) return <LoginPage />;
   // -----------------------------------------------------------------------
 
+  const TAB_TITLE: Record<string, string> = {
+    EMPLOYEES: 'Employees Directory', CONTRACTS: 'Contracts', JOB_POSITIONS: 'Job Positions',
+    ATTENDANCE: 'Attendance', TIMEOFF: 'Time Off', PAYROLL: 'Payroll', CONFIG: 'Configuration',
+    ORG: 'Organization', SETTINGS: 'Roles & Access', MY_PROFILE: 'My Profile',
+  };
+
   return (
-    <div className="min-h-screen bg-brand-warmCream flex flex-col font-sans relative">
-      {/* Top Navbar */}
-      <Navbar
+    <div className="flex h-screen overflow-hidden font-sans">
+      <Sidebar
         activeTab={activeTab}
         onTabChange={(tab) => {
           setActiveTab(tab);
@@ -200,52 +231,25 @@ export function App() {
           if (tab === 'EMPLOYEES') setContractEmployeeFilter(null);
         }}
         isBackendConnected={isBackendConnected}
+        counts={{ EMPLOYEES: employees.length, CONTRACTS: contracts.length }}
       />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <TopHeader title={TAB_TITLE[activeTab] || 'PeoplePay360'} />
 
-      {/* Dynamic Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-brand-deepTeal text-brand-offWhite px-4 py-3 rounded-xl shadow-xl border border-brand-teal flex items-center space-x-2 animate-bounce">
-          <CheckCircle2 className="w-5 h-5 text-brand-sageGreen" />
-          <span className="text-xs font-bold">{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Dynamic Summary KPI Ribbon (master-data tabs only) */}
-      {(activeTab === 'EMPLOYEES' || activeTab === 'CONTRACTS') && (
-      <div className="bg-brand-softSand border-b border-brand-sandBorder px-4 py-2.5">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-brand-darkCharcoal">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-brand-darkTeal" />
-              <span>Total Staff: <strong className="text-brand-deepTeal">{employees.length}</strong></span>
-              <span className="text-brand-mutedSlate">({activeEmployeesCount} Active)</span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <FileText className="w-4 h-4 text-brand-teal" />
-              <span>Active Contracts: <strong className="text-brand-darkTeal">{activeContractsList.length}</strong></span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Briefcase className="w-4 h-4 text-brand-teal" />
-              <span>Job Positions: <strong className="text-brand-darkTeal">{jobPositions.length}</strong></span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4 text-brand-darkTeal" />
-              <span>Monthly Base Budget: <strong className="text-brand-darkTeal">{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(totalMonthlyWageBudget)}</strong></span>
-            </div>
+        {/* Toast */}
+        {toastMessage && (
+          <div className="fixed bottom-5 right-5 z-50 bg-brand-850 text-white px-4 py-3 rounded-xl shadow-xl border border-brand-700 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <span className="text-xs font-bold">{toastMessage}</span>
           </div>
+        )}
 
-          <div className="text-[11px] text-brand-mutedSlate italic">
-            ⚡ Dynamic real-time calculations active
-          </div>
-        </div>
-      </div>
-      )}
-
-      {/* Main Content Area */}
-      <main className="flex-1">
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto bg-canvas">
+        {!canView(activeTab) ? (
+          <AccessDenied title={TAB_TITLE[activeTab]} />
+        ) : (
+        <>
         {activeTab === 'PAYROLL' && <PayrollModule />}
         {activeTab === 'CONFIG' && <ConfigModule />}
         {activeTab === 'ATTENDANCE' && <AttendanceModule />}
@@ -254,116 +258,14 @@ export function App() {
         {activeTab === 'SETTINGS' && <RolesModule />}
         {activeTab === 'MY_PROFILE' && <MyProfileModule />}
         {activeTab === 'EMPLOYEES' && (
-          <div>
-            {isEditingEmployee ? (
-              <EmployeeForm
-                employee={selectedEmployee}
-                onSave={handleSaveEmployee}
-                onCancel={() => setIsEditingEmployee(false)}
-                onViewRelatedContracts={handleSmartButtonViewContracts}
-              />
-            ) : (
-              <div className="max-w-7xl mx-auto space-y-4">
-                {/* Control Bar */}
-                <div className="p-4 bg-brand-offWhite border-b border-brand-sandBorder shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => {
-                        setSelectedEmployee(null);
-                        setIsEditingEmployee(true);
-                      }}
-                      className="bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center space-x-1"
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      <span>NEW EMPLOYEE</span>
-                    </button>
-
-                    <h1 className="text-base font-bold text-brand-darkCharcoal flex items-center">
-                      <Users className="w-5 h-5 mr-2 text-brand-darkTeal" />
-                      Employees Directory
-                    </h1>
-                  </div>
-
-                  {/* Search & Filters */}
-                  <div className="flex flex-wrap items-center gap-3">
-                    {/* Search Input */}
-                    <div className="relative min-w-[240px]">
-                      <Search className="w-4 h-4 text-brand-mutedSlate absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        placeholder="Search employee, position..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 pr-3.5 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal text-brand-darkCharcoal"
-                      />
-                    </div>
-
-                    {/* Department Filter */}
-                    <div className="flex items-center border border-brand-sandBorder rounded-lg px-2.5 bg-white text-xs">
-                      <Filter className="w-3.5 h-3.5 text-brand-mutedSlate mr-1.5" />
-                      <select
-                        value={departmentFilter}
-                        onChange={(e) => setDepartmentFilter(e.target.value)}
-                        className="py-1.5 text-xs text-brand-darkCharcoal bg-transparent focus:outline-none font-semibold"
-                      >
-                        <option value="ALL">All Departments</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Human Resources">Human Resources</option>
-                        <option value="Finance & Payroll">Finance & Payroll</option>
-                        <option value="Product & Design">Product & Design</option>
-                        <option value="Sales & Marketing">Sales & Marketing</option>
-                      </select>
-                    </div>
-
-                    {/* View Switcher */}
-                    <div className="flex items-center border border-brand-sandBorder rounded-lg overflow-hidden divide-x divide-brand-sandBorder shadow-sm">
-                      <button
-                        onClick={() => setEmployeeViewMode('KANBAN')}
-                        className={`p-2 transition-colors ${
-                          employeeViewMode === 'KANBAN'
-                            ? 'bg-brand-darkTeal text-brand-offWhite'
-                            : 'bg-brand-softSand text-brand-darkCharcoal hover:bg-brand-sandBorder'
-                        }`}
-                        title="Kanban View"
-                      >
-                        <LayoutGrid className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setEmployeeViewMode('LIST')}
-                        className={`p-2 transition-colors ${
-                          employeeViewMode === 'LIST'
-                            ? 'bg-brand-darkTeal text-brand-offWhite'
-                            : 'bg-brand-softSand text-brand-darkCharcoal hover:bg-brand-sandBorder'
-                        }`}
-                        title="List View"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Employees View Render */}
-                {employeeViewMode === 'KANBAN' ? (
-                  <EmployeeKanban
-                    employees={filteredEmployees}
-                    onSelectEmployee={(emp) => {
-                      setSelectedEmployee(emp);
-                      setIsEditingEmployee(true);
-                    }}
-                  />
-                ) : (
-                  <EmployeeList
-                    employees={filteredEmployees}
-                    onSelectEmployee={(emp) => {
-                      setSelectedEmployee(emp);
-                      setIsEditingEmployee(true);
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </div>
+          <EmployeesModule
+            employees={employees}
+            contracts={contractsResolved}
+            departments={departments}
+            jobPositionsCount={jobPositions.length}
+            onEditContract={(cnt) => { setSelectedContract(cnt); setActiveTab('CONTRACTS'); setIsEditingContract(true); }}
+            onGoToContracts={() => setActiveTab('CONTRACTS')}
+          />
         )}
 
         {activeTab === 'CONTRACTS' && (
@@ -395,6 +297,7 @@ export function App() {
 
                 <ContractList
                   contracts={filteredContracts}
+                  canWrite={can(...PERM.contractWrite)}
                   onSelectContract={(cnt) => {
                     setSelectedContract(cnt);
                     setIsEditingContract(true);
@@ -427,6 +330,7 @@ export function App() {
               jobPositions={jobPositions}
               departments={departments}
               employees={employees}
+              canWrite={can(...PERM.jobPositionWrite)}
               onOpenCreateForm={() => setIsCreatingJobPosition(true)}
               onAssignEmployee={handleAssignEmployeeJobPosition}
             />
@@ -441,7 +345,10 @@ export function App() {
             )}
           </div>
         )}
-      </main>
+        </>
+        )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,8 @@ import {
 import { payrollApi } from '../services/hrApi';
 import { inr, fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
+import { useAuth } from '../hooks/useAuth';
+import { PERM } from '../lib/permissions';
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'bg-brand-draftBg text-brand-draftText',
@@ -19,6 +21,8 @@ const Badge = ({ s }: { s: string }) => (
 const nameOf = (v: any) => (v && typeof v === 'object' ? v.name : v) || '—';
 
 export const PayrollModule: React.FC = () => {
+  const { can } = useAuth();
+  const canWrite = can(...PERM.payrollWrite);
   const [payruns, setPayruns] = useState<any[]>([]);
   const [detail, setDetail] = useState<any>(null); // { payrun, payslips, totals }
   const [loading, setLoading] = useState(true);
@@ -91,12 +95,16 @@ export const PayrollModule: React.FC = () => {
               {detail.totals?.employeeCount ?? detail.payslips?.length ?? 0} payslips · Net {inr(detail.totals?.totalNet || 0)}
             </p>
           </div>
+          {canWrite ? (
           <div className="flex flex-wrap items-center gap-2">
             <ActBtn icon={Calculator} label="Compute" busy={busy === 'compute'} disabled={st === 'PAID' || st === 'CANCELLED'} onClick={() => act(() => payrollApi.compute(run._id), 'compute')} primary />
             <ActBtn icon={ShieldCheck} label="Validate" busy={busy === 'validate'} disabled={st !== 'COMPUTED'} onClick={() => act(() => payrollApi.validate(run._id), 'validate')} />
             <ActBtn icon={BadgeCheck} label="Mark Paid" busy={busy === 'markpaid'} disabled={st !== 'VALIDATED'} onClick={() => act(() => payrollApi.markPaid(run._id), 'markpaid')} />
             <ActBtn icon={XCircle} label="Cancel" busy={busy === 'cancel'} disabled={st === 'PAID' || st === 'CANCELLED'} onClick={() => act(() => payrollApi.cancel(run._id), 'cancel')} />
           </div>
+          ) : (
+            <span className="text-xs text-slate-400 italic">Read-only — you can view payslips but not process this payrun.</span>
+          )}
         </div>
 
         {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
@@ -131,9 +139,11 @@ export const PayrollModule: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={loadList} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow"><RefreshCw className="w-4 h-4" /></button>
-          <button onClick={() => setShowNew(true)} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm">
-            <Plus className="w-4 h-4" /> New Payrun
-          </button>
+          {canWrite && (
+            <button onClick={() => setShowNew(true)} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm">
+              <Plus className="w-4 h-4" /> New Payrun
+            </button>
+          )}
         </div>
       </div>
 

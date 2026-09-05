@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Loader2, X, RefreshCw } from 'lucide-react';
 import { configApi } from '../services/hrApi';
 import { inr } from '../lib/format';
+import { useAuth } from '../hooks/useAuth';
+import { PERM } from '../lib/permissions';
 
 type Tab = 'RULES' | 'STRUCTURES';
 
@@ -18,6 +20,8 @@ const emptyRule = {
 };
 
 export const ConfigModule: React.FC = () => {
+  const { can } = useAuth();
+  const canWrite = can(...PERM.configWrite);
   const [tab, setTab] = useState<Tab>('RULES');
   const [rules, setRules] = useState<any[]>([]);
   const [structures, setStructures] = useState<any[]>([]);
@@ -75,7 +79,7 @@ export const ConfigModule: React.FC = () => {
           <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow" title="Refresh">
             <RefreshCw className="w-4 h-4" />
           </button>
-          {tab === 'RULES' && (
+          {tab === 'RULES' && canWrite && (
             <button onClick={() => setShowRuleForm(true)} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm">
               <Plus className="w-4 h-4" /> New Rule
             </button>
