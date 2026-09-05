@@ -1,6 +1,6 @@
 import { Payrun, PayrunDocument } from "../../models/payrun.model";
 import { Payslip } from "../../models/payslip.model";
-import { Employee, Contract, SalaryStructure, SalaryRule } from "../../models";
+import { Employee, Contract, SalaryStructure, SalaryRule, Attendance, TimeOffRequest, TimeOffType } from "../../models";
 import { ValidationError, NotFoundError } from "../../errors";
 import { Types } from "mongoose";
 import { Parser } from "expr-eval";
@@ -100,7 +100,51 @@ export const computePayrunService = async (payrunId: string, employeeIds?: strin
       continue;
     }
 
-    // 3b. Resolve salary structure
+    // 3b. Fetch Attendance & Leaves for context
+    let workedDays = 0;
+    let paidLeaveDays = 0;
+    let unpaidLeaveDays = 0;
+
+    try {
+      // Get attendance records in the period
+      const attendances = await Attendance.find({
+        employeeId: empId,
+        date: { $gte: payrun.periodStart, $lte: payrun.periodEnd }
+      });
+      workedDays = attendances.length; // Simply count days with an attendance record
+
+      // Get approved leaves that overlap the period
+      const leaves = await TimeOffRequest.find({
+        employeeId: empId,
+        status: "APPROVED",
+        startDate: { $lte: payrun.periodEnd },
+        endDate: { $gte: payrun.periodStart }
+      }).populate('timeOffTypeId');
+
+      for (const leave of leaves) {
+        // Calculate overlapping days in the payrun period
+        const start = leave.startDate < payrun.periodStart ? payrun.periodStart : leave.startDate;
+        const end = leave.endDate > payrun.periodEnd ? payrun.periodEnd : leave.endDate;
+        
+        // Simple day difference
+        const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) + 1;
+
+        const type = leave.timeOffTypeId as any;
+        if (type?.isPaid) {
+          paidLeaveDays += days;
+        } else {
+          unpaidLeaveDays += days;
+        }
+      }
+    } catch (err: any) {
+      warnings.push({
+        employeeId: empId,
+        type: "ATTENDANCE_ERROR",
+        message: `${empName}: Failed to fetch attendance/leave data: ${err.message}`,
+      });
+    }
+
+    // 3c. Resolve salary structure
     if (!contract.salaryStructureId) {
       warnings.push({
         employeeId: empId,
@@ -135,9 +179,12 @@ export const computePayrunService = async (payrunId: string, employeeIds?: strin
       });
     }
 
-    // 3d. Evaluate salary rules sequentially using expr-eval
+    // 3e. Evaluate salary rules sequentially using expr-eval
     const context: Record<string, number> = {
       wage: contract.wage,
+      worked_days: workedDays,
+      paid_leave_days: paidLeaveDays,
+      unpaid_leave_days: unpaidLeaveDays
     };
 
     const lineItems: Array<{
