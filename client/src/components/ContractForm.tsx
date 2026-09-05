@@ -73,13 +73,13 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+    <div className="max-w-5xl mx-auto p-4 sm:p-6">
       {/* Top Breadcrumb & Header Bar */}
-      <div className="flex items-center justify-between mb-4 bg-brand-offWhite p-3.5 rounded-xl border border-brand-sandBorder shadow-sm">
+      <div className="flex items-center justify-between mb-4 bg-brand-offWhite p-4 rounded-xl border border-brand-sandBorder shadow-sm">
         <div className="flex items-center space-x-3">
           <button
             onClick={onCancel}
-            className="p-1.5 rounded-lg hover:bg-brand-softSand text-brand-deepTeal transition-colors"
+            className="p-2 rounded-lg hover:bg-brand-softSand text-brand-deepTeal transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-brand-darkTeal" />
           </button>
@@ -94,7 +94,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <button
             onClick={handleSubmit}
             className="bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors"
@@ -104,7 +104,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
           </button>
           <button
             onClick={onCancel}
-            className="bg-brand-softSand text-brand-deepTeal hover:bg-brand-sandBorder px-3.5 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors border border-brand-sandBorder"
+            className="bg-brand-softSand text-brand-deepTeal hover:bg-brand-sandBorder px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors border border-brand-sandBorder"
           >
             <X className="w-4 h-4" />
             <span>Cancel</span>
@@ -113,12 +113,13 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       </div>
 
       {/* Main Odoo Sheet Container */}
-      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-6 space-y-6">
+      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-6 sm:p-8 space-y-6">
+        
         {/* Stage Progress Stepper Bar (Draft -> Active -> Expired -> Cancelled) */}
-        <div className="flex items-center justify-between border-b border-brand-sandBorder pb-4">
-          <div className="flex items-center space-x-1">
-            <FileText className="w-5 h-5 text-brand-darkTeal mr-1" />
-            <span className="font-bold text-brand-darkCharcoal text-sm font-mono">{formData.contractRef}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-sandBorder pb-5">
+          <div className="flex items-center space-x-2">
+            <FileText className="w-5 h-5 text-brand-darkTeal" />
+            <span className="font-extrabold text-brand-darkCharcoal text-sm font-mono">{formData.contractRef}</span>
           </div>
 
           <div className="flex items-center border border-brand-sandBorder rounded-lg overflow-hidden divide-x divide-brand-sandBorder shadow-sm">
@@ -127,7 +128,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                 key={st}
                 type="button"
                 onClick={() => handleChange('status', st)}
-                className={`px-3.5 py-1.5 text-xs font-bold uppercase transition-all ${
+                className={`px-4 py-2 text-xs font-bold uppercase transition-all ${
                   formData.status === st
                     ? 'bg-brand-darkTeal text-brand-offWhite shadow-inner'
                     : 'bg-brand-softSand text-brand-mutedSlate hover:bg-brand-sandBorder'
@@ -141,10 +142,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 
         {/* Overlapping Active Contract Business Warning Banner */}
         {hasConcurrentActiveContract && (
-          <div className="bg-brand-warningBg border border-brand-coral/40 text-brand-warningText rounded-lg p-3 text-xs flex items-start space-x-2">
+          <div className="bg-brand-warningBg border border-brand-coral/40 text-brand-warningText rounded-xl p-3.5 text-xs flex items-start space-x-2.5 shadow-sm">
             <AlertTriangle className="w-4 h-4 text-brand-coral flex-shrink-0 mt-0.5" />
             <div>
-              <strong className="font-bold">Payroll Rule Warning:</strong> {formData.employeeName} currently has another active contract. The system will automatically select the applicable contract matching the payroll period date range.
+              <strong className="font-bold">Payroll Rule Warning:</strong> {formData.employeeName} currently has another active contract. The system will automatically select the single applicable contract matching the payroll period date range.
             </div>
           </div>
         )}
@@ -172,7 +173,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
               <select
                 value={formData.employeeId}
                 onChange={(e) => handleChange('employeeId', e.target.value)}
-                className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white font-bold text-brand-darkCharcoal"
+                className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-bold text-brand-darkCharcoal focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
               >
                 {employees.map((emp) => (
                   <option key={emp.id} value={emp.id}>
@@ -259,7 +260,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
               <select
                 value={formData.salaryStructure}
                 onChange={(e) => handleChange('salaryStructure', e.target.value)}
-                className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white font-medium text-brand-darkCharcoal"
+                className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-semibold text-brand-darkCharcoal focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
               >
                 <option value="Regular Salary Structure">Regular Salary Structure (Basic + HRA + TA - Deductions)</option>
                 <option value="Executive Structure">Executive Structure (High Base + Allowances)</option>
@@ -282,6 +283,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
             className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
           />
         </div>
+
       </div>
     </div>
   );

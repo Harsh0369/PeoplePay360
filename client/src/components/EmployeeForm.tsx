@@ -57,13 +57,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   const isBankMissing = !formData.bankAccountNo.trim();
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6">
       {/* Top Header & Breadcrumb Bar */}
-      <div className="flex items-center justify-between mb-4 bg-brand-offWhite p-3.5 rounded-xl border border-brand-sandBorder shadow-sm">
+      <div className="flex items-center justify-between mb-4 bg-brand-offWhite p-4 rounded-xl border border-brand-sandBorder shadow-sm">
         <div className="flex items-center space-x-3">
           <button
             onClick={onCancel}
-            className="p-1.5 rounded-lg hover:bg-brand-softSand text-brand-deepTeal transition-colors"
+            className="p-2 rounded-lg hover:bg-brand-softSand text-brand-deepTeal transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-brand-darkTeal" />
           </button>
@@ -78,7 +78,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <button
             onClick={handleSubmit}
             className="bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-colors"
@@ -88,7 +88,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           </button>
           <button
             onClick={onCancel}
-            className="bg-brand-softSand text-brand-deepTeal hover:bg-brand-sandBorder px-3.5 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors border border-brand-sandBorder"
+            className="bg-brand-softSand text-brand-deepTeal hover:bg-brand-sandBorder px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors border border-brand-sandBorder"
           >
             <X className="w-4 h-4" />
             <span>Discard</span>
@@ -97,64 +97,56 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
       </div>
 
       {/* Main Odoo Sheet Container */}
-      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-6">
+      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-6 sm:p-8 space-y-6">
+        
         {/* Header Smart Buttons & Stage Ribbon Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-brand-sandBorder">
           {/* Smart Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => onViewRelatedContracts(formData.id)}
-              className="smart-button group hover:border-brand-darkTeal hover:bg-brand-softSand transition-all"
+              className="smart-button h-14 min-w-[100px] hover:border-brand-darkTeal hover:bg-brand-softSand transition-all"
               title="Click to view and filter contracts for this employee"
             >
               <div className="flex items-center space-x-1.5">
                 <FileText className="w-4 h-4 text-brand-darkTeal" />
-                <span className="font-bold text-sm text-brand-darkCharcoal group-hover:text-brand-darkTeal">
+                <span className="font-extrabold text-sm text-brand-darkCharcoal">
                   {formData.contractCount}
                 </span>
               </div>
-              <span className="text-[10px] text-brand-mutedSlate font-medium mt-0.5">Contracts</span>
+              <span className="text-[10px] text-brand-mutedSlate font-semibold mt-0.5">Contracts</span>
             </button>
 
-            <button
-              type="button"
-              className="smart-button group opacity-90 cursor-default"
-            >
+            <div className="smart-button h-14 min-w-[100px] opacity-90 cursor-default">
               <div className="flex items-center space-x-1.5">
                 <Clock className="w-4 h-4 text-brand-teal" />
-                <span className="font-bold text-sm text-brand-darkCharcoal">
+                <span className="font-extrabold text-sm text-brand-darkCharcoal">
                   {formData.attendanceCount}d
                 </span>
               </div>
-              <span className="text-[10px] text-brand-mutedSlate font-medium mt-0.5">Attendance</span>
-            </button>
+              <span className="text-[10px] text-brand-mutedSlate font-semibold mt-0.5">Attendance</span>
+            </div>
 
-            <button
-              type="button"
-              className="smart-button group opacity-90 cursor-default"
-            >
+            <div className="smart-button h-14 min-w-[100px] opacity-90 cursor-default">
               <div className="flex items-center space-x-1.5">
                 <CalendarCheck className="w-4 h-4 text-brand-goldenAmber" />
-                <span className="font-bold text-sm text-brand-darkCharcoal">
+                <span className="font-extrabold text-sm text-brand-darkCharcoal">
                   {formData.timeOffCount}
                 </span>
               </div>
-              <span className="text-[10px] text-brand-mutedSlate font-medium mt-0.5">Time Off</span>
-            </button>
+              <span className="text-[10px] text-brand-mutedSlate font-semibold mt-0.5">Time Off</span>
+            </div>
 
-            <button
-              type="button"
-              className="smart-button group opacity-90 cursor-default"
-            >
+            <div className="smart-button h-14 min-w-[100px] opacity-90 cursor-default">
               <div className="flex items-center space-x-1.5">
                 <CheckCircle2 className="w-4 h-4 text-brand-sageGreen" />
-                <span className="font-bold text-sm text-brand-darkCharcoal">
+                <span className="font-extrabold text-sm text-brand-darkCharcoal">
                   {formData.allocationCount}d
                 </span>
               </div>
-              <span className="text-[10px] text-brand-mutedSlate font-medium mt-0.5">Allocations</span>
-            </button>
+              <span className="text-[10px] text-brand-mutedSlate font-semibold mt-0.5">Allocations</span>
+            </div>
           </div>
 
           {/* Stage Ribbon */}
@@ -164,7 +156,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                 key={st}
                 type="button"
                 onClick={() => handleChange('status', st)}
-                className={`px-3.5 py-1.5 text-xs font-bold uppercase transition-all ${
+                className={`px-4 py-2 text-xs font-bold uppercase transition-all ${
                   formData.status === st
                     ? 'bg-brand-darkTeal text-brand-offWhite shadow-inner'
                     : 'bg-brand-softSand text-brand-mutedSlate hover:bg-brand-sandBorder'
@@ -178,19 +170,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
         {/* Missing Bank Info Alert Banner */}
         {isBankMissing && (
-          <div className="mt-4 p-3 bg-brand-warningBg border border-brand-coral/40 rounded-lg flex items-center space-x-2 text-xs text-brand-warningText font-medium">
+          <div className="p-3.5 bg-brand-warningBg border border-brand-coral/40 rounded-xl flex items-center space-x-2.5 text-xs text-brand-warningText font-medium shadow-sm">
             <AlertCircle className="w-4 h-4 text-brand-coral flex-shrink-0" />
             <span>
-              <strong>Payroll Warning:</strong> Bank Account details are missing. Payroll processing requires valid bank details for payslip generation.
+              <strong>Payroll Warning:</strong> Bank Account details are missing. Valid bank details are required before processing payrun payslips.
             </span>
           </div>
         )}
 
         {/* Primary Employee Identity Block */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-b border-brand-sandBorder/60">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-2 border-b border-brand-sandBorder/60">
           <div className="md:col-span-2 space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-brand-deepTeal mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-brand-deepTeal mb-1.5">
                 Employee Name *
               </label>
               <input
@@ -198,7 +190,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-sm font-bold text-brand-darkCharcoal focus:outline-none focus:ring-2 focus:ring-brand-darkTeal"
+                className="w-full px-4 py-2.5 border border-brand-sandBorder bg-white rounded-lg text-sm font-extrabold text-brand-darkCharcoal focus:outline-none focus:ring-2 focus:ring-brand-darkTeal shadow-sm"
               />
             </div>
 
@@ -212,7 +204,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   value={formData.jobPosition}
                   onChange={(e) => handleChange('jobPosition', e.target.value)}
                   placeholder="e.g. Senior Software Engineer"
-                  className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                  className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-semibold text-brand-darkCharcoal focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                 />
               </div>
 
@@ -223,7 +215,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                 <select
                   value={formData.department}
                   onChange={(e) => handleChange('department', e.target.value)}
-                  className="w-full px-3 py-1.5 border border-brand-sandBorder rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
+                  className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-semibold text-brand-darkCharcoal focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
                 >
                   <option value="Engineering">Engineering</option>
                   <option value="Human Resources">Human Resources</option>
@@ -236,42 +228,42 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           </div>
 
           {/* Avatar Box */}
-          <div className="flex flex-col items-center justify-center p-4 border border-dashed border-brand-sandBorder rounded-xl bg-brand-softSand/60">
+          <div className="flex flex-col items-center justify-center p-4 border border-dashed border-brand-sandBorder rounded-xl bg-brand-softSand/50">
             <img
               src={formData.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
               alt="Avatar preview"
               className="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md mb-2"
             />
-            <span className="text-[11px] text-brand-deepTeal font-bold">Employee Avatar</span>
+            <span className="text-[11px] text-brand-deepTeal font-bold">Employee Profile Photo</span>
           </div>
         </div>
 
         {/* Tabbed Form Notebook Navigation */}
-        <div className="mt-4">
-          <div className="flex border-b border-brand-sandBorder space-x-4">
+        <div className="pt-2">
+          <div className="flex border-b border-brand-sandBorder space-x-6">
             <button
               type="button"
               onClick={() => setActiveTab('WORK')}
-              className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors flex items-center space-x-1.5 ${
+              className={`py-3 px-2 text-xs font-extrabold border-b-2 transition-colors flex items-center space-x-2 ${
                 activeTab === 'WORK'
                   ? 'border-brand-darkTeal text-brand-darkTeal'
                   : 'border-transparent text-brand-mutedSlate hover:text-brand-darkCharcoal'
               }`}
             >
-              <Building className="w-3.5 h-3.5" />
+              <Building className="w-4 h-4" />
               <span>Work Information</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('BANK')}
-              className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors flex items-center space-x-1.5 ${
+              className={`py-3 px-2 text-xs font-extrabold border-b-2 transition-colors flex items-center space-x-2 ${
                 activeTab === 'BANK'
                   ? 'border-brand-darkTeal text-brand-darkTeal'
                   : 'border-transparent text-brand-mutedSlate hover:text-brand-darkCharcoal'
               }`}
             >
-              <Landmark className="w-3.5 h-3.5" />
+              <Landmark className="w-4 h-4" />
               <span>Bank Account Details</span>
               {isBankMissing && <span className="w-2 h-2 rounded-full bg-brand-coral inline-block ml-1"></span>}
             </button>
@@ -279,13 +271,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('HR')}
-              className={`py-2.5 px-3.5 text-xs font-bold border-b-2 transition-colors flex items-center space-x-1.5 ${
+              className={`py-3 px-2 text-xs font-extrabold border-b-2 transition-colors flex items-center space-x-2 ${
                 activeTab === 'HR'
                   ? 'border-brand-darkTeal text-brand-darkTeal'
                   : 'border-transparent text-brand-mutedSlate hover:text-brand-darkCharcoal'
               }`}
             >
-              <User className="w-3.5 h-3.5" />
+              <User className="w-4 h-4" />
               <span>HR Settings & Schedule</span>
             </button>
           </div>
@@ -295,7 +287,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             {activeTab === 'WORK' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-mutedSlate border-b border-brand-sandBorder pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-mutedSlate border-b border-brand-sandBorder pb-1.5">
                     Contact Details
                   </h4>
 
@@ -304,13 +296,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       Work Email
                     </label>
                     <div className="flex items-center border border-brand-sandBorder rounded-lg px-3 bg-white focus-within:ring-1 focus-within:ring-brand-darkTeal">
-                      <Mail className="w-3.5 h-3.5 text-brand-mutedSlate mr-2" />
+                      <Mail className="w-4 h-4 text-brand-mutedSlate mr-2.5 flex-shrink-0" />
                       <input
                         type="email"
                         value={formData.workEmail}
                         onChange={(e) => handleChange('workEmail', e.target.value)}
                         placeholder="sarah.jenkins@company.com"
-                        className="w-full py-1.5 text-xs focus:outline-none"
+                        className="w-full py-2 text-xs font-medium focus:outline-none"
                       />
                     </div>
                   </div>
@@ -320,20 +312,20 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       Work Phone
                     </label>
                     <div className="flex items-center border border-brand-sandBorder rounded-lg px-3 bg-white focus-within:ring-1 focus-within:ring-brand-darkTeal">
-                      <Phone className="w-3.5 h-3.5 text-brand-mutedSlate mr-2" />
+                      <Phone className="w-4 h-4 text-brand-mutedSlate mr-2.5 flex-shrink-0" />
                       <input
                         type="text"
                         value={formData.workPhone}
                         onChange={(e) => handleChange('workPhone', e.target.value)}
                         placeholder="+1 (555) 019-2834"
-                        className="w-full py-1.5 text-xs focus:outline-none"
+                        className="w-full py-2 text-xs font-medium focus:outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-mutedSlate border-b border-brand-sandBorder pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-mutedSlate border-b border-brand-sandBorder pb-1.5">
                     Position & Hierarchy
                   </h4>
 
@@ -345,7 +337,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       type="text"
                       value={formData.manager}
                       onChange={(e) => handleChange('manager', e.target.value)}
-                      className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                      className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                     />
                   </div>
 
@@ -356,7 +348,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     <select
                       value={formData.workingSchedule}
                       onChange={(e) => handleChange('workingSchedule', e.target.value)}
-                      className="w-full px-3 py-1.5 border border-brand-sandBorder rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
+                      className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
                     >
                       <option value="Standard 40h/week">Standard 40h/week (Mon-Fri 9-5)</option>
                       <option value="Flexible Shift 35h">Flexible Shift 35h</option>
@@ -378,9 +370,9 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     value={formData.bankAccountNo}
                     onChange={(e) => handleChange('bankAccountNo', e.target.value)}
                     placeholder="987654321045"
-                    className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                   />
-                  <p className="text-[10px] text-brand-mutedSlate mt-1">Required for payrun payslip validation.</p>
+                  <p className="text-[10px] text-brand-mutedSlate mt-1 font-medium">Required for payrun payslip validation.</p>
                 </div>
 
                 <div>
@@ -392,7 +384,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     value={formData.bankName}
                     onChange={(e) => handleChange('bankName', e.target.value)}
                     placeholder="JPMorgan Chase Bank"
-                    className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                   />
                 </div>
 
@@ -405,7 +397,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     value={formData.ifscCode}
                     onChange={(e) => handleChange('ifscCode', e.target.value)}
                     placeholder="CHASUS33XXX"
-                    className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs font-mono uppercase focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-mono uppercase focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                   />
                 </div>
               </div>
@@ -420,7 +412,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   <select
                     value={formData.employeeType}
                     onChange={(e) => handleChange('employeeType', e.target.value as EmployeeType)}
-                    className="w-full px-3 py-1.5 border border-brand-sandBorder rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
                   >
                     <option value="FULL_TIME">Full-Time Staff</option>
                     <option value="PART_TIME">Part-Time Staff</option>
@@ -437,13 +429,14 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     type="date"
                     value={formData.joinDate}
                     onChange={(e) => handleChange('joinDate', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-brand-sandBorder bg-white rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder bg-white rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-darkTeal"
                   />
                 </div>
               </div>
             )}
           </div>
         </div>
+
       </div>
     </div>
   );
