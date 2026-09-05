@@ -3,26 +3,27 @@ import { apiRequest } from './api.js';
 
 /**
  * Builds a standard set of React Query hooks for a REST resource.
- * Every module gets consistent list/detail/save/delete behavior for free:
  *
  *   const { useList, useOne, useSave, useRemove } = makeResource('employees');
  *
- * Save handles both create (no id) and update (has _id). All hooks invalidate
- * the list cache so screens refresh automatically after a change.
+ * Pass { forceMock: true } for modules that must stay on the mock (e.g. payroll,
+ * whose payruns/payslips reference mock employees and contracts).
  */
-export function makeResource(resource) {
-  const key = [resource];
+export function makeResource(resource, opts = {}) {
+  const { forceMock = false } = opts;
+  // Keep mock-backed caches separate from real ones for the same resource name.
+  const key = forceMock ? [resource, 'mock'] : [resource];
 
   const useList = (params) =>
     useQuery({
-      queryKey: params ? [resource, params] : key,
-      queryFn: () => apiRequest('get', `/${resource}`),
+      queryKey: params ? [...key, params] : key,
+      queryFn: () => apiRequest('get', `/${resource}`, null, { forceMock }),
     });
 
   const useOne = (id) =>
     useQuery({
-      queryKey: [resource, id],
-      queryFn: () => apiRequest('get', `/${resource}/${id}`),
+      queryKey: [...key, id],
+      queryFn: () => apiRequest('get', `/${resource}/${id}`, null, { forceMock }),
       enabled: !!id,
     });
 
@@ -31,8 +32,8 @@ export function makeResource(resource) {
     return useMutation({
       mutationFn: (doc) =>
         doc._id
-          ? apiRequest('put', `/${resource}/${doc._id}`, doc)
-          : apiRequest('post', `/${resource}`, doc),
+          ? apiRequest('put', `/${resource}/${doc._id}`, doc, { forceMock })
+          : apiRequest('post', `/${resource}`, doc, { forceMock }),
       onSuccess: () => qc.invalidateQueries({ queryKey: key }),
     });
   };
@@ -40,7 +41,7 @@ export function makeResource(resource) {
   const useRemove = () => {
     const qc = useQueryClient();
     return useMutation({
-      mutationFn: (id) => apiRequest('delete', `/${resource}/${id}`),
+      mutationFn: (id) => apiRequest('delete', `/${resource}/${id}`, null, { forceMock }),
       onSuccess: () => qc.invalidateQueries({ queryKey: key }),
     });
   };
