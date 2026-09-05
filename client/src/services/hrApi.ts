@@ -52,6 +52,7 @@ export const masterApi = {
   getRoles: () => req('GET', '/roles'),
   createRole: (data: any) => req('POST', '/roles', data),
   getEmployees: () => req('GET', '/employees'),
+  getMyProfile: () => req('GET', '/employees/me'), // { employee, activeContract }
 };
 
 // ---- Attendance ----

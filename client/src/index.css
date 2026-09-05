@@ -22,6 +22,9 @@
 .badge {
   @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
 }
+/* Hide scrollbar on the horizontal tab strip while keeping it scrollable. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .stage-step {
   @apply px-4 py-1.5 text-xs font-bold uppercase tracking-wider relative flex items-center justify-center transition-colors;

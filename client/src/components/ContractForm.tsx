@@ -23,14 +23,14 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       contractRef: `CNT/2026/${Math.floor(100 + Math.random() * 900)}`,
       employeeId: employees[0]?.id || '',
       employeeName: employees[0]?.name || '',
-      department: employees[0]?.department || 'Engineering',
-      jobPosition: employees[0]?.jobPosition || 'Software Engineer',
+      department: employees[0]?.department || '',
+      jobPosition: employees[0]?.jobPosition || '',
       startDate: new Date().toISOString().split('T')[0],
       endDate: null,
-      wage: 6500,
-      salaryStructure: 'Regular Salary Structure',
-      status: 'ACTIVE',
-      terms: 'Standard employment agreement terms and conditions.'
+      wage: 0,
+      salaryStructure: '',
+      status: 'DRAFT',
+      terms: ''
     }
   );
 
