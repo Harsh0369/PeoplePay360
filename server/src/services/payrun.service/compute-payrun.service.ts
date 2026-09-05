@@ -16,7 +16,7 @@ interface PayrunWarning {
  * Orchestrates payslip generation for all eligible employees in a payrun.
  * This is the most critical service in the entire payroll system.
  */
-export const computePayrunService = async (payrunId: string) => {
+export const computePayrunService = async (payrunId: string, employeeIds?: string[]) => {
   // 1. Load and guard payrun state
   const payrun = await Payrun.findById(payrunId);
   if (!payrun) {
@@ -32,10 +32,14 @@ export const computePayrunService = async (payrunId: string) => {
   const warnings: PayrunWarning[] = [];
   const parser = new Parser();
 
-  // 2. Find eligible employees (optionally scoped by department)
+  // 2. Find eligible employees (optionally scoped by department and employeeIds)
   const employeeQuery: any = { status: "Active" };
   if (payrun.departmentId) {
     employeeQuery.departmentId = payrun.departmentId;
+  }
+  
+  if (employeeIds && employeeIds.length > 0) {
+    employeeQuery._id = { $in: employeeIds.map(id => new Types.ObjectId(id)) };
   }
 
   const employees = await Employee.find(employeeQuery);

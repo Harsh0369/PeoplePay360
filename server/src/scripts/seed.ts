@@ -410,7 +410,7 @@ async function seed() {
   for (const du of DEMO_USERS) {
     const user = await User.create({
       email: du.email,
-      password: hashedPassword,
+      password: SEED_PASSWORD, // User.create triggers userSchema pre('save') hook which hashes the plaintext password with bcrypt
       name: du.name,
       roleId: roleMap[du.role]._id,
       active: true,

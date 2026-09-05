@@ -5,6 +5,6 @@ import { catchAsync } from "../../utils/catch-async.util";
 import { computePayrunService } from "../../services/payrun.service";
 
 export const computePayrunController = catchAsync(async (req: AuthRequest, res: Response) => {
-  const result = await computePayrunService(req.params.id);
+  const result = await computePayrunService(req.params.id, req.body.employeeIds);
   return ResponseUtil.success(res, "Payrun computed successfully", result);
 });

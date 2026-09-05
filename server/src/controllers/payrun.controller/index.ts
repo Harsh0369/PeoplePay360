@@ -5,3 +5,5 @@ export * from "./mark-paid-payrun.controller";
 export * from "./get-payruns.controller";
 export * from "./get-payrun-detail.controller";
 export * from "./cancel-payrun.controller";
+export * from "./get-eligible-employees.controller";
+export * from "./send-payrun.controller";

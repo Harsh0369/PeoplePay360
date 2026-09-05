@@ -86,6 +86,14 @@ const payslipSchema = new Schema(
       enum: ["Draft", "Computed", "Paid", "Cancelled"],
       default: "Draft",
     },
+    isSent: {
+      type: Boolean,
+      default: false,
+    },
+    sentAt: {
+      type: Date,
+      default: null,
+    }
   },
   {
     timestamps: true,
