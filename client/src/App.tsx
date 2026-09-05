@@ -9,6 +9,8 @@ import { EmployeeForm } from './components/EmployeeForm';
 import { ContractList } from './components/ContractList';
 import { ContractForm } from './components/ContractForm';
 import { LoginPage } from './components/LoginPage';
+import { PayrollModule } from './components/PayrollModule';
+import { ConfigModule } from './components/ConfigModule';
 import { useAuth } from './hooks/useAuth';
 import { JobPositionList } from './components/JobPositionList';
 import { JobPositionForm } from './components/JobPositionForm';
@@ -216,7 +218,8 @@ export function App() {
         </div>
       )}
 
-      {/* Dynamic Summary KPI Ribbon */}
+      {/* Dynamic Summary KPI Ribbon (master-data tabs only) */}
+      {(activeTab === 'EMPLOYEES' || activeTab === 'CONTRACTS') && (
       <div className="bg-brand-softSand border-b border-brand-sandBorder px-4 py-2.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-brand-darkCharcoal">
           <div className="flex items-center space-x-6">
@@ -247,9 +250,12 @@ export function App() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1">
+        {activeTab === 'PAYROLL' && <PayrollModule />}
+        {activeTab === 'CONFIG' && <ConfigModule />}
         {activeTab === 'EMPLOYEES' && (
           <div>
             {isEditingEmployee ? (

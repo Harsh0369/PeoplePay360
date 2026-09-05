@@ -61,4 +61,4 @@ export interface JobPosition {
   createdAt?: string;
 }
 
-export type ActiveTab = 'EMPLOYEES' | 'CONTRACTS' | 'JOB_POSITIONS';
+export type ActiveTab = 'EMPLOYEES' | 'CONTRACTS' | 'JOB_POSITIONS' | 'PAYROLL' | 'CONFIG';

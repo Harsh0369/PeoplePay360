@@ -1,23 +1,30 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-  AuthUser, getStoredUser, getToken, login as doLogin, logout as doLogout, fetchMe,
+  AuthUser, getStoredUser, getStoredPerms, getToken,
+  login as doLogin, logout as doLogout, fetchMe,
 } from '../services/auth';
 
 interface AuthContextValue {
   user: AuthUser | null;
+  permissions: string[];
+  isAdmin: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<AuthUser>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  /** RBAC check: admin passes everything; otherwise the permission must be granted. */
+  can: (...perms: string[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+  const [permissions, setPermissions] = useState<string[]>(() => getStoredPerms().permissions);
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => getStoredPerms().isAdmin);
   const [isLoading, setIsLoading] = useState<boolean>(!!getToken());
 
-  // Revalidate a stored session on load so an expired token doesn't linger.
+  // Revalidate the stored session (and refresh permissions) on load.
   useEffect(() => {
     let cancelled = false;
     async function verify() {
@@ -25,34 +32,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
         return;
       }
-      const me = await fetchMe();
+      const ctx = await fetchMe();
       if (cancelled) return;
-      if (me) setUser(me);
-      else {
+      if (ctx?.user) {
+        setUser(ctx.user);
+        setPermissions(ctx.permissions);
+        setIsAdmin(ctx.isAdmin);
+      } else {
         doLogout();
         setUser(null);
       }
       setIsLoading(false);
     }
     verify();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const login = async (email: string, password: string) => {
-    const u = await doLogin(email, password);
-    setUser(u);
-    return u;
+    await doLogin(email, password);
+    const ctx = await fetchMe(); // enrich with permissions
+    if (ctx?.user) {
+      setUser(ctx.user);
+      setPermissions(ctx.permissions);
+      setIsAdmin(ctx.isAdmin);
+    }
   };
 
   const logout = () => {
     doLogout();
     setUser(null);
+    setPermissions([]);
+    setIsAdmin(false);
   };
 
+  const can = (...perms: string[]) =>
+    isAdmin || perms.length === 0 || perms.some((p) => permissions.includes(p));
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, permissions, isAdmin, isAuthenticated: !!user, isLoading, login, logout, can }}
+    >
       {children}
     </AuthContext.Provider>
   );

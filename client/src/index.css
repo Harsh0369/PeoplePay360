@@ -12,6 +12,17 @@
   @apply flex flex-col items-center justify-center px-4 py-2 bg-brand-offWhite border border-brand-sandBorder rounded-lg hover:bg-brand-softSand transition-all cursor-pointer text-xs shadow-sm text-brand-darkCharcoal font-semibold;
 }
 
+/* Shared helpers used by the added modules (Config, Payroll). */
+.inp {
+  @apply w-full px-3 py-2 rounded-lg border border-brand-sandBorder bg-white text-brand-darkCharcoal text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal/40 focus:border-brand-teal;
+}
+.td {
+  @apply px-4 py-3;
+}
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
 .stage-step {
   @apply px-4 py-1.5 text-xs font-bold uppercase tracking-wider relative flex items-center justify-center transition-colors;
 }
