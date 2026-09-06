@@ -20,29 +20,32 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   onCancel,
   onViewRelatedContracts
 }) => {
-  const [formData, setFormData] = useState<Employee>(
-    employee || {
-      id: `emp-${Date.now()}`,
-      empCode: `EMP${Math.floor(100 + Math.random() * 900)}`,
-      name: pendingUser ? pendingUser.name : '',
-      workEmail: pendingUser ? pendingUser.email : '',
-      workPhone: '',
-      jobPosition: '',
-      department: '',
-      manager: '',
-      workingSchedule: '',
-      status: 'ACTIVE',
-      employeeType: 'FULL_TIME',
-      bankAccountNo: '',
-      bankName: '',
-      ifscCode: '',
-      joinDate: new Date().toISOString().split('T')[0],
-      contractCount: 0,
-      attendanceCount: 0,
-      timeOffCount: 0,
-      allocationCount: 0
-    }
-  );
+  // Always start from a complete set of defaults, then overlay the employee being
+  // edited (which may arrive from the directory without every field, e.g. no bank
+  // details) so text fields are never undefined — otherwise `.trim()` below crashes.
+  const [formData, setFormData] = useState<Employee>(() => ({
+    id: `emp-${Date.now()}`,
+    empCode: `EMP${Math.floor(100 + Math.random() * 900)}`,
+    name: '',
+    workEmail: '',
+    workPhone: '',
+    jobPosition: '',
+    department: '',
+    manager: '',
+    workingSchedule: '',
+    status: 'ACTIVE',
+    employeeType: 'FULL_TIME',
+    bankAccountNo: '',
+    bankName: '',
+    ifscCode: '',
+    joinDate: new Date().toISOString().split('T')[0],
+    contractCount: 0,
+    attendanceCount: 0,
+    timeOffCount: 0,
+    allocationCount: 0,
+    ...(employee || {}),
+    ...(pendingUser && !employee ? { name: pendingUser.name, workEmail: pendingUser.email } : {}),
+  }));
 
   const [activeTab, setActiveTab] = useState<'WORK' | 'PRIVATE' | 'HR' | 'BANK'>('WORK');
 
@@ -52,7 +55,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) {
+    if (!(formData.name || '').trim()) {
       notify.error('Employee Name is required');
       return;
     }
@@ -63,7 +66,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     onSave(submitData);
   };
 
-  const isBankMissing = !formData.bankAccountNo.trim();
+  const isBankMissing = !(formData.bankAccountNo || '').trim();
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">

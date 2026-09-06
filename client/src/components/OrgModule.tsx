@@ -107,7 +107,10 @@ export const OrgModule: React.FC = () => {
   const addLine = () => setForm((f: any) => ({ ...f, workingDays: [...f.workingDays, { dayOfWeek: 'Monday', startTime: '09:00', endTime: '18:00', breakDurationMinutes: 60 }] }));
   const rmLine = (i: number) => setForm((f: any) => ({ ...f, workingDays: f.workingDays.filter((_: any, idx: number) => idx !== i) }));
 
-  const editDepartment = (d: any) => setForm({ kind: 'DEPT', _id: d._id, name: d.name, parentDepartmentId: d.parentDepartmentId || '', managerId: d.managerId || '' });
+  // parentDepartmentId / managerId arrive populated as objects; the <select> options
+  // use string ids, so extract the id or they won't pre-select (and save would clobber them).
+  const idOf = (v: any) => (v && typeof v === 'object' ? v._id : v) || '';
+  const editDepartment = (d: any) => setForm({ kind: 'DEPT', _id: d._id, name: d.name, parentDepartmentId: idOf(d.parentDepartmentId), managerId: idOf(d.managerId) });
   const deleteDepartment = async (id: string) => {
     if (!confirm('Are you sure?')) return;
     try { await masterApi.deleteDepartment(id); notify.success('Department deleted.'); load(); }

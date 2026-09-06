@@ -17,6 +17,7 @@ import { RolesModule } from './components/RolesModule';
 import { AuditModule } from './components/AuditModule';
 import { MyProfileModule } from './components/MyProfileModule';
 import { AccessDenied } from './components/AccessDenied';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { TAB_PERMS, PERM } from './lib/permissions';
 import { notify } from './lib/toast';
 import { fetchPaged } from './lib/paged';
@@ -294,6 +295,7 @@ export function App() {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-canvas">
+        <ErrorBoundary resetKey={activeTab} label={`Something went wrong in ${TAB_TITLE[activeTab] || 'this section'}`}>
         {!canView(activeTab) ? (
           <AccessDenied title={TAB_TITLE[activeTab]} />
         ) : (
@@ -388,6 +390,7 @@ export function App() {
         )}
         </>
         )}
+        </ErrorBoundary>
         </main>
       </div>
     </div>

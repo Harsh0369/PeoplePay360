@@ -79,7 +79,19 @@ export const TimeOffModule: React.FC = () => {
       } else if (form.kind === 'ALLOCATION') {
         await timeOffApi.createAllocation({ employeeId: form.employeeId, timeOffTypeId: form.timeOffTypeId, validityYear: Number(form.validityYear), grantedDays: Number(form.grantedDays) });
       } else if (form.kind === 'REQUEST') {
-        await timeOffApi.raiseRequest({ timeOffTypeId: form.timeOffTypeId, startDate: form.startDate, endDate: form.endDate });
+        if (!form.timeOffTypeId || !form.startDate || !form.endDate) {
+          notify.error('Select a leave type and both start and end dates.');
+          return;
+        }
+        const start = new Date(form.startDate);
+        const end = new Date(form.endDate);
+        // Inclusive calendar-day count (the backend stores this and checks it against the balance).
+        const requestedDays = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+        if (requestedDays < 1) {
+          notify.error('End date must be on or after the start date.');
+          return;
+        }
+        await timeOffApi.raiseRequest({ timeOffTypeId: form.timeOffTypeId, startDate: form.startDate, endDate: form.endDate, requestedDays });
       }
       notify.success(`${form.kind.charAt(0) + form.kind.slice(1).toLowerCase()} created.`);
       setForm(null); load();
