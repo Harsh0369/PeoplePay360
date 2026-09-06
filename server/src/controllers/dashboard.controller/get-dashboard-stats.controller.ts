@@ -1,122 +1,78 @@
 import { Request, Response } from "express";
-import { Employee, Payslip, Department, Attendance, TimeOffRequest, Contract } from "../../models";
+import { Employee, Payslip, Attendance, TimeOffRequest, Contract } from "../../models";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { cached } from "../../utils/cache.util";
 
 export const getDashboardStatsController = async (req: Request, res: Response): Promise<void> => {
   try {
-    const today = new Date();
-    const monthStart = startOfMonth(today);
-    const monthEnd = endOfMonth(today);
+    // Dashboard aggregates are expensive (several scans/aggregations across the
+    // biggest collections) and change slowly, so serve them from a short-lived
+    // in-process cache. Within the TTL the whole block is computed once, not once
+    // per request — which was a top offender under load.
+    const stats = await cached("dashboard:stats", 20_000, async () => {
+      const today = new Date();
+      const monthStart = startOfMonth(today);
+      const monthEnd = endOfMonth(today);
 
-    // 1. Total Headcount
-    const headcount = await Employee.countDocuments({ status: "Active" });
+      const startOfToday = new Date(today);
+      startOfToday.setHours(0, 0, 0, 0);
+      const endOfToday = new Date(today);
+      endOfToday.setHours(23, 59, 59, 999);
 
-    // 2. Department Breakdown
-    const departmentBreakdown = await Employee.aggregate([
-      { $match: { status: "Active" } },
-      {
-        $group: {
-          _id: "$departmentId",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $lookup: {
-          from: "departments",
-          localField: "_id",
-          foreignField: "_id",
-          as: "department",
-        },
-      },
-      {
-        $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
-      },
-      {
-        $project: {
-          departmentName: { $ifNull: ["$department.name", "Unassigned"] },
-          count: 1,
-        },
-      },
-      { $sort: { count: -1 } }
-    ]);
+      // Run every independent query concurrently — latency becomes the slowest
+      // single query instead of the sum of all seven (previously sequential).
+      const [
+        headcount,
+        departmentBreakdown,
+        payslipStats,
+        pendingTimeOffs,
+        todaysAttendance,
+        employeeTypeBreakdown,
+        contractStatusBreakdown,
+      ] = await Promise.all([
+        Employee.countDocuments({ status: "Active" }),
 
-    // 3. Salary & Payslip Stats for current month
-    const payslipStats = await Payslip.aggregate([
-      {
-        $match: {
-          periodStart: { $gte: monthStart, $lte: monthEnd },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalPaid: {
-            $sum: {
-              $cond: [{ $eq: ["$status", "Paid"] }, "$netSalary", 0],
+        Employee.aggregate([
+          { $match: { status: "Active" } },
+          { $group: { _id: "$departmentId", count: { $sum: 1 } } },
+          { $lookup: { from: "departments", localField: "_id", foreignField: "_id", as: "department" } },
+          { $unwind: { path: "$department", preserveNullAndEmptyArrays: true } },
+          { $project: { departmentName: { $ifNull: ["$department.name", "Unassigned"] }, count: 1 } },
+          { $sort: { count: -1 } },
+        ]),
+
+        Payslip.aggregate([
+          { $match: { periodStart: { $gte: monthStart, $lte: monthEnd } } },
+          {
+            $group: {
+              _id: null,
+              totalPaid: { $sum: { $cond: [{ $eq: ["$status", "Paid"] }, "$netSalary", 0] } },
+              totalPayslips: { $sum: 1 },
             },
           },
-          totalPayslips: { $sum: 1 },
-        },
-      },
-    ]);
+        ]),
 
-    const salaryStats = payslipStats[0] || { totalPaid: 0, totalPayslips: 0 };
+        TimeOffRequest.countDocuments({ status: "Pending" }),
 
-    // 4. Time Off Requests (Pending)
-    const pendingTimeOffs = await TimeOffRequest.countDocuments({
-      status: "Pending",
-    });
+        Attendance.countDocuments({ "checkIn.time": { $gte: startOfToday, $lte: endOfToday } }),
 
-    // 5. Today's Attendance Stats
-    const startOfToday = new Date(today);
-    startOfToday.setHours(0, 0, 0, 0);
-    const endOfToday = new Date(today);
-    endOfToday.setHours(23, 59, 59, 999);
+        Employee.aggregate([
+          { $match: { status: "Active" } },
+          { $group: { _id: "$employeeType", count: { $sum: 1 } } },
+          { $project: { type: { $ifNull: ["$_id", "FULL_TIME"] }, count: 1, _id: 0 } },
+          { $sort: { count: -1 } },
+        ]),
 
-    const todaysAttendance = await Attendance.countDocuments({
-      "checkIn.time": { $gte: startOfToday, $lte: endOfToday },
-    });
+        Contract.aggregate([
+          { $group: { _id: "$status", count: { $sum: 1 } } },
+          { $project: { status: { $ifNull: ["$_id", "Unknown"] }, count: 1, _id: 0 } },
+          { $sort: { count: -1 } },
+        ]),
+      ]);
 
-    // 6. Employee Type Breakdown
-    const employeeTypeBreakdown = await Employee.aggregate([
-      { $match: { status: "Active" } },
-      {
-        $group: {
-          _id: "$employeeType",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          type: { $ifNull: ["$_id", "FULL_TIME"] },
-          count: 1,
-          _id: 0,
-        },
-      },
-      { $sort: { count: -1 } }
-    ]);
+      const salaryStats = payslipStats[0] || { totalPaid: 0, totalPayslips: 0 };
 
-    // 7. Contract Status Breakdown
-    const contractStatusBreakdown = await Contract.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          status: { $ifNull: ["$_id", "Unknown"] },
-          count: 1,
-          _id: 0,
-        },
-      },
-      { $sort: { count: -1 } }
-    ]);
-
-    res.status(200).json({
-      success: true,
-      data: {
+      return {
         headcount,
         departmentBreakdown,
         salaryPaidThisMonth: salaryStats.totalPaid,
@@ -125,8 +81,10 @@ export const getDashboardStatsController = async (req: Request, res: Response): 
         todaysAttendance,
         employeeTypeBreakdown,
         contractStatusBreakdown,
-      },
+      };
     });
+
+    res.status(200).json({ success: true, data: stats });
   } catch (error: any) {
     console.error("Error in getDashboardStatsController:", error);
     res.status(500).json({

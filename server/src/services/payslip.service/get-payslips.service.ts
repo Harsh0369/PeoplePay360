@@ -1,5 +1,6 @@
 import { Payslip } from "../../models/payslip.model";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getPayslipsService = async (
   pagination: PaginationParams,
@@ -42,7 +43,7 @@ export const getPayslipsService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    Payslip.countDocuments(query)
+    smartCount(Payslip, query)
   ]);
 
   return {

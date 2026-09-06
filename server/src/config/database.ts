@@ -23,12 +23,18 @@ export class MongoDatabase {
 
         mongoose.set('strictQuery', false);
 
+        // Connection pool: the previous cap of 10 meant only 10 DB operations
+        // could be in flight at once, so under load every extra request queued and
+        // eventually timed out. Size it to the concurrency we actually serve
+        // (override with DB_POOL_SIZE; 100 is safe for a shared Atlas tier).
+        const maxPoolSize = Math.max(10, parseInt(process.env.DB_POOL_SIZE || "100", 10) || 100);
         await mongoose.connect(config.mongodb.uri, {
-            maxPoolSize: 10,
-            minPoolSize: 1,
+            maxPoolSize,
+            minPoolSize: 5,
             connectTimeoutMS: 60000,
             socketTimeoutMS: 45000,
         });
+        Logger.info(`MongoDB pool maxPoolSize=${maxPoolSize}`);
 
         this.isConnected = true;
         Logger.info('MongoDB connected successfully');

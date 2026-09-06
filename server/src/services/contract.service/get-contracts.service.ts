@@ -1,6 +1,7 @@
 import { Contract } from "../../models/contract.model";
 import { Employee } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getContractsService = async (pagination: PaginationParams, filters: any = {}) => {
   const query: Record<string, any> = {};
@@ -29,7 +30,7 @@ export const getContractsService = async (pagination: PaginationParams, filters:
       .skip(skip)
       .limit(limit)
       .lean(),
-    Contract.countDocuments(query)
+    smartCount(Contract, query)
   ]);
 
   return {

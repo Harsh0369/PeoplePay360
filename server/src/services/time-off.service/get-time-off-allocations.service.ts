@@ -1,5 +1,6 @@
 import { TimeOffAllocation } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getTimeOffAllocationsService = async (
   pagination: PaginationParams,
@@ -24,7 +25,7 @@ export const getTimeOffAllocationsService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    TimeOffAllocation.countDocuments(query)
+    smartCount(TimeOffAllocation, query)
   ]);
 
   return {

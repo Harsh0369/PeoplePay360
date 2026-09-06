@@ -60,6 +60,9 @@ attendanceSchema.index(
   { unique: true, partialFilterExpression: { sessionState: "OPEN" }, name: "unique_open_session_per_employee" }
 );
 attendanceSchema.index({ date: 1 });
+// Covers the default list sort (date desc, then check-in desc) so large,
+// unfiltered attendance pages don't do an in-memory sort of ~32k docs.
+attendanceSchema.index({ date: -1, "checkIn.time": -1 });
 
 export type AttendanceModel = InferSchemaType<typeof attendanceSchema>;
 export type AttendanceDocument = HydratedDocument<AttendanceModel>;

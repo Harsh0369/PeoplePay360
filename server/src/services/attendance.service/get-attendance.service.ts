@@ -1,5 +1,6 @@
 import { Attendance } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getAttendanceService = async (
   pagination: PaginationParams,
@@ -31,7 +32,7 @@ export const getAttendanceService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    Attendance.countDocuments(query)
+    smartCount(Attendance, query)
   ]);
 
   return {

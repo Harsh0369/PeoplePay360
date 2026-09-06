@@ -1,5 +1,6 @@
 import { Employee } from "../../models/employee.model";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getAllEmployeesService = async (pagination: PaginationParams, filters: any = {}) => {
   const { page, limit, skip } = pagination;
@@ -20,7 +21,7 @@ export const getAllEmployeesService = async (pagination: PaginationParams, filte
       .skip(skip)
       .limit(limit)
       .lean(),
-    Employee.countDocuments(query)
+    smartCount(Employee, query)
   ]);
 
   return {
