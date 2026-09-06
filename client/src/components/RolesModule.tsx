@@ -125,7 +125,7 @@ export const RolesModule: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-xl font-bold text-brand-darkCharcoal flex items-center gap-2">
             Roles &amp; Permissions
@@ -182,14 +182,14 @@ export const RolesModule: React.FC = () => {
             value={cl.search} 
             onChange={cl.setSearch} 
             placeholder="Search roles…" 
-            className="w-64" 
+            className="w-full sm:w-64" 
           />
         ) : (
           <SearchBar 
             value={userList.search} 
             onChange={userList.setSearch} 
             placeholder="Search users…" 
-            className="w-64" 
+            className="w-full sm:w-64" 
           />
         )}
       </div>

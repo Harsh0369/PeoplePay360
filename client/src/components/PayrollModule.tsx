@@ -139,7 +139,7 @@ export const PayrollModule: React.FC = () => {
   // ---------- List view ----------
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-xl font-bold text-brand-darkCharcoal">Payroll — Payruns</h2>
           <p className="text-sm text-brand-mutedSlate">Create a payrun, compute payslips, validate and mark paid.</p>
@@ -156,7 +156,7 @@ export const PayrollModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
-      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder="Search by status…" className="w-64" /></div>
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder="Search by status…" className="w-full sm:w-64" /></div>
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>

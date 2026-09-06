@@ -29,11 +29,11 @@ const ReportModal: React.FC<{ title: string; onClose: () => void; fetcher: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-brand-900 border border-brand-800 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-brand-900 border border-brand-800 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-brand-900/50">
-          <h2 className="text-xl font-bold text-white">{title} Detailed Report</h2>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex items-center justify-between bg-brand-900/50 gap-3">
+          <h2 className="text-base sm:text-xl font-bold text-white truncate">{title} Detailed Report</h2>
           <div className="flex items-center gap-3">
             <button
               onClick={handleExport}
@@ -173,7 +173,7 @@ export const DashboardModule: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar bg-[#0f172a] p-8">
+    <div className="flex-1 overflow-y-auto no-scrollbar bg-[#0f172a] p-4 sm:p-6 lg:p-8">
       {activeReport && (
         <ReportModal title={activeReport} onClose={() => setActiveReport(null)} fetcher={getReportFetcher()} />
       )}
@@ -181,9 +181,9 @@ export const DashboardModule: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard & Analytics</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Dashboard & Analytics</h1>
             <p className="text-emerald-200/60 mt-1">Key metrics and organizational insights at a glance.</p>
           </div>
           <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2">
@@ -196,14 +196,14 @@ export const DashboardModule: React.FC = () => {
         </div>
 
         {/* Top KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           
           <div onClick={() => handleCardClick('Headcount')} className="cursor-pointer bg-brand-900/40 border border-white/10 rounded-2xl p-5 hover:bg-brand-900/80 hover:border-emerald-500/50 transition-all group overflow-hidden relative shadow-lg">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/30 transition-all" />
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <p className="text-sm font-semibold text-emerald-200/60 uppercase tracking-wider group-hover:text-emerald-400 transition-colors">Total Headcount</p>
-                <h3 className="text-4xl font-bold text-white mt-2">{stats?.headcount || 0}</h3>
+                <h3 className="text-2xl sm:text-4xl font-bold text-white mt-2">{stats?.headcount || 0}</h3>
               </div>
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 border border-emerald-500/30 group-hover:scale-110 transition-transform">
                 <Users className="w-5 h-5" />
@@ -219,7 +219,7 @@ export const DashboardModule: React.FC = () => {
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <p className="text-sm font-semibold text-emerald-200/60 uppercase tracking-wider">Today's Attendance</p>
-                <h3 className="text-4xl font-bold text-white mt-2">{stats?.todaysAttendance || 0}</h3>
+                <h3 className="text-2xl sm:text-4xl font-bold text-white mt-2">{stats?.todaysAttendance || 0}</h3>
               </div>
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/30 group-hover:scale-110 transition-transform">
                 <Clock className="w-5 h-5" />
@@ -235,7 +235,7 @@ export const DashboardModule: React.FC = () => {
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <p className="text-sm font-semibold text-emerald-200/60 uppercase tracking-wider">Pending Time Off</p>
-                <h3 className="text-4xl font-bold text-white mt-2">{stats?.pendingTimeOffs || 0}</h3>
+                <h3 className="text-2xl sm:text-4xl font-bold text-white mt-2">{stats?.pendingTimeOffs || 0}</h3>
               </div>
               <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 border border-orange-500/30 group-hover:scale-110 transition-transform">
                 <CalendarCheck className="w-5 h-5" />
@@ -269,7 +269,7 @@ export const DashboardModule: React.FC = () => {
         </div>
 
         {/* Charts & Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           
           {/* Department Breakdown */}
           <div className="bg-brand-900/40 border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col">

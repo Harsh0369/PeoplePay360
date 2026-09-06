@@ -103,7 +103,7 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
   const rows = emp.items.map(mapEmp);
 
   return (
-    <div className="px-6 lg:px-8 py-6 space-y-6">
+    <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* KPI summary bar */}
       <section className="bg-white/90 backdrop-blur rounded-2xl border border-slate-200/90 p-3.5 shadow-sm">
         <div className="flex flex-wrap items-center gap-y-3 gap-x-6 text-xs text-slate-700 font-medium">
@@ -182,7 +182,7 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
       ) : rows.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200/90 p-16 text-center text-slate-400">No employees match “{emp.search}”.</div>
       ) : view === 'grid' ? (
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {rows.map((e) => {
             const s = stStyle(e.status);
             return (
@@ -319,8 +319,8 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
       {detail && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" onClick={() => setDetail(null)} />
-          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-canvas shadow-2xl flex flex-col">
-            <div className="bg-brand-850 text-white p-6 flex items-start gap-4">
+          <div className="absolute right-0 top-0 h-full w-full sm:max-w-md bg-canvas shadow-2xl flex flex-col">
+            <div className="bg-brand-850 text-white p-4 sm:p-6 flex items-start gap-4">
               <div className={`w-16 h-16 rounded-full bg-gradient-to-tr ${tone(detail.name)} flex items-center justify-center text-xl font-bold ring-2 ring-white/20`}>{initials(detail.name)}</div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-bold truncate">{detail.name}</h3>
@@ -329,7 +329,7 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
               </div>
               <button onClick={() => setDetail(null)} className="text-white/60 hover:text-white p-1.5 rounded-lg hover:bg-white/10"><X className="w-5 h-5" /></button>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
               <DetailBlock title="Contact & Role">
                 <DetailRow icon={Mail} label="Work Email" value={detail.workEmail} />
                 <DetailRow icon={Phone} label="Work Phone" value={detail.workPhone} />

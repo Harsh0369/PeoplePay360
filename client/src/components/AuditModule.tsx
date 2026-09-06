@@ -53,7 +53,7 @@ export const AuditModule: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-xl font-bold text-brand-darkCharcoal flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-brand-teal" /> Audit Trail</h2>
           <p className="text-sm text-brand-mutedSlate">Every create, update, override and approval — who did what, and when.</p>
@@ -62,11 +62,11 @@ export const AuditModule: React.FC = () => {
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
-        <select className="inp w-48" value={entity} onChange={(e) => setEntity(e.target.value)}>
+        <select className="inp w-full sm:w-48" value={entity} onChange={(e) => setEntity(e.target.value)}>
           <option value="">All entities</option>
           {ENTITIES.map((x) => <option key={x} value={x}>{x}</option>)}
         </select>
-        <select className="inp w-48" value={action} onChange={(e) => setAction(e.target.value)}>
+        <select className="inp w-full sm:w-48" value={action} onChange={(e) => setAction(e.target.value)}>
           <option value="">All actions</option>
           {ACTIONS.map((x) => <option key={x} value={x}>{x}</option>)}
         </select>

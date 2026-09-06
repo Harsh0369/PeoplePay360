@@ -173,7 +173,7 @@ export const AttendanceModule: React.FC = () => {
             <button onClick={saveEdit} disabled={savingEdit} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{savingEdit && <Loader2 className="w-4 h-4 animate-spin" />} Save Correction</button>
           </>}>
           <p className="text-sm text-brand-mutedSlate mb-4">Editing record for <span className="font-semibold text-brand-darkCharcoal">{edit.employeeName}</span>. This is audit-logged as an admin override.</p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Check In"><input type="datetime-local" className="inp" value={edit.checkInTime} onChange={(e) => setEdit((f: any) => ({ ...f, checkInTime: e.target.value }))} /></Field>
             <Field label="Check Out"><input type="datetime-local" className="inp" value={edit.checkOutTime} onChange={(e) => setEdit((f: any) => ({ ...f, checkOutTime: e.target.value }))} /></Field>
             <Field label="Status">

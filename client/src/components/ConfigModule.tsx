@@ -124,7 +124,7 @@ export const ConfigModule: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-xl font-bold text-brand-darkCharcoal flex items-center gap-2">
             Payroll Configuration
@@ -160,7 +160,7 @@ export const ConfigModule: React.FC = () => {
 
       {error && <div className="mb-4 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">{error}</div>}
 
-      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder={tab === 'RULES' ? 'Search rules…' : 'Search structures…'} className="w-64" /></div>
+      <div className="mb-3"><SearchBar value={cl.search} onChange={cl.setSearch} placeholder={tab === 'RULES' ? 'Search rules…' : 'Search structures…'} className="w-full sm:w-64" /></div>
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
@@ -294,12 +294,14 @@ export const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm overflow-hidden overflow-x-auto">{children}</div>
 );
 export const Table: React.FC<{ head: string[]; children: React.ReactNode }> = ({ head, children }) => (
-  <table className="w-full text-sm">
-    <thead><tr className="bg-brand-softSand/50 text-left text-xs uppercase tracking-wide text-brand-mutedSlate">
-      {head.map((h, i) => <th key={h || `c${i}`} className="px-4 py-3 font-semibold">{h}</th>)}
-    </tr></thead>
-    <tbody>{children}</tbody>
-  </table>
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm min-w-[600px]">
+      <thead><tr className="bg-brand-softSand/50 text-left text-xs uppercase tracking-wide text-brand-mutedSlate">
+        {head.map((h, i) => <th key={h || `c${i}`} className="px-4 py-3 font-semibold whitespace-nowrap">{h}</th>)}
+      </tr></thead>
+      <tbody>{children}</tbody>
+    </table>
+  </div>
 );
 export const EmptyRow: React.FC<{ cols: number; msg: string }> = ({ cols, msg }) => (
   <tr><td colSpan={cols} className="px-4 py-12 text-center text-brand-mutedSlate">{msg}</td></tr>
@@ -310,13 +312,13 @@ export const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ 
 export const Drawer: React.FC<{ title: string; onClose: () => void; footer: React.ReactNode; children: React.ReactNode }> = ({ title, onClose, footer, children }) => (
   <div className="fixed inset-0 z-50">
     <div className="absolute inset-0 bg-brand-darkCharcoal/30" onClick={onClose} />
-    <div className="absolute right-0 top-0 h-full w-full max-w-xl bg-brand-warmCream shadow-2xl flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4 bg-brand-offWhite border-b border-brand-sandBorder">
+    <div className="absolute right-0 top-0 h-full w-full sm:max-w-xl bg-brand-warmCream shadow-2xl flex flex-col">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-brand-offWhite border-b border-brand-sandBorder">
         <h3 className="text-lg font-bold text-brand-darkCharcoal">{title}</h3>
         <button onClick={onClose} className="p-2 text-brand-mutedSlate hover:text-brand-darkCharcoal"><X className="w-5 h-5" /></button>
       </div>
-      <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
-      <div className="flex items-center justify-end gap-2 px-6 py-4 bg-brand-offWhite border-t border-brand-sandBorder">{footer}</div>
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">{children}</div>
+      <div className="flex items-center justify-end gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-brand-offWhite border-t border-brand-sandBorder">{footer}</div>
     </div>
   </div>
 );

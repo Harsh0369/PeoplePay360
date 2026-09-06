@@ -172,10 +172,10 @@ export const MyProfileModule: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header card */}
-      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-6 mb-5 flex items-center gap-5">
+      <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm p-4 sm:p-6 mb-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
         <div className="w-16 h-16 rounded-full bg-brand-teal text-white grid place-items-center text-xl font-bold shadow">{initials}</div>
         <div>
-          <h2 className="text-xl font-bold text-brand-darkCharcoal">{emp.name}</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-brand-darkCharcoal text-center sm:text-left">{emp.name}</h2>
           <p className="text-brand-mutedSlate">{nameOf(emp.jobPositionId)} · {nameOf(emp.departmentId)}</p>
           <span className="badge bg-brand-activeBg text-brand-activeText mt-1">{emp.status || 'Active'}</span>
         </div>
@@ -239,7 +239,7 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 const Row: React.FC<{ icon: any; label: string; value: any; strong?: boolean }> = ({ icon: Icon, label, value, strong }) => (
   <div className="flex items-center gap-3 text-sm">
     <Icon className="w-4 h-4 text-brand-mutedSlate shrink-0" />
-    <span className="text-brand-mutedSlate w-28 shrink-0">{label}</span>
+    <span className="text-brand-mutedSlate w-24 sm:w-28 shrink-0">{label}</span>
     <span className={strong ? 'font-bold text-brand-darkTeal' : 'font-medium text-brand-darkCharcoal'}>{value}</span>
   </div>
 );

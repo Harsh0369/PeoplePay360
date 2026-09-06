@@ -107,7 +107,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
         </div>
 
         {/* Department Filter & Create Button */}
-        <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
+        <div className="flex items-center flex-wrap gap-3 w-full md:w-auto justify-end">
           <div className="relative">
             <select
               value={selectedStatus}

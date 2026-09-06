@@ -36,6 +36,7 @@ export function App() {
   };
   // Main State Management
   const [activeTab, setActiveTab] = useState<ActiveTab>('DASHBOARD');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([]);
@@ -290,9 +291,11 @@ export function App() {
         }}
         isBackendConnected={isBackendConnected}
         counts={navCounts}
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
       />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopHeader title={TAB_TITLE[activeTab] || 'PeoplePay360'} />
+        <TopHeader title={TAB_TITLE[activeTab] || 'PeoplePay360'} onMenuToggle={() => setMobileSidebarOpen(true)} />
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-canvas">
