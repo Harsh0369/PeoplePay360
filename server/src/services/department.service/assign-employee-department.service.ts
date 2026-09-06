@@ -11,14 +11,21 @@ export const assignEmployeeDepartmentService = async (
     throw new NotFoundError("Employee not found");
   }
 
-  const department = await Department.findById(departmentId);
-  if (!department) {
-    throw new NotFoundError("Department not found");
+  let departmentName = 'None';
+  let newDeptId = null;
+
+  if (departmentId) {
+    const department = await Department.findById(departmentId);
+    if (!department) {
+      throw new NotFoundError("Department not found");
+    }
+    departmentName = department.name;
+    newDeptId = department._id;
   }
 
   const oldDeptId = employee.departmentId;
   
-  employee.departmentId = department._id;
+  employee.departmentId = newDeptId;
   await employee.save();
 
   // Non-blocking business log
@@ -27,7 +34,7 @@ export const assignEmployeeDepartmentService = async (
       await BusinessLog.create({
         entity: "EMPLOYEE",
         action: "UPDATE",
-        content: `Assigned to department: ${department.name} (was: ${oldDeptId || 'None'})`,
+        content: `Assigned to department: ${departmentName} (was: ${oldDeptId || 'None'})`,
         actorId: adminUserId,
       });
     } catch (err) {

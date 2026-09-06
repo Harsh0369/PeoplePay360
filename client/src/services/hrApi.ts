@@ -6,7 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/
 // GET requests carry a high limit so paginated list endpoints return the full set.
 async function req<T = any>(method: string, path: string, body?: any): Promise<T> {
   let url = `${API_BASE_URL}${path}`;
-  if (method === 'GET') url += (path.includes('?') ? '&' : '?') + 'limit=100000';
+  if (method === 'GET' && !path.includes('page=') && !path.includes('limit=')) url += (path.includes('?') ? '&' : '?') + 'limit=100000';
   const res = await fetch(url, {
     method,
     headers: authHeaders(body ? { 'Content-Type': 'application/json' } : {}),
@@ -70,7 +70,8 @@ export const masterApi = {
   updateEmployee: (id: string, data: any) => req('PUT', `/employees/${id}`, data),
   getMyProfile: () => req('GET', '/employees/me'), // { employee, activeContract }
   getJoinRequests: () => req('GET', '/users/join-requests'),
-  updateUserRole: (userId: string, roleId: string) => req('PUT', `/users/${userId}/role`, { roleId }),
+  updateUserRole: (userId: string, roleId?: string, customPermissions?: any) => req('PUT', `/users/${userId}/role`, { roleId, customPermissions }),
+  getUsers: () => req('GET', '/users'),
 };
 
 // ---- Attendance ----

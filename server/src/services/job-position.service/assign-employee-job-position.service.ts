@@ -11,21 +11,35 @@ export const assignEmployeeJobPositionService = async (
     throw new NotFoundError("Employee not found");
   }
 
-  const jobPosition = await JobPosition.findById(jobPositionId);
-  if (!jobPosition) {
-    throw new NotFoundError("Job Position not found");
+  let jobPositionTitle = 'None';
+  let newJobPositionId = null;
+
+  if (jobPositionId) {
+    const jobPosition = await JobPosition.findById(jobPositionId);
+    if (!jobPosition) {
+      throw new NotFoundError("Job Position not found");
+    }
+    jobPositionTitle = jobPosition.title;
+    newJobPositionId = jobPosition._id;
   }
 
   const oldJobId = employee.jobPositionId;
   
-  employee.jobPositionId = jobPosition._id;
+  employee.jobPositionId = newJobPositionId;
   await employee.save();
 
   // Optionally update their active Contract
-  await Contract.updateMany(
-    { employeeId: employee._id, status: "Running" },
-    { $set: { jobPositionId: jobPosition._id } }
-  );
+  if (newJobPositionId) {
+    await Contract.updateMany(
+      { employeeId: employee._id, status: "Running" },
+      { $set: { jobPositionId: newJobPositionId } }
+    );
+  } else {
+    await Contract.updateMany(
+      { employeeId: employee._id, status: "Running" },
+      { $unset: { jobPositionId: 1 } }
+    );
+  }
 
   // Non-blocking business log
   setImmediate(async () => {
@@ -33,7 +47,7 @@ export const assignEmployeeJobPositionService = async (
       await BusinessLog.create({
         entity: "EMPLOYEE",
         action: "UPDATE",
-        content: `Assigned to Job Title: ${jobPosition.title} (was: ${oldJobId || 'None'})`,
+        content: `Assigned to Job Title: ${jobPositionTitle} (was: ${oldJobId || 'None'})`,
         actorId: adminUserId,
       });
     } catch (err) {

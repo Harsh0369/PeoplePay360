@@ -171,4 +171,9 @@ export const apiService = {
     await send('POST', `/job-positions/employee/${employeeId}/assign`, { jobPositionId });
     return true;
   },
+
+  async assignEmployeeDepartment(employeeId: string, departmentId: string): Promise<boolean> {
+    await send('POST', `/departments/employee/${employeeId}/assign`, { departmentId });
+    return true;
+  },
 };

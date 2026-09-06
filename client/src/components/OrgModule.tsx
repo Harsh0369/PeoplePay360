@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, Plus, Trash2, Pencil } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Trash2, Pencil, UserPlus, X } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
 import { useAuth } from '../hooks/useAuth';
@@ -28,6 +28,11 @@ export const OrgModule: React.FC = () => {
   const cl = tab === 'DEPARTMENTS' ? deptList : schedList;
   const [error, setError] = useState('');
   const [form, setForm] = useState<any>(null);
+  
+  // Assignment Modal
+  const [assigningDept, setAssigningDept] = useState<any>(null);
+  const [assignMode, setAssignMode] = useState<'ASSIGN' | 'UNASSIGN'>('ASSIGN');
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
 
   const load = async () => {
     setLoading(true); setError('');
@@ -68,6 +73,26 @@ export const OrgModule: React.FC = () => {
     } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
   };
+
+  const handleConfirmAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningDept || !selectedEmployeeId) return;
+    try {
+      await masterApi.assignDepartment(selectedEmployeeId, assignMode === 'ASSIGN' ? assigningDept._id : '');
+      notify.success(`Employee ${assignMode === 'ASSIGN' ? 'assigned to' : 'unassigned from'} department.`);
+      setAssigningDept(null);
+      setSelectedEmployeeId('');
+      load();
+    } catch (err: any) {
+      notify.error(err.message || 'Failed to assign employee');
+    }
+  };
+
+  const eligibleEmployees = assigningDept 
+    ? employees.filter(emp => assignMode === 'ASSIGN' 
+        ? !emp.department || emp.department === '—' || emp.department === '-' || emp.department.trim() === ''
+        : emp.department === assigningDept.name)
+    : [];
 
   const set = (k: string) => (e: any) => setForm((f: any) => ({ ...f, [k]: e.target.value }));
   const defLines = () => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((d) => ({ dayOfWeek: d, startTime: '09:00', endTime: '18:00', breakDurationMinutes: 60 }));
@@ -127,7 +152,11 @@ export const OrgModule: React.FC = () => {
                 <td className="td font-medium text-brand-darkCharcoal">{d.name}</td>
                 <td className="td">{nameOf(d.parentDepartmentId)}</td>
                 <td className="td">{nameOf(d.managerId)}</td>
-                {canWrite && <td className="td flex justify-end gap-1"><button onClick={() => editDepartment(d)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg"><Pencil className="w-4 h-4" /></button><button onClick={() => deleteDepartment(d._id)} className="p-1.5 rounded-lg text-brand-warningText hover:bg-brand-warningBg"><Trash2 className="w-4 h-4" /></button></td>}
+                {canWrite && <td className="td flex justify-end gap-1">
+                  <button onClick={() => { setAssigningDept(d); setAssignMode('ASSIGN'); setSelectedEmployeeId(''); }} className="px-2 py-1 bg-brand-softSand text-brand-deepTeal text-xs font-bold rounded hover:bg-brand-teal hover:text-white flex items-center gap-1" title="Manage Staff"><UserPlus className="w-3.5 h-3.5" /> Staff</button>
+                  <button onClick={() => editDepartment(d)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg"><Pencil className="w-4 h-4" /></button>
+                  <button onClick={() => deleteDepartment(d._id)} className="p-1.5 rounded-lg text-brand-warningText hover:bg-brand-warningBg"><Trash2 className="w-4 h-4" /></button>
+                </td>}
               </tr>
             ))}
             {departments.length === 0 && <EmptyRow cols={canWrite ? 4 : 3} msg="No departments yet." />}
@@ -182,6 +211,80 @@ export const OrgModule: React.FC = () => {
             </div>
           )}
         </Drawer>
+      )}
+
+      {/* Assign Dept Staff Modal */}
+      {assigningDept && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-brand-offWhite w-full max-w-md rounded-2xl shadow-2xl border border-brand-teal/20 overflow-hidden animate-fadeIn">
+            <div className="bg-brand-deepTeal text-brand-offWhite px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <UserPlus className="w-5 h-5 text-brand-teal" />
+                <h3 className="font-bold text-sm">Manage Staff for {assigningDept.name}</h3>
+              </div>
+              <button onClick={() => setAssigningDept(null)} className="text-white/70 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex border-b border-brand-teal/20">
+              <button
+                onClick={() => { setAssignMode('ASSIGN'); setSelectedEmployeeId(''); }}
+                className={`flex-1 py-3 text-xs font-bold transition-colors ${assignMode === 'ASSIGN' ? 'text-brand-deepTeal border-b-2 border-brand-deepTeal bg-brand-teal/5' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                Assign Staff
+              </button>
+              <button
+                onClick={() => { setAssignMode('UNASSIGN'); setSelectedEmployeeId(''); }}
+                className={`flex-1 py-3 text-xs font-bold transition-colors ${assignMode === 'UNASSIGN' ? 'text-brand-deepTeal border-b-2 border-brand-deepTeal bg-brand-teal/5' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                Unassign Staff
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmAssignment} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-brand-charcoal mb-1">
+                  Select Employee to {assignMode === 'ASSIGN' ? 'Assign' : 'Unassign'}
+                </label>
+                <select
+                  value={selectedEmployeeId}
+                  onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                  className="w-full p-2.5 bg-white text-xs border border-brand-teal/30 rounded-xl focus:ring-2 focus:ring-brand-teal outline-none font-medium"
+                >
+                  <option value="" disabled>-- Select an employee --</option>
+                  {eligibleEmployees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.empCode})
+                    </option>
+                  ))}
+                </select>
+                {eligibleEmployees.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    No employees available to {assignMode.toLowerCase()}.
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-3 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setAssigningDept(null)}
+                  className="px-3 py-1.5 text-xs font-bold bg-brand-softSand rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!selectedEmployeeId}
+                  className={`px-4 py-1.5 text-xs font-bold text-white rounded-xl shadow transition-colors ${!selectedEmployeeId ? 'bg-gray-400 cursor-not-allowed' : assignMode === 'ASSIGN' ? 'bg-brand-teal hover:bg-brand-darkTeal' : 'bg-red-500 hover:bg-red-600'}`}
+                >
+                  {assignMode === 'ASSIGN' ? 'Confirm Assignment' : 'Confirm Unassignment'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

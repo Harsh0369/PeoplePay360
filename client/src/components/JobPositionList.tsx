@@ -29,9 +29,15 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   
   // Assignment Modal State
   const [assigningPosition, setAssigningPosition] = useState<JobPosition | null>(null);
+  const [assignMode, setAssignMode] = useState<'ASSIGN' | 'UNASSIGN'>('ASSIGN');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
   const [page, setPage] = useState(1);
   const PAGE = 12;
+
+  // Reset pagination when search or filter changes
+  React.useEffect(() => {
+    setPage(1);
+  }, [searchTerm, selectedDepartment]);
 
   // Filtered Job Positions
   const filteredPositions = jobPositions.filter((pos) => {
@@ -67,10 +73,16 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   const handleConfirmAssignment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!assigningPosition || !selectedEmployeeId) return;
-    onAssignEmployee(selectedEmployeeId, assigningPosition.id || assigningPosition._id || '');
+    onAssignEmployee(selectedEmployeeId, assignMode === 'ASSIGN' ? (assigningPosition.id || assigningPosition._id || '') : '');
     setAssigningPosition(null);
     setSelectedEmployeeId('');
   };
+
+  const eligibleEmployees = assigningPosition 
+    ? employees.filter(emp => assignMode === 'ASSIGN' 
+        ? !emp.jobPosition || emp.jobPosition === '—' || emp.jobPosition === '-' || emp.jobPosition.trim() === ''
+        : emp.jobPosition === assigningPosition.title)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -197,7 +209,8 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
                     <button
                       onClick={() => {
                         setAssigningPosition(pos);
-                        setSelectedEmployeeId(employees[0]?.id || '');
+                        setAssignMode('ASSIGN');
+                        setSelectedEmployeeId('');
                       }}
                       className="px-3 py-1.5 text-xs font-bold text-brand-deepTeal bg-brand-softSand hover:bg-brand-teal hover:text-white rounded-lg transition-all flex items-center space-x-1"
                     >
@@ -233,27 +246,50 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
             <div className="bg-brand-deepTeal text-brand-offWhite px-5 py-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-5 h-5 text-brand-teal" />
-                <h3 className="font-bold text-sm">Assign Staff to {assigningPosition.title}</h3>
+                <h3 className="font-bold text-sm">Manage Staff for {assigningPosition.title}</h3>
               </div>
               <button onClick={() => setAssigningPosition(null)} className="text-white/70 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
+            <div className="flex border-b border-brand-teal/20">
+              <button
+                onClick={() => { setAssignMode('ASSIGN'); setSelectedEmployeeId(''); }}
+                className={`flex-1 py-3 text-xs font-bold transition-colors ${assignMode === 'ASSIGN' ? 'text-brand-deepTeal border-b-2 border-brand-deepTeal bg-brand-teal/5' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                Assign Staff
+              </button>
+              <button
+                onClick={() => { setAssignMode('UNASSIGN'); setSelectedEmployeeId(''); }}
+                className={`flex-1 py-3 text-xs font-bold transition-colors ${assignMode === 'UNASSIGN' ? 'text-brand-deepTeal border-b-2 border-brand-deepTeal bg-brand-teal/5' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                Unassign Staff
+              </button>
+            </div>
+
             <form onSubmit={handleConfirmAssignment} className="p-5 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-brand-charcoal mb-1">Select Employee</label>
+                <label className="block text-xs font-bold text-brand-charcoal mb-1">
+                  Select Employee to {assignMode === 'ASSIGN' ? 'Assign' : 'Unassign'}
+                </label>
                 <select
                   value={selectedEmployeeId}
                   onChange={(e) => setSelectedEmployeeId(e.target.value)}
                   className="w-full p-2.5 bg-white text-xs border border-brand-teal/30 rounded-xl focus:ring-2 focus:ring-brand-teal outline-none font-medium"
                 >
-                  {employees.map((emp) => (
+                  <option value="" disabled>-- Select an employee --</option>
+                  {eligibleEmployees.map((emp) => (
                     <option key={emp.id} value={emp.id}>
-                      {emp.name} ({emp.empCode}) — Current: {emp.jobPosition}
+                      {emp.name} ({emp.empCode})
                     </option>
                   ))}
                 </select>
+                {eligibleEmployees.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    No employees available to {assignMode.toLowerCase()}.
+                  </p>
+                )}
               </div>
 
               <div className="pt-3 flex justify-end space-x-2">
@@ -266,9 +302,10 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-bold text-white bg-brand-teal hover:bg-brand-darkTeal rounded-xl shadow"
+                  disabled={!selectedEmployeeId}
+                  className={`px-4 py-1.5 text-xs font-bold text-white rounded-xl shadow transition-colors ${!selectedEmployeeId ? 'bg-gray-400 cursor-not-allowed' : assignMode === 'ASSIGN' ? 'bg-brand-teal hover:bg-brand-darkTeal' : 'bg-red-500 hover:bg-red-600'}`}
                 >
-                  Confirm Assignment
+                  {assignMode === 'ASSIGN' ? 'Confirm Assignment' : 'Confirm Unassignment'}
                 </button>
               </div>
             </form>

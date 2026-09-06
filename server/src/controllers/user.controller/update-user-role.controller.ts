@@ -6,12 +6,12 @@ import { catchAsync } from "../../utils/catch-async.util";
 
 export const updateUserRoleController = catchAsync(async (req: AuthRequest, res: Response) => {
   const userId = req.params.id;
-  const { roleId } = req.body;
+  const { roleId, customPermissions } = req.body;
 
-  if (!roleId) {
-    return ResponseUtil.error(res, "roleId is required", 400);
+  if (!roleId && customPermissions === undefined) {
+    return ResponseUtil.error(res, "Either roleId or customPermissions is required", 400);
   }
 
-  const result = await updateUserRoleService(userId, roleId);
-  return ResponseUtil.success(res, "User role updated successfully", result);
+  const result = await updateUserRoleService(userId, roleId, customPermissions);
+  return ResponseUtil.success(res, "User updated successfully", result);
 });

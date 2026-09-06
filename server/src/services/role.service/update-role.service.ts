@@ -10,20 +10,25 @@ export const updateRoleService = async (id: string, data: any) => {
   }
 
   if (role.isSystem) {
-    throw new ConflictError("Cannot modify system roles directly");
-  }
-
-  if (name && name !== role.name) {
-    const existingRole = await Role.findOne({ name });
-    if (existingRole) {
-      throw new ConflictError("Role with this name already exists");
+    if (name && name !== role.name) {
+      throw new ConflictError("Cannot rename system roles");
     }
-    role.name = name;
+    if (isAdmin !== undefined && isAdmin !== role.isAdmin) {
+      throw new ConflictError("Cannot change admin status of system roles");
+    }
+  } else {
+    if (name && name !== role.name) {
+      const existingRole = await Role.findOne({ name });
+      if (existingRole) {
+        throw new ConflictError("Role with this name already exists");
+      }
+      role.name = name;
+    }
+    if (isAdmin !== undefined) role.isAdmin = isAdmin;
   }
 
   if (permissions !== undefined) role.permissions = permissions;
   if (dataScope !== undefined) role.dataScope = dataScope;
-  if (isAdmin !== undefined) role.isAdmin = isAdmin;
 
   await role.save();
   return role;

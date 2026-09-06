@@ -1,7 +1,7 @@
 import { User } from "../../models/user.model";
-import { PaginationOptions } from "../../types/pagination.type";
+import { PaginationParams } from "../../utils/pagination.util";
 
-export const getJoinRequestsService = async (options: PaginationOptions) => {
+export const getJoinRequestsService = async (options: PaginationParams) => {
   const { page = 1, limit = 15 } = options;
   const skip = (page - 1) * limit;
 

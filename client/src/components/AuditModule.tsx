@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Loader2, RefreshCw, ShieldAlert } from 'lucide-react';
-import { auditApi } from '../services/hrApi';
 import { Card, Table, EmptyRow } from './ConfigModule';
 import { Paginator } from './ui/Paginator';
+import { fetchPaged } from '../lib/paged';
 
 const PAGE_SIZE = 20;
 const ENTITIES = ['ATTENDANCE', 'EMPLOYEE', 'LEAVE', 'CONTRACT', 'PAYROLL'];
@@ -29,18 +29,18 @@ export const AuditModule: React.FC = () => {
   const loadPage = useCallback(async (page: number) => {
     setLoading(true);
     try {
-      const qs = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
-      if (entity) qs.set('entity', entity);
-      if (action) qs.set('action', action);
-      const res: any = await auditApi.getLogs(`?${qs.toString()}`);
-      const data = Array.isArray(res) ? res : res?.data ?? [];
-      const p = res?.offsetPagination || {};
-      setRows(data);
+      const extra = new URLSearchParams();
+      if (entity) extra.set('entity', entity);
+      if (action) extra.set('action', action);
+      
+      const res = await fetchPaged('/business-logs', { page, limit: PAGE_SIZE, extra: extra.toString() });
+      
+      setRows(res.items);
       setInfo({
-        page: p.currentPage ?? page,
-        totalPages: p.totalPages ?? 1,
-        totalItems: p.totalItems ?? data.length,
-        pageSize: p.pageSize ?? PAGE_SIZE,
+        page: res.pagination.currentPage,
+        totalPages: res.pagination.totalPages,
+        totalItems: res.pagination.totalItems,
+        pageSize: res.pagination.pageSize,
       });
     } catch {
       setRows([]);
