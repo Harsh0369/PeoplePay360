@@ -1,12 +1,17 @@
 import { Role } from "../../models/role.model";
-import { NotFoundError, ConflictError } from "../../errors/index";
+import { NotFoundError, ConflictError, ForbiddenError } from "../../errors/index";
 
-export const updateRoleService = async (id: string, data: any) => {
+export const updateRoleService = async (id: string, data: any, actorIsSuperAdmin = false) => {
   const { name, permissions, dataScope, isAdmin } = data;
-  
+
   const role = await Role.findById(id);
   if (!role) {
     throw new NotFoundError("Role not found");
+  }
+
+  // Editing an existing admin role, or promoting a role to admin, is super-admin-only.
+  if ((role.isAdmin || isAdmin === true) && !actorIsSuperAdmin) {
+    throw new ForbiddenError("Only the super admin can modify admin roles");
   }
 
   if (role.isSystem) {

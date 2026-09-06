@@ -12,6 +12,6 @@ export const updateUserRoleController = catchAsync(async (req: AuthRequest, res:
     return ResponseUtil.error(res, "Either roleId or customPermissions is required", 400);
   }
 
-  const result = await updateUserRoleService(userId, roleId, customPermissions);
+  const result = await updateUserRoleService(userId, roleId, customPermissions, !!req.isSuperAdmin);
   return ResponseUtil.success(res, "User updated successfully", result);
 });

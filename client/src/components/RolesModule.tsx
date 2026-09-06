@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, ShieldCheck, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Loader2, RefreshCw, ShieldCheck, Plus, Pencil, Trash2, Lock, Crown } from 'lucide-react';
 import { masterApi } from '../services/hrApi';
 import { useAuth } from '../hooks/useAuth';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
@@ -34,8 +34,10 @@ function grantedPerms(permissions: any): string[] {
 const ROLE_SEARCH = ['name', 'dataScope'];
 const USER_SEARCH = ['email', 'employeeId.name', 'roleId.name'];
 
+const isAdminRole = (r: any) => !!(r?.isAdmin || (Array.isArray(r?.permissions) ? r.permissions.includes('admin') : false));
+
 export const RolesModule: React.FC = () => {
-  const { can } = useAuth();
+  const { can, isSuperAdmin } = useAuth();
   const canWrite = can('admin', 'Settings.Write');
   const [roles, setRoles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,8 +127,19 @@ export const RolesModule: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold text-brand-darkCharcoal">Roles &amp; Permissions</h2>
-          <p className="text-sm text-brand-mutedSlate">Role-based access control across the platform.</p>
+          <h2 className="text-xl font-bold text-brand-darkCharcoal flex items-center gap-2">
+            Roles &amp; Permissions
+            {isSuperAdmin && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300">
+                <Crown className="w-3.5 h-3.5" /> Super Admin
+              </span>
+            )}
+          </h2>
+          <p className="text-sm text-brand-mutedSlate">
+            {isSuperAdmin
+              ? 'You can manage admin roles and promote or demote admins — powers regular admins don’t have.'
+              : 'Role-based access control across the platform.'}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow"><RefreshCw className="w-4 h-4" /></button>
@@ -193,11 +206,13 @@ export const RolesModule: React.FC = () => {
                     <td className="td">{r.dataScope || '—'}</td>
                     <td className="td">{r.isAdmin || perms.includes('admin') ? <span className="badge bg-brand-activeBg text-brand-activeText">All (admin)</span> : `${perms.length} granted`}</td>
                     <td className="td" onClick={(e) => e.stopPropagation()}>
-                      {canWrite ? (
+                      {canWrite && (!isAdminRole(r) || isSuperAdmin) ? (
                         <div className="flex items-center gap-1">
                           <button onClick={() => editRole(r)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg" title="Edit"><Pencil className="w-4 h-4" /></button>
                           <button onClick={() => deleteRole(r)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-rose-600 hover:bg-rose-50" title="Delete"><Trash2 className="w-4 h-4" /></button>
                         </div>
+                      ) : isAdminRole(r) && canWrite ? (
+                        <span className="inline-flex items-center gap-1 text-brand-mutedSlate text-xs" title="Admin roles can only be changed by the super admin"><Lock className="w-3.5 h-3.5" /> Super admin only</span>
                       ) : <span className="text-brand-teal text-xs">View</span>}
                     </td>
                   </tr>
@@ -210,15 +225,28 @@ export const RolesModule: React.FC = () => {
 
           {activeTab === 'USERS' && (
             <Card><Table head={['User Email', 'Linked Employee', 'Role', '']}>
-              {userList.items.map((u) => (
+              {userList.items.map((u) => {
+                // Changing an admin's role, or the super admin's, is reserved for the super admin.
+                const rowLocked = (u.isSuperAdmin || isAdminRole(u.roleId)) && !isSuperAdmin;
+                // Non-super-admins may not assign admin roles (no promoting to admin).
+                const roleOptions = roles.filter((r) => isSuperAdmin || !isAdminRole(r));
+                return (
                 <tr key={u._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                   <td className="td font-medium text-brand-darkCharcoal">{u.email}</td>
                   <td className="td">{u.employeeId?.name || '—'}</td>
-                  <td className="td font-medium">{u.roleId?.name || '—'}</td>
+                  <td className="td font-medium">
+                    <span className="inline-flex items-center gap-1.5">
+                      {u.isSuperAdmin && <Crown className="w-4 h-4 text-amber-500" aria-label="Super Admin" />}
+                      {u.roleId?.name || '—'}
+                      {isAdminRole(u.roleId) && !u.isSuperAdmin && <span className="badge bg-brand-activeBg text-brand-activeText">admin</span>}
+                    </span>
+                  </td>
                   <td className="td">
-                    {canWrite && (
+                    {!canWrite ? null : rowLocked ? (
+                      <span className="inline-flex items-center gap-1 text-brand-mutedSlate text-xs" title="Only the super admin can change this account"><Lock className="w-3.5 h-3.5" /> Super admin only</span>
+                    ) : (
                       <div className="flex items-center gap-2">
-                        <select 
+                        <select
                           className="inp py-1 text-sm"
                           value={u.roleId?._id || ''}
                           onChange={async (e) => {
@@ -232,7 +260,7 @@ export const RolesModule: React.FC = () => {
                           }}
                         >
                           <option value="" disabled>Select Role</option>
-                          {roles.map(r => (
+                          {roleOptions.map(r => (
                             <option key={r._id} value={r._id}>{r.name}</option>
                           ))}
                         </select>
@@ -241,7 +269,8 @@ export const RolesModule: React.FC = () => {
                     )}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {users.length === 0 && <EmptyRow cols={4} msg="No users found." />}
               <tr><td colSpan={4} className="p-0"><Paginator page={userList.page} totalPages={userList.totalPages} totalItems={userList.totalItems} pageSize={userList.pageSize} onPage={userList.setPage} /></td></tr>
             </Table></Card>
@@ -321,9 +350,13 @@ export const RolesModule: React.FC = () => {
               </select>
             </Field>
           </div>
-          <label className="flex items-center gap-2 text-sm mt-3">
-            <input type="checkbox" checked={form.isAdmin} onChange={(e) => setForm({ ...form, isAdmin: e.target.checked })} /> Super admin (grants everything)
-          </label>
+          {isSuperAdmin ? (
+            <label className="flex items-center gap-2 text-sm mt-3">
+              <input type="checkbox" checked={form.isAdmin} onChange={(e) => setForm({ ...form, isAdmin: e.target.checked })} /> Admin role — grants full access to everything
+            </label>
+          ) : (
+            <p className="text-xs text-brand-mutedSlate mt-3 flex items-center gap-1"><Lock className="w-3.5 h-3.5" /> Only the super admin can create admin roles.</p>
+          )}
 
           {!form.isAdmin && (
             <div className="mt-5">

@@ -2,6 +2,24 @@
 
 > ⚠️ **DO NOT DELETE** these users from the database. They are pinned seed accounts used for development, testing, and demo purposes.
 
+## 👑 Super Admin (the single elevated account)
+
+There is exactly **one** super admin for the business. It has everything an Admin has, **plus** exclusive powers regular admins do **not** have:
+
+- Create, edit, and delete **admin roles** and their permissions
+- **Promote** any user to an admin role
+- **Demote** an admin to a non-admin role
+
+Regular admins cannot do any of the above to each other — only the super admin can.
+
+| Role | Email | Password | Name |
+|------|-------|----------|------|
+| **Super Admin** | `superadmin@peoplepay.com` | `Super@1234` | Super Admin |
+
+> The super admin is distinguished by the `isSuperAdmin` flag on the user (set only by the seeder — no API can grant it), so there is structurally only one.
+
+---
+
 ## Shared Password
 
 All demo accounts use the same password:

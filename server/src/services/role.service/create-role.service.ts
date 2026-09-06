@@ -1,8 +1,13 @@
 import { Role } from "../../models/role.model";
-import { ConflictError } from "../../errors/index";
+import { ConflictError, ForbiddenError } from "../../errors/index";
 
-export const createRoleService = async (data: any) => {
+export const createRoleService = async (data: any, actorIsSuperAdmin = false) => {
   const { name, permissions, dataScope, isAdmin } = data;
+
+  // Only the super admin may create admin (all-access) roles.
+  if (isAdmin && !actorIsSuperAdmin) {
+    throw new ForbiddenError("Only the super admin can create admin roles");
+  }
 
   const existingRole = await Role.findOne({ name });
   if (existingRole) {

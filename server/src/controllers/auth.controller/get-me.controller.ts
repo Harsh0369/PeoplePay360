@@ -22,6 +22,7 @@ export const getMeController = catchAsync(async (req: AuthRequest, res: Response
     },
     permissions: Array.from(req.userPermissions || []),
     isAdmin: req.isAdmin,
+    isSuperAdmin: req.isSuperAdmin,
     dataScope: req.dataScope
   });
 });

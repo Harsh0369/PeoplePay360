@@ -28,6 +28,7 @@ type ResolvedRole = {
 export type ResolvedPermissionContext = {
   permissions: Set<string>;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   dataScope: DataScope;
   roleId: string | null;
   roleName: string | null;
@@ -71,12 +72,15 @@ export class PermissionService {
       this.extractEnabledPermissions(mergedPermissions)
     );
 
-    const isAdmin = Boolean(role?.isAdmin);
+    // The super admin flag lives on the user, independent of role, and implies admin.
+    const isSuperAdmin = Boolean((user as any).isSuperAdmin);
+    const isAdmin = Boolean(role?.isAdmin) || isSuperAdmin;
     const dataScope: DataScope = isAdmin ? "all" : (role?.dataScope ?? "self");
 
     return {
       permissions,
       isAdmin,
+      isSuperAdmin,
       dataScope,
       roleId: this.toStringId(role?._id),
       roleName: role?.name ?? null,

@@ -20,6 +20,10 @@ const userSchema = new Schema(
       type: Object,
       default: {},
     },
+    // The single business super admin. Grants everything an admin has, PLUS the
+    // exclusive ability to manage admin roles and promote/demote admins — powers
+    // regular admins do not have. Set only by the seeder; no API toggles it.
+    isSuperAdmin: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     lastLoginAt: { type: Date, default: null },
   },
