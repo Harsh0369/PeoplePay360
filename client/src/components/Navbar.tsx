@@ -73,13 +73,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, isBacken
           </div>
 
           <div className="flex items-center gap-3">
-            <div className={`hidden sm:flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full font-bold border ${
-              isBackendConnected ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40' : 'bg-brand-darkTeal text-[#CFE3DF] border-brand-teal/40'
-            }`}>
-              <Server className={`w-3 h-3 ${isBackendConnected ? 'text-emerald-400' : 'text-[#8FBDB5]'}`} />
-              <span>{isBackendConnected ? 'API Connected' : 'Offline'}</span>
-            </div>
-
             <div className="flex items-center gap-2.5 pl-1">
               <div className="w-9 h-9 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold text-xs shadow" title={user?.name || ''}>
                 {initials}
