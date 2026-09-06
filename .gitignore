@@ -48,3 +48,6 @@ rulebook.md
 PeoplePay360 HR & Payroll.pdf
 codereview.md
 peoplepay360_ai_agent.md
+
+# k6 load-test binary (downloaded locally, not committed)
+load-tests/.bin/
