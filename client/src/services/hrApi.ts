@@ -87,6 +87,7 @@ export const attendanceApi = {
   clockIn: (data: any = {}) => req('POST', '/attendance/clock-in', data),
   clockOut: (data: any = {}) => req('POST', '/attendance/clock-out', data),
   adminUpdate: (id: string, data: any) => req('PUT', `/attendance/${id}`, data),
+  getMyAttendance: (params = '') => req('GET', `/attendance/my${params}`),
 };
 
 // ---- Time Off ----
@@ -95,7 +96,21 @@ export const timeOffApi = {
   createType: (data: any) => req('POST', '/time-off/types', data),
   getAllocations: () => req('GET', '/time-off/allocations'),
   createAllocation: (data: any) => req('POST', '/time-off/allocations', data),
+  exportAllocations: async () => {
+    const res = await fetch(`${API_BASE_URL}/time-off/allocations/export`, { headers: authHeaders() });
+    if (!res.ok) throw new Error('Failed to export ledger');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'leave_ledger.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  },
   getRequests: () => req('GET', '/time-off/requests'),
+  getMyRequests: () => req('GET', '/time-off/my/requests'),
   raiseRequest: (data: any) => req('POST', '/time-off/request', data),
   review: (id: string, data: { status: 'APPROVED' | 'REJECTED'; reviewNote?: string }) =>
     req('POST', `/time-off/${id}/review`, data),

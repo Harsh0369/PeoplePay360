@@ -8,6 +8,7 @@ import {
   getTimeOffTypesController,
   createTimeOffTypeController,
   getTimeOffAllocationsController,
+  exportTimeOffAllocationsController,
   createTimeOffAllocationController,
   getTimeOffRequestsController,
   getMyAllocationsController,
@@ -24,6 +25,7 @@ router.post("/types", requireAnyPermission("TimeOff.Write"), createTimeOffTypeCo
 
 // --- Time Off Allocations ---
 router.get("/allocations", requireAnyPermission("TimeOff.Read"), getTimeOffAllocationsController);
+router.get("/allocations/export", requireAnyPermission("TimeOff.Read"), exportTimeOffAllocationsController);
 router.post("/allocations", requireAnyPermission("TimeOff.Write"), createTimeOffAllocationController);
 
 // --- Time Off Requests ---

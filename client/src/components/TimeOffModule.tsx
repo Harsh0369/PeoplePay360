@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, Plus, Check, X } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Check, X, Download } from 'lucide-react';
 import { timeOffApi, masterApi } from '../services/hrApi';
 import { fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
@@ -112,7 +112,15 @@ export const TimeOffModule: React.FC = () => {
           <p className="text-sm text-brand-mutedSlate">Leave requests, allocations (balances) and leave types.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow"><RefreshCw className="w-4 h-4" /></button>
+          <button onClick={load} className="p-2 rounded-lg border border-brand-sandBorder text-brand-mutedSlate hover:bg-brand-hoverRow" title="Refresh"><RefreshCw className="w-4 h-4" /></button>
+          {tab === 'ALLOCATIONS' && (
+            <button onClick={() => {
+              setBusy('export');
+              timeOffApi.exportAllocations().catch(e => notify.error(e.message)).finally(() => setBusy(''));
+            }} disabled={busy === 'export'} className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+              <Download className="w-4 h-4" /> Export Ledger
+            </button>
+          )}
           {(tab === 'REQUESTS' || canWrite) && <button onClick={openNew} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-brand-offWhite font-semibold px-4 py-2 rounded-lg text-sm"><Plus className="w-4 h-4" /> {newLabel}</button>}
         </div>
       </div>
