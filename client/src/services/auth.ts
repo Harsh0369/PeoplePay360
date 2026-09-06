@@ -15,6 +15,7 @@ export interface AuthContextData {
   user: AuthUser | null;
   permissions: string[];
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 export const getToken = (): string | null => localStorage.getItem(TOKEN_KEY);
@@ -28,17 +29,17 @@ export const getStoredUser = (): AuthUser | null => {
   }
 };
 
-export const getStoredPerms = (): { permissions: string[]; isAdmin: boolean } => {
+export const getStoredPerms = (): { permissions: string[]; isAdmin: boolean; isSuperAdmin: boolean } => {
   try {
     const raw = localStorage.getItem(PERMS_KEY);
-    return raw ? JSON.parse(raw) : { permissions: [], isAdmin: false };
+    return raw ? { isSuperAdmin: false, ...JSON.parse(raw) } : { permissions: [], isAdmin: false, isSuperAdmin: false };
   } catch {
-    return { permissions: [], isAdmin: false };
+    return { permissions: [], isAdmin: false, isSuperAdmin: false };
   }
 };
 
-const storePerms = (permissions: string[], isAdmin: boolean) =>
-  localStorage.setItem(PERMS_KEY, JSON.stringify({ permissions, isAdmin }));
+const storePerms = (permissions: string[], isAdmin: boolean, isSuperAdmin: boolean) =>
+  localStorage.setItem(PERMS_KEY, JSON.stringify({ permissions, isAdmin, isSuperAdmin }));
 
 export const roleLabel = (user: AuthUser | null): string => {
   const r: any = user?.role;
@@ -105,12 +106,13 @@ export async function fetchMe(): Promise<AuthContextData | null> {
     const user: AuthUser = d?.user ?? d;
     const permissions: string[] = d?.permissions ?? [];
     const isAdmin: boolean = !!d?.isAdmin;
+    const isSuperAdmin: boolean = !!d?.isSuperAdmin;
     if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-    storePerms(permissions, isAdmin);
-    return { user, permissions, isAdmin };
+    storePerms(permissions, isAdmin, isSuperAdmin);
+    return { user, permissions, isAdmin, isSuperAdmin };
   } catch {
     // Network/timeout: keep the cached session instead of logging out.
     const cached = getStoredPerms();
-    return { user: getStoredUser(), permissions: cached.permissions, isAdmin: cached.isAdmin };
+    return { user: getStoredUser(), permissions: cached.permissions, isAdmin: cached.isAdmin, isSuperAdmin: cached.isSuperAdmin };
   }
 }

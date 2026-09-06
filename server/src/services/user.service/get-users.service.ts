@@ -7,7 +7,7 @@ export const getUsersService = async (pagination: PaginationParams) => {
   const [data, totalItems] = await Promise.all([
     User.find()
       .populate("employeeId", "name empCode workEmail")
-      .populate("roleId", "name isSystem")
+      .populate("roleId", "name isSystem isAdmin")
       .skip(skip)
       .limit(limit)
       .lean(),

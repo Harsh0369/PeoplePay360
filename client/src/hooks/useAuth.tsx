@@ -8,6 +8,8 @@ interface AuthContextValue {
   user: AuthUser | null;
   permissions: string[];
   isAdmin: boolean;
+  /** The single business super admin — can manage admin roles and promote/demote admins. */
+  isSuperAdmin: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -22,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
   const [permissions, setPermissions] = useState<string[]>(() => getStoredPerms().permissions);
   const [isAdmin, setIsAdmin] = useState<boolean>(() => getStoredPerms().isAdmin);
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(() => getStoredPerms().isSuperAdmin);
   const [isLoading, setIsLoading] = useState<boolean>(!!getToken());
 
   // Revalidate the stored session (and refresh permissions) on load.
@@ -38,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(ctx.user);
         setPermissions(ctx.permissions);
         setIsAdmin(ctx.isAdmin);
+        setIsSuperAdmin(ctx.isSuperAdmin);
       } else {
         doLogout();
         setUser(null);
@@ -55,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(ctx.user);
       setPermissions(ctx.permissions);
       setIsAdmin(ctx.isAdmin);
+      setIsSuperAdmin(ctx.isSuperAdmin);
     }
   };
 
@@ -63,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setPermissions([]);
     setIsAdmin(false);
+    setIsSuperAdmin(false);
   };
 
   const can = (...perms: string[]) =>
@@ -70,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider
-      value={{ user, permissions, isAdmin, isAuthenticated: !!user, isLoading, login, logout, can }}
+      value={{ user, permissions, isAdmin, isSuperAdmin, isAuthenticated: !!user, isLoading, login, logout, can }}
     >
       {children}
     </AuthContext.Provider>

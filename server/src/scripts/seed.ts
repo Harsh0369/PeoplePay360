@@ -10,7 +10,8 @@
  *          The 5 "demo" credential users are always preserved in creds.md.
  *
  * Data generated:
- *   - 5 Roles (Employee, HR Manager, HR Payroll User, HR Payroll Manager, Admin)
+ *   - 6 Roles (Employee, HR Manager, HR Payroll User, HR Payroll Manager, Admin, Super Admin)
+ *   - 1 Super Admin account (superadmin@peoplepay.com) — the single elevated user
  *   - 12 Departments with hierarchy (parent→child)
  *   - 30+ Job Positions across departments
  *   - 4 Working Schedules (Standard, Part-Time, Night Shift, Compressed)
@@ -175,6 +176,16 @@ const ROLE_DEFS = [
   },
   {
     name: "Admin",
+    permissions: {},
+    dataScope: "all" as const,
+    isAdmin: true,
+    isSystem: true,
+  },
+  {
+    // Elevated single account. Same full access as Admin, but the owning user
+    // carries the isSuperAdmin flag which unlocks admin-role management and
+    // promoting/demoting admins — things regular admins cannot do.
+    name: "Super Admin",
     permissions: {},
     dataScope: "all" as const,
     isAdmin: true,
@@ -464,6 +475,39 @@ async function seed() {
   const adminUserId = demoUserDocs[0]._id;
   const hrManagerUserId = demoUserDocs[1]._id;
   console.log(`   ✅ 5 demo users created`);
+
+  // ---- The single SUPER ADMIN (distinct password, isSuperAdmin flag) ----
+  const SUPER_ADMIN_PASSWORD = "Super@1234";
+  const superAdminUser = await User.create({
+    email: "superadmin@peoplepay.com",
+    password: SUPER_ADMIN_PASSWORD, // hashed by the user pre-save hook
+    name: "Super Admin",
+    roleId: roleMap["Super Admin"]._id,
+    isSuperAdmin: true,
+    active: true,
+  });
+  const superAdminEmp = await Employee.create({
+    userId: superAdminUser._id,
+    name: "Super Admin",
+    workEmail: "superadmin@peoplepay.com",
+    workPhone: genPhone(),
+    departmentId: deptMap["Engineering"]._id,
+    jobPositionId: jobMap["CTO"]._id,
+    managerId: null,
+    joinDate: new Date(`${YEAR}-01-01`),
+    bankAccount: `DEMO${rand(100000, 999999)}`,
+    status: "Active",
+  });
+  await User.findByIdAndUpdate(superAdminUser._id, { employeeId: superAdminEmp._id });
+  businessLogs.push({
+    actorId: superAdminUser._id,
+    affectedEmployeeId: superAdminEmp._id,
+    action: "CREATE",
+    entity: "EMPLOYEE",
+    content: `Super Admin account "Super Admin" created`,
+    createdAt: new Date(`${YEAR}-01-01T09:00:00Z`),
+  });
+  console.log(`   ✅ Super Admin created (superadmin@peoplepay.com)`);
 
   // ==================== 8. BULK USERS + EMPLOYEES ====================
   console.log("8️⃣  Seeding ~1500 bulk users + employees...");
@@ -1088,7 +1132,7 @@ async function seed() {
   console.log(`   Departments:        ${DEPT_DEFS.length}`);
   console.log(`   Job Positions:      ${JOB_DEFS.length}`);
   console.log(`   Working Schedules:  ${SCHEDULE_DEFS.length}`);
-  console.log(`   Users+Employees:    ${TOTAL_EMPLOYEES + 5} (5 demo + ${TOTAL_EMPLOYEES} bulk)`);
+  console.log(`   Users+Employees:    ${TOTAL_EMPLOYEES + 6} (5 demo + 1 super admin + ${TOTAL_EMPLOYEES} bulk)`);
   console.log(`   Contracts:          ${contractDocs.length}`);
   console.log(`   Time Off Types:     ${TIMEOFF_TYPE_DEFS.length}`);
   console.log(`   Allocations:        ${allocationDocs.length}`);
