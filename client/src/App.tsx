@@ -129,7 +129,7 @@ export function App() {
   }, [isAuthenticated, permissions, activeTab]);
 
   // Dynamic Calculated Metrics
-  const activeEmployeesCount = employees.filter((e) => e.status === 'ACTIVE').length;
+  const activeEmployeesCount = employees.filter((e) => e.status === 'Active').length;
   const activeContractsList = contracts.filter((c) => c.status === 'ACTIVE');
   const totalMonthlyWageBudget = activeContractsList.reduce((sum, c) => sum + (c.wage || 0), 0);
 
@@ -177,6 +177,19 @@ export function App() {
       setPendingUser(null);
     } catch (e: any) {
       showToast(`Could not save employee: ${e.message}`);
+    }
+  };
+
+  const handleDeleteEmployee = async (id: string) => {
+    if (!confirm('Are you sure you want to fire/delete this employee? This action is permanent.')) return;
+    try {
+      await apiService.deleteEmployee(id);
+      showToast('Employee deleted.');
+      apiService.getEmployees().then(setEmployees).catch(() => {});
+      setIsEditingEmployee(false);
+      setSelectedEmployee(null);
+    } catch (e: any) {
+      showToast(`Could not delete employee: ${e.message}`);
     }
   };
 
@@ -322,6 +335,7 @@ export function App() {
               onSave={handleSaveEmployee}
               onCancel={() => { setIsEditingEmployee(false); setSelectedEmployee(null); setPendingUser(null); }}
               onViewRelatedContracts={handleSmartButtonViewContracts}
+              onDelete={selectedEmployee?.id ? () => handleDeleteEmployee(selectedEmployee.id) : undefined}
             />
           ) : (
             <EmployeesModule

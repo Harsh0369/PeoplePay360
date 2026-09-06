@@ -14,9 +14,9 @@ async function get(path: string): Promise<any[]> {
   if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
   return Array.isArray(json?.data) ? json.data : [];
 }
-async function send(method: string, path: string, body: any): Promise<any> {
+async function send(method: string, path: string, body?: any): Promise<any> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
-    method, headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify(body), signal: AbortSignal.timeout(12000),
+    method, headers: authHeaders({ 'Content-Type': 'application/json' }), body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(12000),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
@@ -63,7 +63,7 @@ export const apiService = {
       department: item.departmentId?.name || '—',
       manager: item.managerId?.name || '—',
       workingSchedule: item.workingScheduleId?.name || '—',
-      status: (item.status || 'ACTIVE').toString().toUpperCase(),
+      status: item.status || 'Active',
       employeeType: item.employeeType || 'FULL_TIME',
       bankAccountNo: item.bankAccountNo || '',
       bankName: item.bankName || '',
@@ -84,6 +84,11 @@ export const apiService = {
   async updateEmployee(id: string, data: Partial<Employee>): Promise<Employee> {
     const d = await send('PUT', `/employees/${id}`, data);
     return { ...(data as Employee), ...d, id: d._id || d.id || id };
+  },
+
+  async deleteEmployee(id: string): Promise<boolean> {
+    await send('DELETE', `/employees/${id}`);
+    return true;
   },
 
   async getContracts(): Promise<Contract[]> {

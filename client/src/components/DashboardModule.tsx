@@ -157,7 +157,7 @@ export const DashboardModule: React.FC = () => {
     switch (activeReport) {
       case 'Headcount': return async () => {
         const emps = await apiService.getEmployees();
-        return emps.filter(e => e.status === 'ACTIVE').map(e => ({
+        return emps.filter(e => e.status === 'Active').map(e => ({
           Name: e.name, Code: e.empCode, Email: e.workEmail, Position: e.jobPosition, Department: e.department, Type: e.employeeType
         }));
       };

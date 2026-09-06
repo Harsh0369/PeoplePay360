@@ -94,6 +94,7 @@ export const attendanceApi = {
 export const timeOffApi = {
   getTypes: () => req('GET', '/time-off/types'),
   createType: (data: any) => req('POST', '/time-off/types', data),
+  updateType: (id: string, data: any) => req('PUT', `/time-off/types/${id}`, data),
   getAllocations: () => req('GET', '/time-off/allocations'),
   createAllocation: (data: any) => req('POST', '/time-off/allocations', data),
   exportAllocations: async () => {

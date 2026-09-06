@@ -5,9 +5,10 @@ import { Mail, Phone, Building2, Briefcase } from 'lucide-react';
 interface EmployeeKanbanProps {
   employees: Employee[];
   onSelectEmployee: (emp: Employee) => void;
+  onDeleteEmployee: (id: string) => void;
 }
 
-export const EmployeeKanban: React.FC<EmployeeKanbanProps> = ({ employees, onSelectEmployee }) => {
+export const EmployeeKanban: React.FC<EmployeeKanbanProps> = ({ employees, onSelectEmployee, onDeleteEmployee }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-4 sm:p-6">
       {employees.map((emp) => (
@@ -27,14 +28,14 @@ export const EmployeeKanban: React.FC<EmployeeKanbanProps> = ({ employees, onSel
               <div className="flex flex-col items-end space-y-1">
                 <span
                   className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                    emp.status === 'ACTIVE'
+                    emp.status === 'Active'
                       ? 'bg-brand-activeBg text-brand-activeText border border-brand-teal/30'
-                      : emp.status === 'ON_LEAVE'
+                      : emp.status === 'Inactive'
                       ? 'bg-brand-leaveBg text-brand-leaveText border border-amber-300'
                       : 'bg-brand-draftBg text-brand-draftText border border-brand-sandBorder'
                   }`}
                 >
-                  {emp.status.replace('_', ' ')}
+                  {emp.status}
                 </span>
                 <span className="text-[10px] text-brand-mutedSlate font-mono font-medium">
                   {emp.empCode}
@@ -72,8 +73,19 @@ export const EmployeeKanban: React.FC<EmployeeKanbanProps> = ({ employees, onSel
 
           {/* Footer Summary Badges */}
           <div className="mt-4 pt-3 border-t border-brand-softSand flex items-center justify-between text-[11px] text-brand-mutedSlate font-medium">
-            <span>Contracts: <strong className="text-brand-darkTeal">{emp.contractCount}</strong></span>
-            <span>Attendance: <strong className="text-brand-darkCharcoal">{emp.attendanceCount}d</strong></span>
+            <div className="flex items-center space-x-3">
+              <span>Contracts: <strong className="text-brand-darkTeal">{emp.contractCount}</strong></span>
+              <span>Attendance: <strong className="text-brand-darkCharcoal">{emp.attendanceCount}d</strong></span>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteEmployee(emp.id);
+              }}
+              className="text-brand-warningText hover:text-red-700 hover:underline font-bold text-xs"
+            >
+              Delete
+            </button>
           </div>
         </div>
       ))}

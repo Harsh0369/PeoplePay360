@@ -5,9 +5,10 @@ import { Mail, FileText } from 'lucide-react';
 interface EmployeeListProps {
   employees: Employee[];
   onSelectEmployee: (emp: Employee) => void;
+  onDeleteEmployee: (id: string) => void;
 }
 
-export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onSelectEmployee }) => {
+export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onSelectEmployee, onDeleteEmployee }) => {
   return (
     <div className="p-4 sm:p-6">
       <div className="bg-brand-offWhite rounded-xl border border-brand-sandBorder shadow-sm overflow-hidden">
@@ -70,17 +71,17 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onSelectE
                   <td className="py-3 px-4">
                     <span
                       className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider inline-block ${
-                        emp.status === 'ACTIVE'
+                        emp.status === 'Active'
                           ? 'bg-brand-activeBg text-brand-activeText border border-brand-teal/30'
-                          : emp.status === 'ON_LEAVE'
+                          : emp.status === 'Inactive'
                           ? 'bg-brand-leaveBg text-brand-leaveText border border-amber-300'
                           : 'bg-brand-draftBg text-brand-draftText border border-brand-sandBorder'
                       }`}
                     >
-                      {emp.status.replace('_', ' ')}
+                      {emp.status}
                     </span>
                   </td>
-                  <td className="py-3 px-5 text-right">
+                  <td className="py-3 px-5 text-right space-x-3">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -89,6 +90,15 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({ employees, onSelectE
                       className="text-brand-darkTeal hover:text-brand-teal hover:underline font-bold text-xs inline-flex items-center"
                     >
                       <FileText className="w-3.5 h-3.5 mr-1" /> View Form
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteEmployee(emp.id);
+                      }}
+                      className="text-brand-warningText hover:text-red-700 hover:underline font-bold text-xs inline-flex items-center"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>

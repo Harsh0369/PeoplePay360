@@ -9,6 +9,7 @@ import { useServerList } from '../hooks/usePagedList';
 import { useAuth } from '../hooks/useAuth';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
+import { apiService } from '../services/api';
 
 const PAGE_SIZE = 12;
 
@@ -16,18 +17,21 @@ const AVATAR_TONES = ['from-emerald-600 to-teal-400', 'from-teal-600 to-cyan-400
 const tone = (s: string) => AVATAR_TONES[(s?.charCodeAt(0) || 0) % AVATAR_TONES.length];
 const initials = (n: string) => (n || '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 const STATUS_STYLE: Record<string, { badge: string; dot: string; ring: string }> = {
-  ACTIVE: { badge: 'bg-emerald-100/70 text-emerald-800 border-emerald-300/40', dot: 'bg-emerald-500', ring: 'ring-emerald-500/20' },
-  ON_LEAVE: { badge: 'bg-amber-100/70 text-amber-800 border-amber-300/40', dot: 'bg-amber-500', ring: 'ring-amber-500/20' },
-  INACTIVE: { badge: 'bg-slate-100 text-slate-600 border-slate-300/40', dot: 'bg-slate-400', ring: 'ring-slate-400/20' },
+  Active: { badge: 'bg-emerald-100/70 text-emerald-800 border-emerald-300/40', dot: 'bg-emerald-500', ring: 'ring-emerald-500/20' },
+  Inactive: { badge: 'bg-amber-100/70 text-amber-800 border-amber-300/40', dot: 'bg-amber-500', ring: 'ring-amber-500/20' },
+  Terminated: { badge: 'bg-slate-100 text-slate-600 border-slate-300/40', dot: 'bg-slate-400', ring: 'ring-slate-400/20' },
 };
-const stStyle = (s: string) => STATUS_STYLE[s] || STATUS_STYLE.INACTIVE;
+const stStyle = (s: string) => STATUS_STYLE[s] || STATUS_STYLE.Terminated;
 
-// Maps a raw backend employee to the flat shape this view renders.
-const mapEmp = (e: any) => ({
-  id: e._id, name: e.name || '', empCode: e.empCode || `EMP-${String(e._id || '').slice(-4).toUpperCase()}`,
-  workEmail: e.workEmail || '—', workPhone: e.workPhone || '—',
-  department: e.departmentId?.name || '—', jobPosition: e.jobPositionId?.title || '—',
-  status: (e.status || 'ACTIVE').toString().toUpperCase(),
+const mapRow = (e: any) => ({
+  id: e._id || e.id,
+  empCode: e.empCode || '—',
+  name: e.name || 'Unknown',
+  workEmail: e.workEmail || '—',
+  workPhone: e.workPhone || '—',
+  department: e.departmentId?.name || '—',
+  jobPosition: e.jobPositionId?.title || '—',
+  status: e.status || 'Active',
   contractCount: e.contractCount ?? 0, attendanceCount: e.attendanceCount ?? 0,
 });
 
@@ -100,7 +104,19 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
     }
   }, [moduleTab]);
 
-  const rows = emp.items.map(mapEmp);
+  const handleDelete = async (e: any, id: string) => {
+    e.stopPropagation();
+    if (confirm('Are you sure you want to fire/delete this employee? This action is permanent.')) {
+      try {
+        await apiService.deleteEmployee(id);
+        emp.reload();
+      } catch (err: any) {
+        alert(err.message);
+      }
+    }
+  };
+
+  const rows = emp.items.map(mapRow);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
@@ -207,6 +223,11 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
                     <div className="flex items-center gap-2.5"><Mail className="w-4 h-4 text-slate-400 flex-shrink-0" /><span className="text-slate-500 truncate">{e.workEmail}</span></div>
                     <div className="flex items-center gap-2.5"><Phone className="w-4 h-4 text-slate-400 flex-shrink-0" /><span className="text-slate-500 truncate">{e.workPhone}</span></div>
                   </div>
+                  {canWrite && (
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end">
+                      <button onClick={(ev) => handleDelete(ev, e.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold transition-colors">Fire / Delete</button>
+                    </div>
+                  )}
                 </div>
               </article>
             );
@@ -217,7 +238,7 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-600">
               <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/70">
-                <tr><th className="py-3 px-5">Employee</th><th className="py-3 px-5">Department</th><th className="py-3 px-5">Position</th><th className="py-3 px-5">Status</th></tr>
+                <tr><th className="py-3 px-5">Employee</th><th className="py-3 px-5">Department</th><th className="py-3 px-5">Position</th><th className="py-3 px-5">Status</th>{canWrite && <th className="py-3 px-5 text-right">Action</th>}</tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {rows.map((e) => {
@@ -231,6 +252,11 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
                       <td className="py-3 px-5">{e.department}</td>
                       <td className="py-3 px-5">{e.jobPosition}</td>
                       <td className="py-3 px-5"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${s.badge}`}>{e.status.replace('_', ' ')}</span></td>
+                      {canWrite && (
+                        <td className="py-3 px-5 text-right">
+                          <button onClick={(ev) => handleDelete(ev, e.id)} className="text-rose-600 hover:text-rose-800 text-xs font-bold transition-colors">Fire / Delete</button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

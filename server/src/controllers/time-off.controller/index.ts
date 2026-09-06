@@ -9,3 +9,4 @@ export * from "./create-time-off-allocation.controller";
 export * from "./get-time-off-requests.controller";
 export * from "./get-my-requests.controller";
 export * from "./get-my-allocations.controller";
+export * from "./update-time-off-type.controller";

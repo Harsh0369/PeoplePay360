@@ -1,4 +1,4 @@
-export type EmployeeStatus = 'ACTIVE' | 'ON_LEAVE' | 'INACTIVE';
+export type EmployeeStatus = 'Active' | 'Inactive' | 'Terminated';
 export type EmployeeType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERN';
 export type ContractStatus = 'DRAFT' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 

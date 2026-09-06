@@ -141,6 +141,35 @@ export const LoginPage: React.FC = () => {
           </div>
         </form>
 
+        {import.meta.env.DEV && (
+          <div className="mt-5 pt-4 border-t border-brand-sandBorder/50 max-w-sm mx-auto">
+            <p className="text-[10px] font-bold tracking-wider text-[#A7C8C2] uppercase mb-3 text-center">Dev Quick Login</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={async () => { setBusy(true); setError(''); try { await login('superadmin@peoplepay.com', 'Super@1234'); } catch (e: any) { setError(e.message); } finally { setBusy(false); } }}
+                className="text-[11px] bg-brand-darkTeal/50 hover:bg-brand-darkTeal text-brand-offWhite py-1.5 rounded font-medium transition-colors border border-brand-teal/30"
+              >
+                Super Admin
+              </button>
+              <button
+                type="button"
+                onClick={async () => { setBusy(true); setError(''); try { await login('hr.manager@peoplepay.com', 'Test@1234'); } catch (e: any) { setError(e.message); } finally { setBusy(false); } }}
+                className="text-[11px] bg-brand-darkTeal/50 hover:bg-brand-darkTeal text-brand-offWhite py-1.5 rounded font-medium transition-colors border border-brand-teal/30"
+              >
+                HR Admin
+              </button>
+              <button
+                type="button"
+                onClick={async () => { setBusy(true); setError(''); try { await login('admin@peoplepay.com', 'Test@1234'); } catch (e: any) { setError(e.message); } finally { setBusy(false); } }}
+                className="text-[11px] bg-brand-darkTeal/50 hover:bg-brand-darkTeal text-brand-offWhite py-1.5 rounded font-medium transition-colors border border-brand-teal/30"
+              >
+                Manager
+              </button>
+            </div>
+          </div>
+        )}
+
         <p className="text-center text-[11px] text-[#A7C8C2] mt-5">
           Signing in unlocks contracts, attendance, time off and payroll configuration.
         </p>

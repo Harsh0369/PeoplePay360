@@ -49,8 +49,8 @@ const NavLink: React.FC<{ item: Item; active: boolean; count?: number; onClick: 
         <Icon className={`w-4 h-4 ${active ? 'text-emerald-300' : 'text-emerald-300/60 group-hover:text-emerald-300'}`} />
         <span className="text-sm">{item.label}</span>
       </span>
-      {count != null && (
-        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${active ? 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' : 'bg-white/5 text-emerald-200/80'} ${count === 0 ? 'opacity-50' : ''}`}>
+      {count != null && count > 0 && (
+        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${active ? 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' : 'bg-white/5 text-emerald-200/80'}`}>
           {count}
         </span>
       )}

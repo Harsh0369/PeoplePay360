@@ -10,6 +10,7 @@ interface EmployeeFormProps {
   onSave: (emp: any) => void;
   onCancel: () => void;
   onViewRelatedContracts?: (employeeId: string) => void;
+  onDelete?: () => void;
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({
@@ -18,7 +19,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   pendingUser,
   onSave,
   onCancel,
-  onViewRelatedContracts
+  onViewRelatedContracts,
+  onDelete
 }) => {
   // Always start from a complete set of defaults, then overlay the employee being
   // edited (which may arrive from the directory without every field, e.g. no bank
@@ -33,7 +35,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     department: '',
     manager: '',
     workingSchedule: '',
-    status: 'ACTIVE',
+    status: 'Active',
     employeeType: 'FULL_TIME',
     bankAccountNo: '',
     bankName: '',
@@ -105,6 +107,14 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             <X className="w-4 h-4" />
             <span>Discard</span>
           </button>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="bg-brand-warningBg text-brand-warningText hover:bg-brand-coral hover:text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors border border-brand-coral/40"
+            >
+              <span>Fire / Delete</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -163,7 +173,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
           {/* Stage Ribbon */}
           <div className="flex items-center border border-brand-sandBorder rounded-lg overflow-hidden divide-x divide-brand-sandBorder shadow-sm">
-            {(['ACTIVE', 'ON_LEAVE', 'INACTIVE'] as EmployeeStatus[]).map((st) => (
+            {(['Active', 'Inactive', 'Terminated'] as EmployeeStatus[]).map((st) => (
               <button
                 key={st}
                 type="button"
@@ -174,7 +184,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     : 'bg-brand-softSand text-brand-mutedSlate hover:bg-brand-sandBorder'
                 }`}
               >
-                {st.replace('_', ' ')}
+                {st}
               </button>
             ))}
           </div>

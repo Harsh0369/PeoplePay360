@@ -6,3 +6,4 @@ export * from "./create-time-off-type.service";
 export * from "./get-time-off-allocations.service";
 export * from "./create-time-off-allocation.service";
 export * from "./get-time-off-requests.service";
+export * from "./update-time-off-type.service";

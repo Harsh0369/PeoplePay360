@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProfileController, createEmployeeController, getAllEmployeesController, getEmployeeDetailController, updateEmployeePermissionsController, updateEmployeeController } from "../controllers/employee.controller";
+import { getProfileController, createEmployeeController, getAllEmployeesController, getEmployeeDetailController, updateEmployeePermissionsController, updateEmployeeController, deleteEmployeeController } from "../controllers/employee.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requireAnyPermission, requirePermission } from "../middleware/permission.middleware";
 
@@ -25,5 +25,8 @@ router.put("/:id", requireAnyPermission("Employee.Write"), updateEmployeeControl
 
 // Update employee permissions (Custom Overrides) — requires Employee.Write
 router.patch("/:id/permissions", requireAnyPermission("Employee.Write"), updateEmployeePermissionsController);
+
+// Delete employee — requires Employee.Write
+router.delete("/:id", requireAnyPermission("Employee.Write"), deleteEmployeeController);
 
 export default router;

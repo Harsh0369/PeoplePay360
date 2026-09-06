@@ -13,6 +13,7 @@ import {
   getTimeOffRequestsController,
   getMyAllocationsController,
   getMyRequestsController,
+  updateTimeOffTypeController,
 } from "../controllers/time-off.controller";
 
 const router = Router();
@@ -22,6 +23,7 @@ router.use(authMiddleware);
 // --- Time Off Types ---
 router.get("/types", requireAnyPermission("TimeOff.Read"), getTimeOffTypesController);
 router.post("/types", requireAnyPermission("TimeOff.Write"), createTimeOffTypeController);
+router.put("/types/:id", requireAnyPermission("TimeOff.Write"), updateTimeOffTypeController);
 
 // --- Time Off Allocations ---
 router.get("/allocations", requireAnyPermission("TimeOff.Read"), getTimeOffAllocationsController);

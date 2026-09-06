@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, Plus, Check, X, Download } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Check, X, Download, Pencil } from 'lucide-react';
 import { timeOffApi, masterApi } from '../services/hrApi';
 import { fmtDate } from '../lib/format';
 import { Card, Table, EmptyRow, Field, Drawer } from './ConfigModule';
@@ -75,7 +75,11 @@ export const TimeOffModule: React.FC = () => {
     setBusy('save');
     try {
       if (form.kind === 'TYPE') {
-        await timeOffApi.createType({ name: form.name, description: form.description || '', isPaid: !!form.isPaid, requiresAllocation: !!form.requiresAllocation });
+        if (form._id) {
+          await timeOffApi.updateType(form._id, { name: form.name, description: form.description || '', isPaid: !!form.isPaid, requiresAllocation: !!form.requiresAllocation, isActive: !!form.isActive });
+        } else {
+          await timeOffApi.createType({ name: form.name, description: form.description || '', isPaid: !!form.isPaid, requiresAllocation: !!form.requiresAllocation });
+        }
       } else if (form.kind === 'ALLOCATION') {
         await timeOffApi.createAllocation({ employeeId: form.employeeId, timeOffTypeId: form.timeOffTypeId, validityYear: Number(form.validityYear), grantedDays: Number(form.grantedDays) });
       } else if (form.kind === 'REQUEST') {
@@ -93,7 +97,7 @@ export const TimeOffModule: React.FC = () => {
         }
         await timeOffApi.raiseRequest({ timeOffTypeId: form.timeOffTypeId, startDate: form.startDate, endDate: form.endDate, requestedDays });
       }
-      notify.success(`${form.kind.charAt(0) + form.kind.slice(1).toLowerCase()} created.`);
+      notify.success(`${form.kind.charAt(0) + form.kind.slice(1).toLowerCase()} ${form._id ? 'updated' : 'created'}.`);
       setForm(null); load();
     } catch (e: any) { notify.error(e.message); }
     finally { setBusy(''); }
@@ -180,22 +184,27 @@ export const TimeOffModule: React.FC = () => {
             <tr><td colSpan={6} className="p-0"><Paginator page={allocList.page} totalPages={allocList.totalPages} totalItems={allocList.totalItems} pageSize={allocList.pageSize} onPage={allocList.setPage} /></td></tr>
           </Table></Card>
         ) : (
-          <Card><Table head={['Name', 'Paid', 'Allocation Required', 'Status']}>
+          <Card><Table head={['Name', 'Paid', 'Allocation Required', 'Status', 'Actions']}>
             {typeList.items.map((t) => (
               <tr key={t._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{t.name}</td>
                 <td className="td">{t.isPaid ? <span className="badge bg-brand-activeBg text-brand-activeText">Paid</span> : <span className="badge bg-brand-warningBg text-brand-warningText">Unpaid</span>}</td>
                 <td className="td">{t.requiresAllocation ? 'Yes' : 'No'}</td>
                 <td className="td"><span className="badge bg-brand-activeBg text-brand-activeText">{t.isActive === false ? 'Inactive' : 'Active'}</span></td>
+                <td className="td">
+                  {canWrite && (
+                    <button onClick={() => setForm({ kind: 'TYPE', ...t })} className="text-brand-mutedSlate hover:text-brand-teal p-1"><Pencil className="w-4 h-4" /></button>
+                  )}
+                </td>
               </tr>
             ))}
-            {types.length === 0 && <EmptyRow cols={4} msg="No leave types yet." />}
-            <tr><td colSpan={4} className="p-0"><Paginator page={typeList.page} totalPages={typeList.totalPages} totalItems={typeList.totalItems} pageSize={typeList.pageSize} onPage={typeList.setPage} /></td></tr>
+            {types.length === 0 && <EmptyRow cols={5} msg="No leave types yet." />}
+            <tr><td colSpan={5} className="p-0"><Paginator page={typeList.page} totalPages={typeList.totalPages} totalItems={typeList.totalItems} pageSize={typeList.pageSize} onPage={typeList.setPage} /></td></tr>
           </Table></Card>
         )}
 
       {form && (
-        <Drawer title={form.kind === 'TYPE' ? 'New Leave Type' : form.kind === 'ALLOCATION' ? 'New Allocation' : 'New Request'} onClose={() => setForm(null)}
+        <Drawer title={form.kind === 'TYPE' ? (form._id ? 'Edit Leave Type' : 'New Leave Type') : form.kind === 'ALLOCATION' ? 'New Allocation' : 'New Request'} onClose={() => setForm(null)}
           footer={<>
             <button onClick={() => setForm(null)} className="px-4 py-2 text-sm text-brand-mutedSlate">Cancel</button>
             <button onClick={submit} disabled={busy === 'save'} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{busy === 'save' && <Loader2 className="w-4 h-4 animate-spin" />} Save</button>
@@ -206,6 +215,9 @@ export const TimeOffModule: React.FC = () => {
               <Field label="Description"><input className="inp" value={form.description || ''} onChange={set('description')} /></Field>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!form.isPaid} onChange={(e) => setForm({ ...form, isPaid: e.target.checked })} /> Paid leave</label>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!form.requiresAllocation} onChange={(e) => setForm({ ...form, requiresAllocation: e.target.checked })} /> Requires allocation (balance)</label>
+              {form._id && (
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive !== false} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /> Active</label>
+              )}
             </div>
           )}
           {form.kind === 'ALLOCATION' && (
