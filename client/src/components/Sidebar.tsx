@@ -109,16 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, isBack
 
       {/* Bottom: status + profile */}
       <div className="p-4 border-t border-white/10 bg-brand-900/40 space-y-3">
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-500/30 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              {isBackendConnected && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />}
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isBackendConnected ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-            </span>
-            <span className="font-medium text-emerald-200">{isBackendConnected ? 'API Connected' : 'Offline'}</span>
-          </div>
-          <span className="text-[10px] text-emerald-400/80 font-mono">v3.2</span>
-        </div>
+
 
         <div className="flex items-center justify-between p-2 rounded-xl hover:bg-white/5 transition-colors">
           <div className="flex items-center gap-3 min-w-0">

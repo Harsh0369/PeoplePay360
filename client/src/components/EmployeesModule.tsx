@@ -136,9 +136,6 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
               <Kpi icon={Briefcase} label="Job Positions" value={`${jobPosTotal}`} />
             </>
           )}
-          <div className="ml-auto flex items-center gap-1.5 text-[11px] text-amber-700 bg-amber-50/80 px-2.5 py-1 rounded-full border border-amber-200/60 font-medium">
-            <Zap className="w-3.5 h-3.5 text-amber-600" fill="currentColor" /><span>Live · server-paginated</span>
-          </div>
         </div>
       </section>
 
