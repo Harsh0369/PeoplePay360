@@ -2,17 +2,22 @@ import { Contract } from "../../models/contract.model";
 import { Employee } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
 
-export const getContractsService = async (pagination: PaginationParams, employeeId?: string, search = "") => {
-  const query: Record<string, any> = employeeId ? { employeeId } : {};
+export const getContractsService = async (pagination: PaginationParams, filters: any = {}) => {
+  const query: Record<string, any> = {};
+  if (filters.employeeId) query.employeeId = filters.employeeId;
   const { page, limit, skip } = pagination;
 
   // Search matches the employee's name (a populated ref) — resolve matching
   // employee ids first, then filter contracts by them.
-  if (search.trim()) {
-    const rx = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  if (filters.search?.trim()) {
+    const rx = new RegExp(filters.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     const empIds = await Employee.find({ $or: [{ name: rx }, { workEmail: rx }] }).distinct("_id");
-    query.employeeId = employeeId ? employeeId : { $in: empIds };
+    query.employeeId = filters.employeeId ? filters.employeeId : { $in: empIds };
   }
+
+  if (filters.status) query.status = filters.status;
+  if (filters.departmentId) query.departmentId = filters.departmentId;
+  if (filters.jobPositionId) query.jobPositionId = filters.jobPositionId;
 
   const [data, totalItems] = await Promise.all([
     Contract.find(query)

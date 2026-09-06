@@ -1,15 +1,18 @@
 import { Employee } from "../../models/employee.model";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
 
-export const getAllEmployeesService = async (pagination: PaginationParams, search = "") => {
+export const getAllEmployeesService = async (pagination: PaginationParams, filters: any = {}) => {
   const { page, limit, skip } = pagination;
 
-  // Optional case-insensitive text search across name and work email.
   const query: Record<string, any> = {};
-  if (search.trim()) {
-    const rx = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  if (filters.search?.trim()) {
+    const rx = new RegExp(filters.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     query.$or = [{ name: rx }, { workEmail: rx }];
   }
+  if (filters.departmentId) query.departmentId = filters.departmentId;
+  if (filters.jobPositionId) query.jobPositionId = filters.jobPositionId;
+  if (filters.status) query.status = filters.status;
+  if (filters.employeeType) query.employeeType = filters.employeeType;
 
   const [data, totalItems] = await Promise.all([
     Employee.find(query)

@@ -40,7 +40,30 @@ interface Props {
 }
 
 export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContracts, onApproveJoinRequest, onEditEmployee, canWrite }) => {
-  const emp = useServerList('/employees', { limit: PAGE_SIZE });
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDept, setFilterDept] = useState('');
+  const [filterJob, setFilterJob] = useState('');
+  const [depts, setDepts] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    import('../services/hrApi').then(({ masterApi }) => {
+      masterApi.getDepartments().then(d => setDepts(Array.isArray(d) ? d : [])).catch(() => {});
+      masterApi.getJobPositions().then(j => {
+        // masterApi.getJobPositions returns paginated data: { data, offsetPagination } or array? 
+        // Wait, req unwraps json.data. So it should be an array.
+        setJobs(Array.isArray(j) ? j : (j as any)?.data || []);
+      }).catch(() => {});
+    });
+  }, []);
+
+  const extra = [
+    filterStatus ? `status=${encodeURIComponent(filterStatus)}` : '',
+    filterDept ? `departmentId=${encodeURIComponent(filterDept)}` : '',
+    filterJob ? `jobPositionId=${encodeURIComponent(filterJob)}` : '',
+  ].filter(Boolean).join('&');
+
+  const emp = useServerList('/employees', { limit: PAGE_SIZE, extra });
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [detail, setDetail] = useState<any | null>(null);
   const [moduleTab, setModuleTab] = useState<'directory' | 'requests'>('directory');
@@ -104,18 +127,18 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
       </section>
 
       {/* Controls */}
-      <section className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col md:flex-row md:items-center md:justify-between">
-        <div className="flex border-b md:border-b-0 border-slate-200/90">
+      <section className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col xl:flex-row xl:items-center justify-between">
+        <div className="flex border-b xl:border-b-0 border-slate-200/90 overflow-x-auto">
           <button 
             onClick={() => setModuleTab('directory')}
-            className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${moduleTab === 'directory' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
+            className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${moduleTab === 'directory' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
           >
             <Users className="w-4 h-4" /> Directory
           </button>
           {canWrite && (
             <button 
               onClick={() => setModuleTab('requests')}
-              className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${moduleTab === 'requests' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
+              className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${moduleTab === 'requests' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
             >
               <UserPlus className="w-4 h-4" /> Join Requests
             </button>
@@ -124,6 +147,22 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
         
         {moduleTab === 'directory' && (
           <div className="p-4 flex items-center gap-3 flex-wrap justify-end">
+            <div className="flex items-center gap-2 mr-2">
+              <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); emp.setPage(1); }} className="px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-brand-700 bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Terminated">Terminated</option>
+              </select>
+              <select value={filterDept} onChange={e => { setFilterDept(e.target.value); emp.setPage(1); }} className="px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-brand-700 bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                <option value="">All Departments</option>
+                {depts.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
+              </select>
+              <select value={filterJob} onChange={e => { setFilterJob(e.target.value); emp.setPage(1); }} className="px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-brand-700 bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-500 max-w-[150px] truncate">
+                <option value="">All Positions</option>
+                {jobs.map(j => <option key={j._id} value={j._id}>{j.title}</option>)}
+              </select>
+            </div>
             <SearchBar value={emp.search} onChange={emp.setSearch} placeholder="Search name or email…" className="w-64" />
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
               <button onClick={() => setView('grid')} className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-brand-850 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`} title="Grid"><LayoutGrid className="w-4 h-4" /></button>

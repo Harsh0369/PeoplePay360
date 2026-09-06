@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Contract } from '../types';
 import { ContractList } from './ContractList';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
 import { useServerList } from '../hooks/usePagedList';
+import { masterApi } from '../services/hrApi';
 
 const STATUS: Record<string, string> = { RUNNING: 'ACTIVE', DRAFT: 'DRAFT', EXPIRED: 'EXPIRED', CANCELLED: 'CANCELLED' };
 const mapStatus = (s: any) => STATUS[String(s || 'DRAFT').toUpperCase()] || String(s || 'DRAFT').toUpperCase();
@@ -33,13 +34,39 @@ interface Props {
 }
 
 export const ContractsModule: React.FC<Props> = ({ canWrite, onSelectContract, onNewContract }) => {
-  const { items, pagination, page, setPage, search, setSearch, loading, error } = useServerList('/contracts', { limit: 15 });
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDept, setFilterDept] = useState('');
+  const [depts, setDepts] = useState<any[]>([]);
+
+  useEffect(() => {
+    masterApi.getDepartments().then(d => setDepts(Array.isArray(d) ? d : [])).catch(() => {});
+  }, []);
+
+  const extra = [
+    filterStatus ? `status=${encodeURIComponent(filterStatus)}` : '',
+    filterDept ? `departmentId=${encodeURIComponent(filterDept)}` : ''
+  ].filter(Boolean).join('&');
+
+  const { items, pagination, page, setPage, search, setSearch, loading, error } = useServerList('/contracts', { limit: 15, extra });
   const rows = items.map(mapContract) as unknown as Contract[];
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-4">
-      <div className="flex items-center justify-end">
-        <SearchBar value={search} onChange={setSearch} placeholder="Search by employee name…" className="w-72" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }} className="px-3 py-2 border border-slate-200 rounded-md text-sm text-brand-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="">All Statuses</option>
+            <option value="Running">Running</option>
+            <option value="Draft">Draft</option>
+            <option value="Expired">Expired</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          <select value={filterDept} onChange={e => { setFilterDept(e.target.value); setPage(1); }} className="px-3 py-2 border border-slate-200 rounded-md text-sm text-brand-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="">All Departments</option>
+            {depts.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
+          </select>
+        </div>
+        <SearchBar value={search} onChange={setSearch} placeholder="Search by employee name…" className="w-full sm:w-72" />
       </div>
 
       {loading ? (

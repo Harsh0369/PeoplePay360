@@ -26,6 +26,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('ALL');
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
   
   // Assignment Modal State
   const [assigningPosition, setAssigningPosition] = useState<JobPosition | null>(null);
@@ -37,7 +38,7 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   // Reset pagination when search or filter changes
   React.useEffect(() => {
     setPage(1);
-  }, [searchTerm, selectedDepartment]);
+  }, [searchTerm, selectedDepartment, selectedStatus]);
 
   // Filtered Job Positions
   const filteredPositions = jobPositions.filter((pos) => {
@@ -54,7 +55,10 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
     }
 
     const matchesDept = selectedDepartment === 'ALL' || deptName === selectedDepartment;
-    return matchesSearch && matchesDept;
+    const posActive = pos.isActive ?? true;
+    const matchesStatus = selectedStatus === 'ALL' || (selectedStatus === 'ACTIVE' ? posActive : !posActive);
+
+    return matchesSearch && matchesDept && matchesStatus;
   });
 
   const getDepartmentName = (pos: JobPosition) => {
@@ -104,6 +108,17 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
 
         {/* Department Filter & Create Button */}
         <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
+          <div className="relative">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-3 py-2 bg-white text-xs font-semibold border border-brand-teal/30 rounded-xl focus:ring-2 focus:ring-brand-teal outline-none transition-all"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
           <div className="relative">
             <Building2 className="w-4 h-4 text-brand-teal/60 absolute left-3 top-2.5" />
             <select

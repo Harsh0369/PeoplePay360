@@ -1,16 +1,24 @@
 import { JobPosition, Department } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
 
-export const getJobPositionsService = async (pagination: PaginationParams) => {
+export const getJobPositionsService = async (pagination: PaginationParams, filters: any = {}) => {
   const { page, limit, skip } = pagination;
+  
+  const query: Record<string, any> = {};
+  if (filters.search?.trim()) {
+    const rx = new RegExp(filters.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    query.title = rx;
+  }
+  if (filters.departmentId) query.departmentId = filters.departmentId;
+  if (filters.isActive) query.isActive = filters.isActive === 'true';
 
   let [data, totalItems] = await Promise.all([
-    JobPosition.find()
+    JobPosition.find(query)
       .populate("departmentId")
       .skip(skip)
       .limit(limit)
       .lean(),
-    JobPosition.countDocuments()
+    JobPosition.countDocuments(query)
   ]);
 
   if (!data || data.length === 0) {
