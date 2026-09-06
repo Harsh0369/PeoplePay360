@@ -4,7 +4,7 @@ import { ConflictError, NotFoundError } from "../../errors/index";
 import { createBusinessLog } from "../business-log.service";
 
 export const createEmployeeService = async (data: any, actorId?: string) => {
-  const { userId, name, workEmail, workPhone, departmentId, jobPositionId, managerId, joinDate } = data;
+  const { userId, name, workEmail, workPhone, departmentId, jobPositionId, managerId, joinDate, roleId } = data;
 
   const existingEmployee = await Employee.findOne({ $or: [{ userId }, { workEmail }] });
   if (existingEmployee) {
@@ -22,8 +22,11 @@ export const createEmployeeService = async (data: any, actorId?: string) => {
     joinDate: joinDate || new Date(),
   });
 
-  // Update the user record to link this employee
-  await User.findByIdAndUpdate(userId, { employeeId: employee._id });
+  // Update the user record to link this employee and set their role
+  await User.findByIdAndUpdate(userId, { 
+    employeeId: employee._id,
+    ...(roleId && { roleId })
+  });
 
   if (actorId) {
     createBusinessLog({

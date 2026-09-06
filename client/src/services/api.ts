@@ -71,6 +71,11 @@ export const apiService = {
     return { ...(data as Employee), ...d, id: d._id || d.id };
   },
 
+  async updateEmployee(id: string, data: Partial<Employee>): Promise<Employee> {
+    const d = await send('PUT', `/employees/${id}`, data);
+    return { ...(data as Employee), ...d, id: d._id || d.id || id };
+  },
+
   async getContracts(): Promise<Contract[]> {
     const data = await get('/contracts');
     return data.map((item: any) => ({
@@ -110,6 +115,21 @@ export const apiService = {
     }));
   },
 
+  async createDepartment(data: any): Promise<Department> {
+    const d = await send('POST', '/departments', data);
+    return { ...data, id: d._id || d.id, _id: d._id || d.id };
+  },
+
+  async updateDepartment(id: string, data: any): Promise<Department> {
+    const d = await send('PUT', `/departments/${id}`, data);
+    return { ...data, id: d._id || d.id || id, _id: d._id || d.id || id };
+  },
+
+  async deleteDepartment(id: string): Promise<boolean> {
+    await send('DELETE', `/departments/${id}`, {});
+    return true;
+  },
+
   async getJobPositions(): Promise<JobPosition[]> {
     const data = await get('/job-positions');
     return data.map((item: any) => ({
@@ -135,6 +155,16 @@ export const apiService = {
       isActive: d.isActive ?? true,
       createdAt: new Date().toISOString().split('T')[0],
     };
+  },
+
+  async updateJobPosition(id: string, data: Partial<JobPosition>): Promise<JobPosition> {
+    const d = await send('PUT', `/job-positions/${id}`, data);
+    return { ...(data as JobPosition), id: d._id || d.id || id, _id: d._id || d.id || id };
+  },
+
+  async deleteJobPosition(id: string): Promise<boolean> {
+    await send('DELETE', `/job-positions/${id}`, {});
+    return true;
   },
 
   async assignEmployeeJobPosition(employeeId: string, jobPositionId: string): Promise<boolean> {

@@ -3,21 +3,24 @@ import { Briefcase, Building2, DollarSign, X, AlertCircle } from 'lucide-react';
 import { Department, JobPosition } from '../types';
 
 interface JobPositionFormProps {
+  jobPosition?: JobPosition | null;
   departments: Department[];
-  onSubmit: (data: { title: string; departmentId: string; expectedSalary: number }) => void;
-  onClose: () => void;
-  existingPositions: JobPosition[];
+  onSave: (data: any) => void;
+  onCancel: () => void;
 }
 
 export const JobPositionForm: React.FC<JobPositionFormProps> = ({
+  jobPosition,
   departments,
-  onSubmit,
-  onClose,
-  existingPositions
+  onSave,
+  onCancel
 }) => {
-  const [title, setTitle] = useState('');
-  const [departmentId, setDepartmentId] = useState(departments[0]?.id || departments[0]?._id || '');
-  const [expectedSalary, setExpectedSalary] = useState<number>(6500);
+  const [title, setTitle] = useState(jobPosition?.title || '');
+  const initialDeptId = typeof jobPosition?.departmentId === 'object' 
+    ? (jobPosition?.departmentId as any).id || (jobPosition?.departmentId as any)._id
+    : jobPosition?.departmentId;
+  const [departmentId, setDepartmentId] = useState<string>(initialDeptId || departments[0]?.id || departments[0]?._id || '');
+  const [expectedSalary, setExpectedSalary] = useState<number>(jobPosition?.expectedSalary || 6500);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,15 +30,7 @@ export const JobPositionForm: React.FC<JobPositionFormProps> = ({
       return;
     }
 
-    const duplicate = existingPositions.some(
-      (p) => p.title.toLowerCase() === title.trim().toLowerCase()
-    );
-    if (duplicate) {
-      setError(`Job Position "${title.trim()}" already exists in the system.`);
-      return;
-    }
-
-    onSubmit({
+    onSave({
       title: title.trim(),
       departmentId,
       expectedSalary: Number(expectedSalary) || 0
@@ -53,12 +48,12 @@ export const JobPositionForm: React.FC<JobPositionFormProps> = ({
               <Briefcase className="w-5 h-5 text-brand-teal" />
             </div>
             <div>
-              <h2 className="font-bold text-lg leading-tight">Create Job Position</h2>
+              <h2 className="font-bold text-lg leading-tight">{jobPosition ? 'Edit' : 'Create'} Job Position</h2>
               <p className="text-xs text-[#A7C8C2]">Define job role & salary benchmarks</p>
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={onCancel}
             className="p-1 rounded-lg text-brand-offWhite/70 hover:text-white hover:bg-brand-darkTeal transition-colors"
           >
             <X className="w-5 h-5" />
@@ -139,7 +134,7 @@ export const JobPositionForm: React.FC<JobPositionFormProps> = ({
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-brand-softSand">
             <button
               type="button"
-              onClick={onClose}
+              onClick={onCancel}
               className="px-4 py-2 text-xs font-bold text-brand-charcoal bg-brand-softSand hover:bg-brand-softSand/80 rounded-xl transition-colors"
             >
               Cancel
@@ -149,7 +144,7 @@ export const JobPositionForm: React.FC<JobPositionFormProps> = ({
               className="px-5 py-2 text-xs font-bold text-white bg-brand-teal hover:bg-brand-darkTeal rounded-xl shadow-md transition-all flex items-center space-x-1.5"
             >
               <Briefcase className="w-4 h-4" />
-              <span>Create Position</span>
+              <span>{jobPosition ? 'Save Changes' : 'Create Position'}</span>
             </button>
           </div>
         </form>

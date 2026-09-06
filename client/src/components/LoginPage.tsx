@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
-import { LogIn, Loader2, AlertCircle } from 'lucide-react';
+import { LogIn, Loader2, AlertCircle, UserPlus } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { register } from '../services/auth';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError('');
+    setSuccessMsg('');
     try {
-      await login(email.trim(), password);
+      if (mode === 'login') {
+        await login(email.trim(), password);
+      } else {
+        await register(email.trim(), password, name.trim());
+        setSuccessMsg('Registration successful! Please wait for an admin to approve your request.');
+        setMode('login');
+        setPassword('');
+      }
     } catch (err: any) {
-      setError(err?.message || 'Login failed');
+      setError(err?.message || (mode === 'login' ? 'Login failed' : 'Registration failed'));
     } finally {
       setBusy(false);
     }
@@ -59,8 +71,28 @@ export const LoginPage: React.FC = () => {
           onSubmit={submit}
           className="bg-brand-offWhite rounded-2xl shadow-xl border border-brand-sandBorder p-7"
         >
-          <h1 className="text-xl font-bold text-brand-darkCharcoal">Welcome back</h1>
-          <p className="text-sm text-brand-mutedSlate mt-1 mb-6">Sign in to continue</p>
+          <h1 className="text-xl font-bold text-brand-darkCharcoal">{mode === 'login' ? 'Welcome back' : 'Create an account'}</h1>
+          <p className="text-sm text-brand-mutedSlate mt-1 mb-6">{mode === 'login' ? 'Sign in to continue' : 'Sign up to request access'}</p>
+
+          {successMsg && (
+            <div className="mb-4 flex items-start gap-2 rounded-lg bg-emerald-50 text-emerald-700 px-3 py-2.5 text-sm border border-emerald-200">
+              <span>{successMsg}</span>
+            </div>
+          )}
+
+          {mode === 'register' && (
+            <>
+              <label className="block text-sm font-semibold text-brand-darkCharcoal mb-1.5">Full Name</label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Jane Doe"
+                className="w-full mb-4 px-3.5 py-2.5 rounded-lg border border-brand-sandBorder bg-white text-brand-darkCharcoal placeholder:text-brand-mutedSlate/60 focus:outline-none focus:ring-2 focus:ring-brand-teal/40 focus:border-brand-teal"
+              />
+            </>
+          )}
 
           <label className="block text-sm font-semibold text-brand-darkCharcoal mb-1.5">Email</label>
           <input
@@ -83,7 +115,7 @@ export const LoginPage: React.FC = () => {
           />
 
           {error && (
-            <div className="mb-4 flex items-start gap-2 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm">
+            <div className="mb-4 flex items-start gap-2 rounded-lg bg-brand-warningBg text-brand-warningText px-3 py-2.5 text-sm border border-brand-warningText/20">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -94,9 +126,19 @@ export const LoginPage: React.FC = () => {
             disabled={busy}
             className="w-full flex items-center justify-center gap-2 rounded-lg bg-brand-darkTeal hover:bg-brand-teal disabled:opacity-60 text-brand-offWhite font-semibold py-2.5 transition-colors"
           >
-            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
-            {busy ? 'Signing in…' : 'Sign In'}
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : (mode === 'login' ? <LogIn className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />)}
+            {busy ? (mode === 'login' ? 'Signing in…' : 'Signing up…') : (mode === 'login' ? 'Sign In' : 'Sign Up')}
           </button>
+          
+          <div className="mt-5 text-center">
+            <button 
+              type="button" 
+              onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); setSuccessMsg(''); }}
+              className="text-xs font-semibold text-brand-darkTeal hover:text-brand-teal hover:underline transition-colors"
+            >
+              {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+            </button>
+          </div>
         </form>
 
         <p className="text-center text-[11px] text-[#A7C8C2] mt-5">

@@ -4,7 +4,9 @@ import { requireAnyPermission } from "../middleware/permission.middleware";
 import {
   createDepartmentController,
   getDepartmentsController,
-  assignEmployeeDepartmentController
+  assignEmployeeDepartmentController,
+  updateDepartmentController,
+  deleteDepartmentController
 } from "../controllers/department.controller";
 
 const router = Router();
@@ -17,5 +19,7 @@ router.get("/", requireAnyPermission("Organization.Read"), getDepartmentsControl
 // Write — requires Organization.Write
 router.post("/", requireAnyPermission("Organization.Write"), createDepartmentController);
 router.post("/employee/:employeeId/assign", requireAnyPermission("Organization.Write"), assignEmployeeDepartmentController);
+router.put("/:id", requireAnyPermission("Organization.Write"), updateDepartmentController);
+router.delete("/:id", requireAnyPermission("Organization.Write"), deleteDepartmentController);
 
 export default router;

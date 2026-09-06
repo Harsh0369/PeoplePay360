@@ -45,8 +45,13 @@ export const OrgModule: React.FC = () => {
     setBusy('save'); setError('');
     try {
       if (form.kind === 'DEPT') {
-        await masterApi.createDepartment({ name: form.name, ...(form.managerId ? { managerId: form.managerId } : {}), ...(form.parentDepartmentId ? { parentDepartmentId: form.parentDepartmentId } : {}) });
-        notify.success(`Department "${form.name}" created.`);
+        if (form._id) {
+          await masterApi.updateDepartment(form._id, { name: form.name, ...(form.managerId ? { managerId: form.managerId } : {}), ...(form.parentDepartmentId ? { parentDepartmentId: form.parentDepartmentId } : {}) });
+          notify.success(`Department "${form.name}" updated.`);
+        } else {
+          await masterApi.createDepartment({ name: form.name, ...(form.managerId ? { managerId: form.managerId } : {}), ...(form.parentDepartmentId ? { parentDepartmentId: form.parentDepartmentId } : {}) });
+          notify.success(`Department "${form.name}" created.`);
+        }
       } else {
         const workingDays = (form.workingDays || []).map((l: any) => ({
           dayOfWeek: l.dayOfWeek, startTime: l.startTime, endTime: l.endTime, breakDurationMinutes: Number(l.breakDurationMinutes) || 0,
@@ -77,6 +82,18 @@ export const OrgModule: React.FC = () => {
   const addLine = () => setForm((f: any) => ({ ...f, workingDays: [...f.workingDays, { dayOfWeek: 'Monday', startTime: '09:00', endTime: '18:00', breakDurationMinutes: 60 }] }));
   const rmLine = (i: number) => setForm((f: any) => ({ ...f, workingDays: f.workingDays.filter((_: any, idx: number) => idx !== i) }));
 
+  const editDepartment = (d: any) => setForm({ kind: 'DEPT', _id: d._id, name: d.name, parentDepartmentId: d.parentDepartmentId || '', managerId: d.managerId || '' });
+  const deleteDepartment = async (id: string) => {
+    if (!confirm('Are you sure?')) return;
+    try { await masterApi.deleteDepartment(id); notify.success('Department deleted.'); load(); }
+    catch (e: any) { notify.error(e.message); }
+  };
+  const deleteSchedule = async (id: string) => {
+    if (!confirm('Are you sure?')) return;
+    try { await masterApi.deleteWorkingSchedule(id); notify.success('Schedule deleted.'); load(); }
+    catch (e: any) { notify.error(e.message); }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex items-center justify-between mb-5">
@@ -104,16 +121,17 @@ export const OrgModule: React.FC = () => {
 
       {loading ? <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-brand-teal" /></div>
         : tab === 'DEPARTMENTS' ? (
-          <Card><Table head={['Department', 'Parent', 'Manager']}>
+          <Card><Table head={['Department', 'Parent', 'Manager', ...(canWrite ? [''] : [])]}>
             {deptList.items.map((d) => (
               <tr key={d._id} className="border-b border-brand-sandBorder/60 last:border-0 hover:bg-brand-hoverRow">
                 <td className="td font-medium text-brand-darkCharcoal">{d.name}</td>
                 <td className="td">{nameOf(d.parentDepartmentId)}</td>
                 <td className="td">{nameOf(d.managerId)}</td>
+                {canWrite && <td className="td flex justify-end gap-1"><button onClick={() => editDepartment(d)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg"><Pencil className="w-4 h-4" /></button><button onClick={() => deleteDepartment(d._id)} className="p-1.5 rounded-lg text-brand-warningText hover:bg-brand-warningBg"><Trash2 className="w-4 h-4" /></button></td>}
               </tr>
             ))}
-            {departments.length === 0 && <EmptyRow cols={3} msg="No departments yet." />}
-            <tr><td colSpan={3} className="p-0"><Paginator page={deptList.page} totalPages={deptList.totalPages} totalItems={deptList.totalItems} pageSize={deptList.pageSize} onPage={deptList.setPage} /></td></tr>
+            {departments.length === 0 && <EmptyRow cols={canWrite ? 4 : 3} msg="No departments yet." />}
+            <tr><td colSpan={canWrite ? 4 : 3} className="p-0"><Paginator page={deptList.page} totalPages={deptList.totalPages} totalItems={deptList.totalItems} pageSize={deptList.pageSize} onPage={deptList.setPage} /></td></tr>
           </Table></Card>
         ) : (
           <Card><Table head={['Schedule', 'Working Days', 'Weekly Hours', ...(canWrite ? [''] : [])]}>
@@ -122,7 +140,7 @@ export const OrgModule: React.FC = () => {
                 <td className="td font-medium text-brand-darkCharcoal">{s.name}</td>
                 <td className="td">{(s.workingDays || []).length} days</td>
                 <td className="td font-semibold">{s.totalWeeklyHours ?? 0} h</td>
-                {canWrite && <td className="td"><button onClick={() => editSchedule(s)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg" title="Edit"><Pencil className="w-4 h-4" /></button></td>}
+                {canWrite && <td className="td flex justify-end gap-1"><button onClick={() => editSchedule(s)} className="p-1.5 rounded-lg text-brand-mutedSlate hover:text-brand-darkTeal hover:bg-brand-activeBg" title="Edit"><Pencil className="w-4 h-4" /></button><button onClick={() => deleteSchedule(s._id)} className="p-1.5 rounded-lg text-brand-warningText hover:bg-brand-warningBg"><Trash2 className="w-4 h-4" /></button></td>}
               </tr>
             ))}
             {schedules.length === 0 && <EmptyRow cols={canWrite ? 4 : 3} msg="No working schedules yet." />}
@@ -131,7 +149,7 @@ export const OrgModule: React.FC = () => {
         )}
 
       {form && (
-        <Drawer title={form.kind === 'DEPT' ? 'New Department' : form._id ? 'Edit Working Schedule' : 'New Working Schedule'} onClose={() => setForm(null)}
+        <Drawer title={form.kind === 'DEPT' ? (form._id ? 'Edit Department' : 'New Department') : form._id ? 'Edit Working Schedule' : 'New Working Schedule'} onClose={() => setForm(null)}
           footer={<>
             <button onClick={() => setForm(null)} className="px-4 py-2 text-sm text-brand-mutedSlate">Cancel</button>
             <button onClick={submit} disabled={!form.name || busy === 'save'} className="flex items-center gap-2 bg-brand-darkTeal hover:bg-brand-teal text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">{busy === 'save' && <Loader2 className="w-4 h-4 animate-spin" />} Save</button>

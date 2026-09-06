@@ -4,7 +4,8 @@ import { requireAnyPermission } from "../middleware/permission.middleware";
 import {
   createWorkingScheduleController,
   getWorkingSchedulesController,
-  updateWorkingScheduleController
+  updateWorkingScheduleController,
+  deleteWorkingScheduleController,
 } from "../controllers/working-schedule.controller";
 
 const router = Router();
@@ -17,5 +18,6 @@ router.get("/", requireAnyPermission("Organization.Read"), getWorkingSchedulesCo
 // Write — requires Organization.Write
 router.post("/", requireAnyPermission("Organization.Write"), createWorkingScheduleController);
 router.put("/:id", requireAnyPermission("Organization.Write"), updateWorkingScheduleController);
+router.delete("/:id", requireAnyPermission("Organization.Write"), deleteWorkingScheduleController);
 
 export default router;

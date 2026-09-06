@@ -4,7 +4,9 @@ import { requireAnyPermission } from "../middleware/permission.middleware";
 import {
   createJobPositionController,
   getJobPositionsController,
-  assignEmployeeJobPositionController
+  assignEmployeeJobPositionController,
+  updateJobPositionController,
+  deleteJobPositionController,
 } from "../controllers/job-position.controller";
 
 const router = Router();
@@ -17,5 +19,7 @@ router.get("/", requireAnyPermission("Organization.Read"), getJobPositionsContro
 // Write — requires Organization.Write
 router.post("/", requireAnyPermission("Organization.Write"), createJobPositionController);
 router.post("/employee/:employeeId/assign", requireAnyPermission("Organization.Write"), assignEmployeeJobPositionController);
+router.put("/:id", requireAnyPermission("Organization.Write"), updateJobPositionController);
+router.delete("/:id", requireAnyPermission("Organization.Write"), deleteJobPositionController);
 
 export default router;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProfileController, createEmployeeController, getAllEmployeesController, getEmployeeDetailController, updateEmployeePermissionsController } from "../controllers/employee.controller";
+import { getProfileController, createEmployeeController, getAllEmployeesController, getEmployeeDetailController, updateEmployeePermissionsController, updateEmployeeController } from "../controllers/employee.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requireAnyPermission, requirePermission } from "../middleware/permission.middleware";
 
@@ -19,6 +19,9 @@ router.get("/:id", requireAnyPermission("Employee.Read"), getEmployeeDetailContr
 
 // Create employee — requires Employee.Write
 router.post("/", requireAnyPermission("Employee.Write"), createEmployeeController);
+
+// Update employee — requires Employee.Write
+router.put("/:id", requireAnyPermission("Employee.Write"), updateEmployeeController);
 
 // Update employee permissions (Custom Overrides) — requires Employee.Write
 router.patch("/:id/permissions", requireAnyPermission("Employee.Write"), updateEmployeePermissionsController);

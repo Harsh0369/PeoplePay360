@@ -69,6 +69,18 @@ export async function login(email: string, password: string): Promise<AuthUser> 
   return payload.user;
 }
 
+export async function register(email: string, password: string, name: string): Promise<any> {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json?.message || json?.error || 'Registration failed');
+
+  return json?.data ?? json;
+}
+
 export function logout(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);

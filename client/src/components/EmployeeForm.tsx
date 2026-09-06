@@ -5,13 +5,17 @@ import { notify } from '../lib/toast';
 
 interface EmployeeFormProps {
   employee: Employee | null;
-  onSave: (emp: Employee) => void;
+  roles?: any[];
+  pendingUser?: any;
+  onSave: (emp: any) => void;
   onCancel: () => void;
-  onViewRelatedContracts: (employeeId: string) => void;
+  onViewRelatedContracts?: (employeeId: string) => void;
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   employee,
+  roles = [],
+  pendingUser,
   onSave,
   onCancel,
   onViewRelatedContracts
@@ -20,8 +24,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     employee || {
       id: `emp-${Date.now()}`,
       empCode: `EMP${Math.floor(100 + Math.random() * 900)}`,
-      name: '',
-      workEmail: '',
+      name: pendingUser ? pendingUser.name : '',
+      workEmail: pendingUser ? pendingUser.email : '',
       workPhone: '',
       jobPosition: '',
       department: '',
@@ -52,7 +56,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
       notify.error('Employee Name is required');
       return;
     }
-    onSave(formData);
+    const submitData = { ...formData };
+    if (pendingUser) {
+      (submitData as any).userId = pendingUser._id;
+    }
+    onSave(submitData);
   };
 
   const isBankMissing = !formData.bankAccountNo.trim();
@@ -106,7 +114,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={() => onViewRelatedContracts(formData.id)}
+              onClick={() => onViewRelatedContracts?.(formData.id!)}
               className="smart-button h-14 min-w-[100px] hover:border-brand-darkTeal hover:bg-brand-softSand transition-all"
               title="Click to view and filter contracts for this employee"
             >
@@ -225,6 +233,25 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   <option value="Sales & Marketing">Sales & Marketing</option>
                 </select>
               </div>
+
+              {pendingUser && (
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-brand-darkCharcoal mb-1">
+                    System Role *
+                  </label>
+                  <select
+                    value={(formData as any).roleId || ''}
+                    onChange={(e) => handleChange('roleId' as any, e.target.value)}
+                    className="w-full px-3.5 py-2 border border-brand-sandBorder rounded-lg text-xs font-semibold text-brand-darkCharcoal focus:outline-none focus:ring-1 focus:ring-brand-darkTeal bg-white"
+                    required
+                  >
+                    <option value="" disabled>Select a role...</option>
+                    {roles.map(r => (
+                      <option key={r._id || r.id} value={r._id || r.id}>{r.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 

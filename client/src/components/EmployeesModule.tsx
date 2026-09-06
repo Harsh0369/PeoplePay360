@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   Users, FileText, Briefcase, Building2, Mail, Phone,
-  LayoutGrid, List as ListIcon, ChevronRight, Zap, X, Loader2,
+  LayoutGrid, List as ListIcon, ChevronRight, Zap, X, Loader2, UserPlus, CheckCircle
 } from 'lucide-react';
 import { inr } from '../lib/format';
 import { fetchPaged } from '../lib/paged';
 import { useServerList } from '../hooks/usePagedList';
+import { useAuth } from '../hooks/useAuth';
 import { SearchBar } from './ui/SearchBar';
 import { Paginator } from './ui/Paginator';
 
@@ -33,12 +34,20 @@ const mapEmp = (e: any) => ({
 interface Props {
   onEditContract: (c: any) => void;
   onGoToContracts: () => void;
+  onApproveJoinRequest: (user: any) => void;
+  onEditEmployee: (e: any) => void;
+  canWrite: boolean;
 }
 
-export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContracts }) => {
+export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContracts, onApproveJoinRequest, onEditEmployee, canWrite }) => {
   const emp = useServerList('/employees', { limit: PAGE_SIZE });
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [detail, setDetail] = useState<any | null>(null);
+  const [moduleTab, setModuleTab] = useState<'directory' | 'requests'>('directory');
+  const [joinRequests, setJoinRequests] = useState<any[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+
+  const { can } = useAuth();
 
   // Lightweight aggregates + a small preview (no need to load full lists).
   const [contractsTotal, setContractsTotal] = useState(0);
@@ -46,11 +55,27 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
   const [preview, setPreview] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchPaged('/contracts', { page: 1, limit: 6 })
-      .then((r) => { setContractsTotal(r.pagination.totalItems); setPreview(r.items); })
-      .catch(() => {});
-    fetchPaged('/job-positions', { page: 1, limit: 1 }).then((r) => setJobPosTotal(r.pagination.totalItems)).catch(() => {});
-  }, []);
+    if (can('Contract.Read')) {
+      fetchPaged('/contracts', { page: 1, limit: 6 })
+        .then((r) => { setContractsTotal(r.pagination.totalItems); setPreview(r.items); })
+        .catch(() => {});
+    }
+    if (can('Organization.Read')) {
+      fetchPaged('/job-positions', { page: 1, limit: 1 }).then((r) => setJobPosTotal(r.pagination.totalItems)).catch(() => {});
+    }
+  }, [can]);
+
+  useEffect(() => {
+    if (moduleTab === 'requests') {
+      setRequestsLoading(true);
+      import('../services/hrApi').then(({ masterApi }) => {
+        masterApi.getJoinRequests()
+          .then((r: any) => setJoinRequests(r.items || []))
+          .catch(() => {})
+          .finally(() => setRequestsLoading(false));
+      });
+    }
+  }, [moduleTab]);
 
   const rows = emp.items.map(mapEmp);
 
@@ -61,9 +86,17 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
         <div className="flex flex-wrap items-center gap-y-3 gap-x-6 text-xs text-slate-700 font-medium">
           <Kpi icon={Users} label="Total Staff" value={`${emp.pagination.totalItems}`} />
           <Divider />
-          <Kpi icon={FileText} label="Contracts" value={`${contractsTotal}`} />
-          <Divider />
-          <Kpi icon={Briefcase} label="Job Positions" value={`${jobPosTotal}`} />
+          {can('Contract.Read') && (
+            <>
+              <Kpi icon={FileText} label="Contracts" value={`${contractsTotal}`} />
+              <Divider />
+            </>
+          )}
+          {can('Organization.Read') && (
+            <>
+              <Kpi icon={Briefcase} label="Job Positions" value={`${jobPosTotal}`} />
+            </>
+          )}
           <div className="ml-auto flex items-center gap-1.5 text-[11px] text-amber-700 bg-amber-50/80 px-2.5 py-1 rounded-full border border-amber-200/60 font-medium">
             <Zap className="w-3.5 h-3.5 text-amber-600" fill="currentColor" /><span>Live · server-paginated</span>
           </div>
@@ -71,24 +104,38 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
       </section>
 
       {/* Controls */}
-      <section className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-800"><Users className="w-5 h-5" /></div>
-          <div>
-            <h1 className="text-base font-bold text-slate-900 tracking-tight">Employees Directory</h1>
-            <p className="text-xs text-slate-500">Search across all employees — results load {PAGE_SIZE} at a time.</p>
-          </div>
+      <section className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col md:flex-row md:items-center md:justify-between">
+        <div className="flex border-b md:border-b-0 border-slate-200/90">
+          <button 
+            onClick={() => setModuleTab('directory')}
+            className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${moduleTab === 'directory' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
+          >
+            <Users className="w-4 h-4" /> Directory
+          </button>
+          {canWrite && (
+            <button 
+              onClick={() => setModuleTab('requests')}
+              className={`px-6 py-4 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${moduleTab === 'requests' ? 'border-brand-darkTeal text-brand-darkTeal bg-slate-50/50' : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/30'}`}
+            >
+              <UserPlus className="w-4 h-4" /> Join Requests
+            </button>
+          )}
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <SearchBar value={emp.search} onChange={emp.setSearch} placeholder="Search name or email…" className="w-64" />
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button onClick={() => setView('grid')} className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-brand-850 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`} title="Grid"><LayoutGrid className="w-4 h-4" /></button>
-            <button onClick={() => setView('list')} className={`p-1.5 rounded-lg transition-all ${view === 'list' ? 'bg-brand-850 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`} title="List"><ListIcon className="w-4 h-4" /></button>
+        
+        {moduleTab === 'directory' && (
+          <div className="p-4 flex items-center gap-3 flex-wrap justify-end">
+            <SearchBar value={emp.search} onChange={emp.setSearch} placeholder="Search name or email…" className="w-64" />
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button onClick={() => setView('grid')} className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-brand-850 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`} title="Grid"><LayoutGrid className="w-4 h-4" /></button>
+              <button onClick={() => setView('list')} className={`p-1.5 rounded-lg transition-all ${view === 'list' ? 'bg-brand-850 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`} title="List"><ListIcon className="w-4 h-4" /></button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Cards / list */}
+      {moduleTab === 'directory' ? (
+        <>
       {emp.loading ? (
         <div className="bg-white rounded-2xl border border-slate-200/90 p-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-brand-600" /></div>
       ) : emp.error ? (
@@ -159,6 +206,44 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
           <Paginator page={emp.page} totalPages={emp.pagination.totalPages} totalItems={emp.pagination.totalItems} pageSize={emp.pagination.pageSize} onPage={emp.setPage} />
         </div>
       )}
+      </>
+      ) : (
+        <section className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-800"><UserPlus className="w-5 h-5" /></div>
+              <div><h2 className="text-sm font-bold text-slate-900">Pending Join Requests</h2><p className="text-xs text-slate-500">Approve users to onboard them as employees.</p></div>
+            </div>
+          </div>
+          {requestsLoading ? (
+            <div className="p-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-brand-600" /></div>
+          ) : joinRequests.length === 0 ? (
+            <div className="p-16 text-center text-slate-400">No pending join requests.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-600">
+                <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200/70">
+                  <tr><th className="py-3 px-5">Name</th><th className="py-3 px-5">Email</th><th className="py-3 px-5">Date</th><th className="py-3 px-5 text-right">Action</th></tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {joinRequests.map((req) => (
+                    <tr key={req._id} className="hover:bg-slate-50/60">
+                      <td className="py-3.5 px-5 font-bold text-slate-900">{req.name}</td>
+                      <td className="py-3.5 px-5">{req.email}</td>
+                      <td className="py-3.5 px-5">{new Date(req.createdAt).toLocaleDateString()}</td>
+                      <td className="py-3.5 px-5 text-right">
+                        <button onClick={() => onApproveJoinRequest(req)} className="font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ml-auto">
+                          <CheckCircle className="w-4 h-4" /> Approve
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Contracts preview */}
       {preview.length > 0 && (
@@ -213,7 +298,19 @@ export const EmployeesModule: React.FC<Props> = ({ onEditContract, onGoToContrac
                 <DetailRow icon={Briefcase} label="Position" value={detail.jobPosition} />
                 <DetailRow icon={FileText} label="Employee Code" value={detail.empCode} />
               </DetailBlock>
-              <p className="text-[11px] text-slate-400 text-center">Employee records are read-only in this view.</p>
+              {canWrite && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      const fullData = emp.items.find((i: any) => i._id === detail.id || i.id === detail.id);
+                      if (fullData) onEditEmployee(fullData);
+                    }}
+                    className="w-full py-2.5 bg-brand-darkTeal text-white font-bold rounded-xl flex items-center justify-center gap-2"
+                  >
+                    Edit Employee
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -46,11 +46,14 @@ export function App() {
   const [employeeViewMode, setEmployeeViewMode] = useState<'KANBAN' | 'LIST'>('KANBAN');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isEditingEmployee, setIsEditingEmployee] = useState(false);
+  const [pendingUser, setPendingUser] = useState<any>(null);
+  const [roles, setRoles] = useState<any[]>([]);
 
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [isEditingContract, setIsEditingContract] = useState(false);
 
   const [isCreatingJobPosition, setIsCreatingJobPosition] = useState(false);
+  const [selectedJobPosition, setSelectedJobPosition] = useState<JobPosition | null>(null);
 
   // Filter & Search
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,7 +79,8 @@ export function App() {
       // pages. Here we only load the small reference lists the FORMS need for
       // their dropdowns (employees for contract/assign pickers, departments,
       // job positions), and only what this role may read.
-      apiService.getEmployees().then(setEmployees).catch(() => setEmployees([]));
+      if (canView('EMPLOYEES')) apiService.getEmployees().then(setEmployees).catch(() => setEmployees([]));
+      if (canView('SETTINGS')) masterApi.getRoles().then(setRoles).catch(() => setRoles([]));
       if (canView('ORG')) apiService.getDepartments().then(setDepartments).catch(() => setDepartments([]));
       if (canView('JOB_POSITIONS')) apiService.getJobPositions().then(setJobPositions).catch(() => setJobPositions([]));
     }
@@ -154,24 +158,22 @@ export function App() {
     return matchesEmp && matchesSearch;
   });
 
-  // Handlers - Employees. The backend has no employee-update route, and creating
-  // an employee requires a linked User account (no user-create endpoint yet), so
-  // we surface the real backend response instead of faking success.
-  const handleSaveEmployee = async (empData: Employee) => {
-    if (selectedEmployee?.id) {
-      showToast('Editing employees is not available yet — the backend has no update endpoint.');
-      setIsEditingEmployee(false);
-      setSelectedEmployee(null);
-      return;
-    }
+  // Handlers - Employees.
+  const handleSaveEmployee = async (empData: any) => {
     try {
-      await apiService.createEmployee(empData);
+      if (selectedEmployee?.id) {
+        await apiService.updateEmployee(selectedEmployee.id, empData);
+        showToast(`Employee "${empData.name}" updated successfully!`);
+      } else {
+        await apiService.createEmployee(empData);
+        showToast(`Employee "${empData.name}" created successfully!`);
+      }
       apiService.getEmployees().then(setEmployees).catch(() => {});
-      showToast(`Employee "${empData.name}" created successfully!`);
       setIsEditingEmployee(false);
       setSelectedEmployee(null);
+      setPendingUser(null);
     } catch (e: any) {
-      showToast(`Could not create employee: ${e.message}`);
+      showToast(`Could not save employee: ${e.message}`);
     }
   };
 
@@ -199,14 +201,32 @@ export function App() {
   };
 
   // Handlers - Job Positions
-  const handleCreateJobPosition = async (data: { title: string; departmentId: string; expectedSalary: number }) => {
-    const newPos = await apiService.createJobPosition(data);
-    const deptMatch = departments.find((d) => (d.id || d._id) === data.departmentId);
-    newPos.departmentName = deptMatch ? deptMatch.name : 'Engineering';
+  const handleSaveJobPosition = async (data: any) => {
+    try {
+      if (selectedJobPosition?.id) {
+        await apiService.updateJobPosition(selectedJobPosition.id, data);
+        showToast(`Job Position "${data.title}" updated successfully!`);
+      } else {
+        await apiService.createJobPosition(data);
+        showToast(`Job Position "${data.title}" created successfully!`);
+      }
+      apiService.getJobPositions().then(setJobPositions).catch(() => {});
+      setIsCreatingJobPosition(false);
+      setSelectedJobPosition(null);
+    } catch (e: any) {
+      showToast(`Could not save job position: ${e.message}`);
+    }
+  };
 
-    setJobPositions((prev) => [newPos, ...prev]);
-    setIsCreatingJobPosition(false);
-    showToast(`Job Position "${newPos.title}" created successfully!`);
+  const handleDeleteJobPosition = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this job position?')) return;
+    try {
+      await apiService.deleteJobPosition(id);
+      showToast('Job Position deleted.');
+      apiService.getJobPositions().then(setJobPositions).catch(() => {});
+    } catch (e: any) {
+      showToast(`Could not delete job position: ${e.message}`);
+    }
   };
 
   const handleAssignEmployeeJobPosition = async (employeeId: string, jobPositionId: string) => {
@@ -260,7 +280,10 @@ export function App() {
         onTabChange={(tab) => {
           setActiveTab(tab);
           setIsEditingEmployee(false);
+          setPendingUser(null);
           setIsEditingContract(false);
+          setIsCreatingJobPosition(false);
+          setSelectedJobPosition(null);
           if (tab === 'EMPLOYEES') setContractEmployeeFilter(null);
         }}
         isBackendConnected={isBackendConnected}
@@ -284,10 +307,28 @@ export function App() {
         {activeTab === 'AUDIT' && <AuditModule />}
         {activeTab === 'MY_PROFILE' && <MyProfileModule />}
         {activeTab === 'EMPLOYEES' && (
-          <EmployeesModule
-            onEditContract={(cnt) => { setSelectedContract(cnt); setActiveTab('CONTRACTS'); setIsEditingContract(true); }}
-            onGoToContracts={() => setActiveTab('CONTRACTS')}
-          />
+          isEditingEmployee ? (
+            <EmployeeForm
+              employee={selectedEmployee}
+              roles={roles}
+              pendingUser={pendingUser}
+              onSave={handleSaveEmployee}
+              onCancel={() => { setIsEditingEmployee(false); setSelectedEmployee(null); setPendingUser(null); }}
+              onViewRelatedContracts={handleSmartButtonViewContracts}
+            />
+          ) : (
+            <EmployeesModule
+              onEditContract={(cnt) => { setSelectedContract(cnt); setActiveTab('CONTRACTS'); setIsEditingContract(true); }}
+              onGoToContracts={() => setActiveTab('CONTRACTS')}
+              onApproveJoinRequest={(user) => { setPendingUser(user); setIsEditingEmployee(true); }}
+              onEditEmployee={(empData) => {
+                setSelectedEmployee(empData);
+                setPendingUser(null);
+                setIsEditingEmployee(true);
+              }}
+              canWrite={can(...PERM.employeeWrite)}
+            />
+          )
         )}
 
         {activeTab === 'CONTRACTS' && (
@@ -324,21 +365,23 @@ export function App() {
               </div>
             </div>
 
-            <JobPositionList
-              jobPositions={jobPositions}
-              departments={departments}
-              employees={employees}
-              canWrite={can(...PERM.jobPositionWrite)}
-              onOpenCreateForm={() => setIsCreatingJobPosition(true)}
-              onAssignEmployee={handleAssignEmployeeJobPosition}
-            />
-
-            {isCreatingJobPosition && (
-              <JobPositionForm
+            {isCreatingJobPosition ? (
+              <JobPositionForm 
+                jobPosition={selectedJobPosition}
                 departments={departments}
-                existingPositions={jobPositions}
-                onSubmit={handleCreateJobPosition}
-                onClose={() => setIsCreatingJobPosition(false)}
+                onSave={handleSaveJobPosition} 
+                onCancel={() => { setIsCreatingJobPosition(false); setSelectedJobPosition(null); }} 
+              />
+            ) : (
+              <JobPositionList
+                jobPositions={jobPositions}
+                departments={departments}
+                employees={employees}
+                canWrite={can(...PERM.jobPositionWrite)}
+                onOpenCreateForm={() => { setSelectedJobPosition(null); setIsCreatingJobPosition(true); }}
+                onEdit={(pos) => { setSelectedJobPosition(pos); setIsCreatingJobPosition(true); }}
+                onDelete={handleDeleteJobPosition}
+                onAssignEmployee={handleAssignEmployeeJobPosition}
               />
             )}
           </div>

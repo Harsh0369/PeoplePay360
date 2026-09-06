@@ -8,6 +8,8 @@ interface JobPositionListProps {
   departments: Department[];
   employees: Employee[];
   onOpenCreateForm: () => void;
+  onEdit: (pos: JobPosition) => void;
+  onDelete: (id: string) => void;
   onAssignEmployee: (employeeId: string, jobPositionId: string) => void;
   canWrite?: boolean;
 }
@@ -17,6 +19,8 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
   departments,
   employees,
   onOpenCreateForm,
+  onEdit,
+  onDelete,
   onAssignEmployee,
   canWrite = false,
 }) => {
@@ -175,16 +179,32 @@ export const JobPositionList: React.FC<JobPositionListProps> = ({
                 </span>
 
                 {canWrite && (
-                  <button
-                    onClick={() => {
-                      setAssigningPosition(pos);
-                      setSelectedEmployeeId(employees[0]?.id || '');
-                    }}
-                    className="px-3 py-1.5 text-xs font-bold text-brand-deepTeal bg-brand-softSand hover:bg-brand-teal hover:text-white rounded-lg transition-all flex items-center space-x-1"
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Assign Employee</span>
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => onEdit(pos)}
+                      className="px-2 py-1.5 text-xs font-bold text-brand-charcoal hover:bg-brand-teal hover:text-white rounded-lg transition-all"
+                      title="Edit"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => onDelete(pos.id || pos._id || '')}
+                      className="px-2 py-1.5 text-xs font-bold text-red-600 hover:bg-red-500 hover:text-white rounded-lg transition-all"
+                      title="Delete"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAssigningPosition(pos);
+                        setSelectedEmployeeId(employees[0]?.id || '');
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-brand-deepTeal bg-brand-softSand hover:bg-brand-teal hover:text-white rounded-lg transition-all flex items-center space-x-1"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Assign Employee</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

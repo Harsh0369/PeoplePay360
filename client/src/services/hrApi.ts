@@ -49,10 +49,16 @@ export const masterApi = {
   getDepartments: () => req('GET', '/departments'),
   createDepartment: (data: { name: string; parentDepartmentId?: string; managerId?: string }) =>
     req('POST', '/departments', data),
+  updateDepartment: (id: string, data: any) => req('PUT', `/departments/${id}`, data),
+  deleteDepartment: (id: string) => req('DELETE', `/departments/${id}`),
   getJobPositions: () => req('GET', '/job-positions'),
+  createJobPosition: (data: any) => req('POST', '/job-positions', data),
+  updateJobPosition: (id: string, data: any) => req('PUT', `/job-positions/${id}`, data),
+  deleteJobPosition: (id: string) => req('DELETE', `/job-positions/${id}`),
   getWorkingSchedules: () => req('GET', '/working-schedules'),
   createWorkingSchedule: (data: any) => req('POST', '/working-schedules', data),
   updateWorkingSchedule: (id: string, data: any) => req('PUT', `/working-schedules/${id}`, data),
+  deleteWorkingSchedule: (id: string) => req('DELETE', `/working-schedules/${id}`),
   assignDepartment: (employeeId: string, departmentId: string) =>
     req('POST', `/departments/employee/${employeeId}/assign`, { departmentId }),
   getRoles: () => req('GET', '/roles'),
@@ -60,7 +66,11 @@ export const masterApi = {
   updateRole: (id: string, data: any) => req('PUT', `/roles/${id}`, data),
   deleteRole: (id: string) => req('DELETE', `/roles/${id}`),
   getEmployees: () => req('GET', '/employees'),
+  createEmployee: (data: any) => req('POST', '/employees', data),
+  updateEmployee: (id: string, data: any) => req('PUT', `/employees/${id}`, data),
   getMyProfile: () => req('GET', '/employees/me'), // { employee, activeContract }
+  getJoinRequests: () => req('GET', '/users/join-requests'),
+  updateUserRole: (userId: string, roleId: string) => req('PUT', `/users/${userId}/role`, { roleId }),
 };
 
 // ---- Attendance ----
