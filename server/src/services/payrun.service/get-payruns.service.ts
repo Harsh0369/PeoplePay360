@@ -1,5 +1,6 @@
 import { Payrun } from "../../models/payrun.model";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getPayrunsService = async (
   pagination: PaginationParams,
@@ -32,7 +33,7 @@ export const getPayrunsService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    Payrun.countDocuments(query)
+    smartCount(Payrun, query)
   ]);
 
   return {

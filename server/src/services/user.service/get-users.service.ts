@@ -1,5 +1,6 @@
 import { User } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getUsersService = async (pagination: PaginationParams) => {
   const { page, limit, skip } = pagination;
@@ -11,7 +12,7 @@ export const getUsersService = async (pagination: PaginationParams) => {
       .skip(skip)
       .limit(limit)
       .lean(),
-    User.countDocuments()
+    smartCount(User)
   ]);
 
   return {

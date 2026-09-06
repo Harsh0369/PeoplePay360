@@ -106,6 +106,8 @@ payslipSchema.index(
   { unique: true, name: "unique_payslip_per_employee_per_payrun" }
 );
 payslipSchema.index({ periodStart: 1, periodEnd: 1 });
+// Payslip list sorts by createdAt desc.
+payslipSchema.index({ createdAt: -1 });
 
 // Immutability guard: Once status is "Paid", block all modifications
 payslipSchema.pre("save", function (next) {

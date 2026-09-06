@@ -45,5 +45,7 @@ const timeOffAllocationSchema = new Schema<ITimeOffAllocation>(
 
 // An employee can only have one allocation per type per year
 timeOffAllocationSchema.index({ employeeId: 1, timeOffTypeId: 1, validityYear: 1 }, { unique: true });
+// Allocation list sorts by validityYear desc (unfiltered).
+timeOffAllocationSchema.index({ validityYear: -1 });
 
 export const TimeOffAllocation = mongoose.model<ITimeOffAllocation>("TimeOffAllocation", timeOffAllocationSchema);

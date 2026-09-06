@@ -59,4 +59,7 @@ const timeOffRequestSchema = new Schema<ITimeOffRequest>(
   { timestamps: true }
 );
 
+// The requests list sorts by createdAt desc (unfiltered).
+timeOffRequestSchema.index({ createdAt: -1 });
+
 export const TimeOffRequest = mongoose.model<ITimeOffRequest>("TimeOffRequest", timeOffRequestSchema);

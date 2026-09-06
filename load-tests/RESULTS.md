@@ -1,5 +1,31 @@
 # Load Test Results — 1,000 Concurrent Users
 
+> **Update — after local-only optimizations.** The same 1k profile was re-run after
+> the optimizations below (bigger DB pool, cached+parallelized dashboard,
+> `estimatedDocumentCount` for unfiltered totals, sort-covering indexes, `.lean()`).
+> No Redis/queue/external services were added.
+>
+> | Metric (peak 1k) | Before | After | Change |
+> |---|---|---|---|
+> | Failed requests | 97.2% | **85.9%** | ↓ |
+> | Checks passed | 2.8% | **14.5%** | **≈5× more** |
+> | Business errors | 97.5% | **88.0%** | ↓ |
+> | Data served | 419 KB | **9.0 MB** | **≈21× more** |
+> | Successful requests | 205 | **~1,090** | **≈5×** |
+> | A single warm read (idle) | ~0.9s | **~0.25s** | **≈3.6× faster** |
+>
+> **Takeaway:** within the local-only constraint the app now serves several times
+> more successful traffic per run. 1,000 concurrent users still exceeds what a
+> **single Node process + shared Atlas M0** can absorb (offered load ≫ capacity),
+> so p95 stays at the timeout ceiling at the very peak — closing that final gap
+> needs horizontal scaling (multi-process) and a larger DB tier, which are out of
+> scope by request. See `reports/before-optimization.html` vs
+> `reports/after-optimization.html`. Optimizations are listed in the repo chat /
+> commit `feat(perf)`.
+
+---
+
+
 **Suite:** `load-tests/k6` · **Tool:** k6 v2.2.0 · **Date:** 2026-09-06
 **Target:** `http://localhost:5000/api/v1` (single-process `tsx` dev server → MongoDB Atlas)
 **Raw report:** [`reports/summary.html`](reports/summary.html) · [`reports/summary.json`](reports/summary.json)

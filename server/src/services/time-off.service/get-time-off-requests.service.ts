@@ -1,5 +1,6 @@
 import { TimeOffRequest } from "../../models";
 import { PaginationParams, buildOffsetPagination } from "../../utils/pagination.util";
+import { smartCount } from "../../utils/db.util";
 
 export const getTimeOffRequestsService = async (
   pagination: PaginationParams,
@@ -25,7 +26,7 @@ export const getTimeOffRequestsService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    TimeOffRequest.countDocuments(query)
+    smartCount(TimeOffRequest, query)
   ]);
 
   return {

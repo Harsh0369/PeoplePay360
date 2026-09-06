@@ -1,5 +1,6 @@
 import { BusinessLog } from "../models/business-log.model";
 import { PaginationParams, buildOffsetPagination } from "../utils/pagination.util";
+import { smartCount } from "../utils/db.util";
 
 interface CreateLogParams {
   actorId: string;
@@ -47,7 +48,7 @@ export const getBusinessLogsService = async (
       .skip(skip)
       .limit(limit)
       .lean(),
-    BusinessLog.countDocuments(query)
+    smartCount(BusinessLog, query)
   ]);
 
   return {

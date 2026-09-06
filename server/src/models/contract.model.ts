@@ -55,6 +55,8 @@ const contractSchema = new Schema(
 
 // Compound index for finding active contracts in a period
 contractSchema.index({ employeeId: 1, status: 1, startDate: 1, endDate: 1 });
+// Contract list sorts by startDate desc (unfiltered).
+contractSchema.index({ startDate: -1 });
 
 export type ContractModel = InferSchemaType<typeof contractSchema>;
 export type ContractDocument = HydratedDocument<ContractModel>;

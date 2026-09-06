@@ -1,0 +1,980 @@
+{
+  "root_group": {
+    "path": "",
+    "id": "d41d8cd98f00b204e9800998ecf8427e",
+    "groups": [
+      {
+        "checks": [
+          {
+            "name": "login: status 200",
+            "path": "::setup::login: status 200",
+            "id": "638c85000baaeede3d6e857733f783df",
+            "passes": 1,
+            "fails": 0
+          },
+          {
+            "name": "login: returned token",
+            "path": "::setup::login: returned token",
+            "id": "689061ecec4d5f10cf219fd509570432",
+            "passes": 1,
+            "fails": 0
+          }
+        ],
+        "name": "setup",
+        "path": "::setup",
+        "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+        "groups": []
+      },
+      {
+        "name": "org",
+        "path": "::org",
+        "id": "22ce377edff404c640c8fdf442fe2b9a",
+        "groups": [],
+        "checks": [
+            {
+              "fails": 161,
+              "name": "GET /departments: status 2xx",
+              "path": "::org::GET /departments: status 2xx",
+              "id": "653b87f26ec968425822c1b1e246a96f",
+              "passes": 2
+            },
+            {
+              "path": "::org::GET /departments: has body",
+              "id": "c6e2040382ad6d3d6b14e4296914970e",
+              "passes": 2,
+              "fails": 161,
+              "name": "GET /departments: has body"
+            },
+            {
+              "id": "b3ecabd4d1f8be320a93a716f7f718f7",
+              "passes": 4,
+              "fails": 173,
+              "name": "GET /working-schedules: status 2xx",
+              "path": "::org::GET /working-schedules: status 2xx"
+            },
+            {
+              "fails": 173,
+              "name": "GET /working-schedules: has body",
+              "path": "::org::GET /working-schedules: has body",
+              "id": "c352c482758fadbb75aa2ef3b206eca7",
+              "passes": 4
+            }
+          ]
+      },
+      {
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /employees/:id: status 2xx",
+              "path": "::employees::GET /employees/:id: status 2xx",
+              "id": "08bda41f294eade44d0b8f84ffbd769e",
+              "passes": 4,
+              "fails": 224
+            },
+            {
+              "id": "9ee580c01f0a94cbe3990baa2f0a1910",
+              "passes": 4,
+              "fails": 224,
+              "name": "GET /employees/:id: has body",
+              "path": "::employees::GET /employees/:id: has body"
+            },
+            {
+              "id": "51805433694ea7230c27941345f39fba",
+              "passes": 3,
+              "fails": 233,
+              "name": "GET /employees/me: status 2xx",
+              "path": "::employees::GET /employees/me: status 2xx"
+            },
+            {
+              "path": "::employees::GET /employees/me: has body",
+              "id": "52128285963763c1e4b23239bb807bc7",
+              "passes": 3,
+              "fails": 233,
+              "name": "GET /employees/me: has body"
+            },
+            {
+              "name": "GET /employees: status 2xx",
+              "path": "::employees::GET /employees: status 2xx",
+              "id": "16c20364ed08e70245be614c97076e3b",
+              "passes": 3,
+              "fails": 255
+            },
+            {
+              "id": "06b9af91e763a434e251c4d51bf5c118",
+              "passes": 3,
+              "fails": 255,
+              "name": "GET /employees: has body",
+              "path": "::employees::GET /employees: has body"
+            },
+            {
+              "name": "GET /employees?search: status 2xx",
+              "path": "::employees::GET /employees?search: status 2xx",
+              "id": "bbd70f3b074005c2e695dff483ba7606",
+              "passes": 1,
+              "fails": 216
+            },
+            {
+              "name": "GET /employees?search: has body",
+              "path": "::employees::GET /employees?search: has body",
+              "id": "816ddd9a3b30b032db89a572d2284bf5",
+              "passes": 1,
+              "fails": 216
+            }
+          ],
+        "name": "employees",
+        "path": "::employees",
+        "id": "a07c1df4282412afc5b2d006dc6101ae"
+      },
+      {
+        "id": "4119ebca84f71856f7f0a0a5c24d1baa",
+        "groups": [],
+        "checks": [
+            {
+              "fails": 147,
+              "name": "GET /permissions/registry: status 2xx",
+              "path": "::permissions::GET /permissions/registry: status 2xx",
+              "id": "50439324efa3dc485a4cb8abf555f35e",
+              "passes": 4
+            },
+            {
+              "id": "27a6d5a0e967a82280ffb94827414698",
+              "passes": 4,
+              "fails": 147,
+              "name": "GET /permissions/registry: has body",
+              "path": "::permissions::GET /permissions/registry: has body"
+            }
+          ],
+        "name": "permissions",
+        "path": "::permissions"
+      },
+      {
+        "id": "e1e03b8547c8ddb6f4e70a203263b6ce",
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /contracts: status 2xx",
+              "path": "::contracts::GET /contracts: status 2xx",
+              "id": "92d4b885b9bf6bf58989900a6e2dfe8f",
+              "passes": 4,
+              "fails": 287
+            },
+            {
+              "passes": 4,
+              "fails": 287,
+              "name": "GET /contracts: has body",
+              "path": "::contracts::GET /contracts: has body",
+              "id": "43baaa10ebbe41e751678ed2cc026da4"
+            },
+            {
+              "name": "GET /contracts/applicable/:employeeId: status 2xx",
+              "path": "::contracts::GET /contracts/applicable/:employeeId: status 2xx",
+              "id": "97570e2e381d8666d64b18d717cf239c",
+              "passes": 0,
+              "fails": 278
+            },
+            {
+              "id": "32afd34cb772661db2172336d52c82a7",
+              "passes": 7,
+              "fails": 271,
+              "name": "GET /contracts/applicable/:employeeId: has body",
+              "path": "::contracts::GET /contracts/applicable/:employeeId: has body"
+            }
+          ],
+        "name": "contracts",
+        "path": "::contracts"
+      },
+      {
+        "name": "timeoff",
+        "path": "::timeoff",
+        "id": "753d1a2edc62ebe238d7de638b6c93f0",
+        "groups": [],
+        "checks": [
+            {
+              "id": "6dedbad99bd51058af2effcfd25cf450",
+              "passes": 1,
+              "fails": 85,
+              "name": "GET /time-off/my/allocations: status 2xx",
+              "path": "::timeoff::GET /time-off/my/allocations: status 2xx"
+            },
+            {
+              "fails": 85,
+              "name": "GET /time-off/my/allocations: has body",
+              "path": "::timeoff::GET /time-off/my/allocations: has body",
+              "id": "d5b790d0591e50dd234ae829a8b9a6ed",
+              "passes": 1
+            },
+            {
+              "name": "GET /time-off/my/requests: status 2xx",
+              "path": "::timeoff::GET /time-off/my/requests: status 2xx",
+              "id": "3418dd1ec79278a648c59171e2eaafe2",
+              "passes": 2,
+              "fails": 93
+            },
+            {
+              "passes": 2,
+              "fails": 93,
+              "name": "GET /time-off/my/requests: has body",
+              "path": "::timeoff::GET /time-off/my/requests: has body",
+              "id": "df6e0fedba7cd5928f4d5084b5e9b91b"
+            },
+            {
+              "name": "GET /time-off/types: status 2xx",
+              "path": "::timeoff::GET /time-off/types: status 2xx",
+              "id": "890a94ef1073b67807086c7ea979c2d4",
+              "passes": 2,
+              "fails": 99
+            },
+            {
+              "name": "GET /time-off/types: has body",
+              "path": "::timeoff::GET /time-off/types: has body",
+              "id": "d2d1a426150267d560454092159fe1c6",
+              "passes": 2,
+              "fails": 99
+            },
+            {
+              "passes": 1,
+              "fails": 91,
+              "name": "GET /time-off/allocations: status 2xx",
+              "path": "::timeoff::GET /time-off/allocations: status 2xx",
+              "id": "60226d2ef3462c08dbed5631d86b1e50"
+            },
+            {
+              "name": "GET /time-off/allocations: has body",
+              "path": "::timeoff::GET /time-off/allocations: has body",
+              "id": "eeacf3ca3c31e5ec8240ff77f8016455",
+              "passes": 1,
+              "fails": 91
+            },
+            {
+              "name": "GET /time-off/requests: status 2xx",
+              "path": "::timeoff::GET /time-off/requests: status 2xx",
+              "id": "60ade79d9d5df945ed584012a30ae951",
+              "passes": 0,
+              "fails": 83
+            },
+            {
+              "path": "::timeoff::GET /time-off/requests: has body",
+              "id": "018fd6a488b2c705405891fa2c90dfcb",
+              "passes": 0,
+              "fails": 83,
+              "name": "GET /time-off/requests: has body"
+            }
+          ]
+      },
+      {
+        "name": "jobPositions",
+        "path": "::jobPositions",
+        "id": "bcb11e1521ff14ca9d69eb0ec9a357a3",
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /job-positions: status 2xx",
+              "path": "::jobPositions::GET /job-positions: status 2xx",
+              "id": "734d1dfec4d83bb3368601176cd06398",
+              "passes": 2,
+              "fails": 306
+            },
+            {
+              "name": "GET /job-positions: has body",
+              "path": "::jobPositions::GET /job-positions: has body",
+              "id": "98829218e0e6213aa9946c784b98edc7",
+              "passes": 2,
+              "fails": 306
+            }
+          ]
+      },
+      {
+        "checks": [
+          {
+            "passes": 2,
+            "fails": 194,
+            "name": "GET /auth/me: status 2xx",
+            "path": "::auth::GET /auth/me: status 2xx",
+            "id": "641566e290c5a8c0ff8c7f2a0919f03a"
+          },
+          {
+            "fails": 194,
+            "name": "GET /auth/me: has body",
+            "path": "::auth::GET /auth/me: has body",
+            "id": "5d34244e77509267cb889cfc627ffd28",
+            "passes": 2
+          }
+        ],
+        "name": "auth",
+        "path": "::auth",
+        "id": "7974aac4a665813eaeed4ec3fc0411a7",
+        "groups": []
+      },
+      {
+        "path": "::payroll",
+        "id": "a3e9af3d3bd3b58bdb271f6e89a08155",
+        "groups": [],
+        "checks": [
+            {
+              "path": "::payroll::GET /payruns/:id/eligible-employees: status 2xx",
+              "id": "5def0b240d6a3a936a753112eb1b8c26",
+              "passes": 0,
+              "fails": 101,
+              "name": "GET /payruns/:id/eligible-employees: status 2xx"
+            },
+            {
+              "name": "GET /payruns/:id/eligible-employees: has body",
+              "path": "::payroll::GET /payruns/:id/eligible-employees: has body",
+              "id": "5b5ee869b62d42d3d38338526235be2c",
+              "passes": 1,
+              "fails": 100
+            },
+            {
+              "name": "GET /payslips/my: status 2xx",
+              "path": "::payroll::GET /payslips/my: status 2xx",
+              "id": "ccbf9679839014746cefa643a45c0356",
+              "passes": 3,
+              "fails": 108
+            },
+            {
+              "name": "GET /payslips/my: has body",
+              "path": "::payroll::GET /payslips/my: has body",
+              "id": "35537b001bee4e5f6d6fece0b32720af",
+              "passes": 3,
+              "fails": 108
+            },
+            {
+              "fails": 106,
+              "name": "GET /payruns/:id: status 2xx",
+              "path": "::payroll::GET /payruns/:id: status 2xx",
+              "id": "1e8eb0729ad11ad797895cbaa15f07e4",
+              "passes": 0
+            },
+            {
+              "name": "GET /payruns/:id: has body",
+              "path": "::payroll::GET /payruns/:id: has body",
+              "id": "1666c48d02e0dc6d4a90d7dfcc23f3ac",
+              "passes": 0,
+              "fails": 106
+            },
+            {
+              "path": "::payroll::GET /payslips/:id: status 2xx",
+              "id": "72bcf6c9b93278e50eb9af126b815155",
+              "passes": 0,
+              "fails": 103,
+              "name": "GET /payslips/:id: status 2xx"
+            },
+            {
+              "passes": 0,
+              "fails": 103,
+              "name": "GET /payslips/:id: has body",
+              "path": "::payroll::GET /payslips/:id: has body",
+              "id": "ae765df263ee47cff5adfb5f420c3674"
+            },
+            {
+              "name": "GET /payslips: status 2xx",
+              "path": "::payroll::GET /payslips: status 2xx",
+              "id": "2fa72dc73e29f2e4317e867cc50ce78a",
+              "passes": 0,
+              "fails": 104
+            },
+            {
+              "passes": 0,
+              "fails": 104,
+              "name": "GET /payslips: has body",
+              "path": "::payroll::GET /payslips: has body",
+              "id": "126d019bfef64721b80f9b77d5751b23"
+            },
+            {
+              "id": "4b3212349524df4b1ff43518c9ba37f7",
+              "passes": 0,
+              "fails": 87,
+              "name": "GET /payruns: status 2xx",
+              "path": "::payroll::GET /payruns: status 2xx"
+            },
+            {
+              "path": "::payroll::GET /payruns: has body",
+              "id": "8ab35ccade36737a8049c837ed1037c5",
+              "passes": 0,
+              "fails": 87,
+              "name": "GET /payruns: has body"
+            }
+          ],
+        "name": "payroll"
+      },
+      {
+        "name": "config",
+        "path": "::config",
+        "id": "1e3f288e926c2282567ec9a55b7a2c2c",
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /payroll-config/structures: status 2xx",
+              "path": "::config::GET /payroll-config/structures: status 2xx",
+              "id": "6d8ae03c1547d33cd4574855a5065a42",
+              "passes": 1,
+              "fails": 150
+            },
+            {
+              "passes": 1,
+              "fails": 150,
+              "name": "GET /payroll-config/structures: has body",
+              "path": "::config::GET /payroll-config/structures: has body",
+              "id": "c124e44b066e14f6d2ff2fb75d5d0441"
+            },
+            {
+              "name": "GET /payroll-config/rules: status 2xx",
+              "path": "::config::GET /payroll-config/rules: status 2xx",
+              "id": "4a984056e98cbabb4be06a0187411542",
+              "passes": 1,
+              "fails": 149
+            },
+            {
+              "passes": 1,
+              "fails": 149,
+              "name": "GET /payroll-config/rules: has body",
+              "path": "::config::GET /payroll-config/rules: has body",
+              "id": "781258721f1898745bc7e35f4134776e"
+            }
+          ]
+      },
+      {
+        "name": "roles",
+        "path": "::roles",
+        "id": "ee2447bb7cc1396943f9543bcb6d9d3b",
+        "groups": [],
+        "checks": [
+            {
+              "path": "::roles::GET /roles/:id: status 2xx",
+              "id": "f89c54ba25c70396d5120f3a4795a16a",
+              "passes": 2,
+              "fails": 113,
+              "name": "GET /roles/:id: status 2xx"
+            },
+            {
+              "name": "GET /roles/:id: has body",
+              "path": "::roles::GET /roles/:id: has body",
+              "id": "0142942d95cd21ac4a363b1a70c86f70",
+              "passes": 2,
+              "fails": 113
+            },
+            {
+              "name": "GET /roles: status 2xx",
+              "path": "::roles::GET /roles: status 2xx",
+              "id": "463f1f3bb7680a1f27be842ffee96625",
+              "passes": 1,
+              "fails": 108
+            },
+            {
+              "path": "::roles::GET /roles: has body",
+              "id": "34202057cf4e245c9166e55c235deb23",
+              "passes": 1,
+              "fails": 108,
+              "name": "GET /roles: has body"
+            }
+          ]
+      },
+      {
+        "name": "attendance",
+        "path": "::attendance",
+        "id": "ea2918c8a5d07f2bb41582416287a192",
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /attendance/my: status 2xx",
+              "path": "::attendance::GET /attendance/my: status 2xx",
+              "id": "7efd4c61449cf6edd37bd1a73dbcc410",
+              "passes": 5,
+              "fails": 356
+            },
+            {
+              "name": "GET /attendance/my: has body",
+              "path": "::attendance::GET /attendance/my: has body",
+              "id": "820c03ac0f89f74227eed3cdce0f365b",
+              "passes": 5,
+              "fails": 356
+            },
+            {
+              "name": "GET /attendance: status 2xx",
+              "path": "::attendance::GET /attendance: status 2xx",
+              "id": "bfdbf88957802b9e854fcbd9fb160e09",
+              "passes": 2,
+              "fails": 328
+            },
+            {
+              "path": "::attendance::GET /attendance: has body",
+              "id": "79eb8cb8a5795af14cec99ba535cde3d",
+              "passes": 2,
+              "fails": 328,
+              "name": "GET /attendance: has body"
+            }
+          ]
+      },
+      {
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /business-logs: status 2xx",
+              "path": "::audit::GET /business-logs: status 2xx",
+              "id": "e33df2323e8d55e713f7d126a1e27666",
+              "passes": 3,
+              "fails": 379
+            },
+            {
+              "name": "GET /business-logs: has body",
+              "path": "::audit::GET /business-logs: has body",
+              "id": "45c6ba4fc2df2c3e2a4998799618f4db",
+              "passes": 3,
+              "fails": 379
+            }
+          ],
+        "name": "audit",
+        "path": "::audit",
+        "id": "e4d9bca7b10e0cc1d69004aca33826ff"
+      },
+      {
+        "name": "health",
+        "path": "::health",
+        "id": "612cc1c9a7c3d7996d1eb6414fb9c69d",
+        "groups": [],
+        "checks": [
+            {
+              "id": "a209ce9b2dae749b839107c205705418",
+              "passes": 80,
+              "fails": 0,
+              "name": "GET /health: status 2xx",
+              "path": "::health::GET /health: status 2xx"
+            },
+            {
+              "name": "GET /health: has body",
+              "path": "::health::GET /health: has body",
+              "id": "e72655d4bfdefd65d5aad46bd2195423",
+              "passes": 80,
+              "fails": 0
+            }
+          ]
+      },
+      {
+        "path": "::users",
+        "id": "56713dd9a24fad672d64226f5275b061",
+        "groups": [],
+        "checks": [
+            {
+              "path": "::users::GET /users/join-requests: status 2xx",
+              "id": "4032202d3b7d32857837ff3ec99dac38",
+              "passes": 1,
+              "fails": 125,
+              "name": "GET /users/join-requests: status 2xx"
+            },
+            {
+              "name": "GET /users/join-requests: has body",
+              "path": "::users::GET /users/join-requests: has body",
+              "id": "34f872f1b22669e48b7060142c84fdf0",
+              "passes": 1,
+              "fails": 125
+            },
+            {
+              "id": "dacf21aa49b98b692d4ef8e36c4e6693",
+              "passes": 1,
+              "fails": 117,
+              "name": "GET /users: status 2xx",
+              "path": "::users::GET /users: status 2xx"
+            },
+            {
+              "name": "GET /users: has body",
+              "path": "::users::GET /users: has body",
+              "id": "34d4c31fa43c2aed10fbc1373974c3a9",
+              "passes": 1,
+              "fails": 117
+            }
+          ],
+        "name": "users"
+      },
+      {
+        "id": "4127c5b4ec4d84d8d6603b3aae632e90",
+        "groups": [],
+        "checks": [
+            {
+              "name": "GET /dashboard/stats: status 2xx",
+              "path": "::dashboard::GET /dashboard/stats: status 2xx",
+              "id": "1df157f4affe4d9ff68965fa1752bdaa",
+              "passes": 0,
+              "fails": 601
+            },
+            {
+              "name": "GET /dashboard/stats: has body",
+              "path": "::dashboard::GET /dashboard/stats: has body",
+              "id": "16752130318a2cd1b899d29a27de4db6",
+              "passes": 0,
+              "fails": 601
+            }
+          ],
+        "name": "dashboard",
+        "path": "::dashboard"
+      }
+    ],
+    "checks": [
+      {
+        "fails": 1146,
+        "name": "login: status 200",
+        "path": "::login: status 200",
+        "id": "4d9cb0041884c26a6b714904c7aba027",
+        "passes": 44
+      },
+      {
+        "id": "57281e51f670574c9c0675736da60ae8",
+        "passes": 44,
+        "fails": 1146,
+        "name": "login: returned token",
+        "path": "::login: returned token"
+      },
+      {
+        "passes": 21,
+        "fails": 23,
+        "name": "GET /auth/me: status 2xx",
+        "path": "::GET /auth/me: status 2xx",
+        "id": "8f7feca2473d284561922732262018f3"
+      },
+      {
+        "passes": 21,
+        "fails": 23,
+        "name": "GET /auth/me: has body",
+        "path": "::GET /auth/me: has body",
+        "id": "97c4f256e9f81ce9d41609abf9f7d7d1"
+      }
+    ],
+    "name": ""
+  },
+  "options": {
+    "summaryTrendStats": [
+      "avg",
+      "min",
+      "med",
+      "p(90)",
+      "p(95)",
+      "p(99)",
+      "max"
+    ],
+    "summaryTimeUnit": "",
+    "noColor": false
+  },
+  "state": {
+    "isStdErrTTY": false,
+    "testRunDurationMs": 302681.857,
+    "isStdOutTTY": false
+  },
+  "metrics": {
+    "checks": {
+      "values": {
+        "fails": 14250,
+        "rate": 0.02796725784447476,
+        "passes": 410
+      },
+      "thresholds": {
+        "rate>0.95": {
+          "ok": false
+        }
+      },
+      "type": "rate",
+      "contains": "default"
+    },
+    "dropped_iterations": {
+      "contains": "default",
+      "values": {
+        "count": 160,
+        "rate": 0.5286078312913218
+      },
+      "type": "counter"
+    },
+    "vus_max": {
+      "type": "gauge",
+      "contains": "default",
+      "values": {
+        "value": 1150,
+        "min": 1020,
+        "max": 1150
+      }
+    },
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 7334,
+        "rate": 24.230061466815965
+      }
+    },
+    "http_req_sending": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "min": 0,
+        "med": 0,
+        "p(90)": 0.5117,
+        "p(95)": 0.5415349999999999,
+        "p(99)": 0.6490740000000002,
+        "max": 42.5577,
+        "avg": 0.10440979001908934
+      }
+    },
+    "http_req_receiving": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(90)": 0,
+        "p(95)": 0,
+        "p(99)": 0.5435780000000002,
+        "max": 1.8499,
+        "avg": 0.011926302154349604,
+        "min": 0,
+        "med": 0
+      }
+    },
+    "http_req_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "max": 30048.1878,
+        "avg": 29291.092605345013,
+        "min": 0.5081,
+        "med": 29999.5669,
+        "p(90)": 30000.103059999998,
+        "p(95)": 30000.355355,
+        "p(99)": 30002.077064
+      },
+      "thresholds": {
+        "p(95)<2000": {
+          "ok": false
+        },
+        "p(99)<5000": {
+          "ok": false
+        }
+      }
+    },
+    "business_errors": {
+      "values": {
+        "rate": 0.9745886952272357,
+        "passes": 5983,
+        "fails": 156
+      },
+      "type": "rate",
+      "contains": "default"
+    },
+    "http_req_blocked": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 1.0050578265612196,
+        "min": 0,
+        "med": 0.91795,
+        "p(90)": 1.30464,
+        "p(95)": 1.5719099999999997,
+        "p(99)": 2.8586030000000004,
+        "max": 49.4942
+      }
+    },
+    "http_req_duration{scenario:auth}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "min": 584.4631,
+        "med": 29999.6554,
+        "p(90)": 30000.17224,
+        "p(95)": 30000.484535,
+        "p(99)": 30001.099872,
+        "max": 30032.3531,
+        "avg": 28834.773364829864
+      },
+      "thresholds": {
+        "p(95)<4000": {
+          "ok": false
+        }
+      }
+    },
+    "http_req_connecting": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "min": 0,
+        "med": 0.84975,
+        "p(90)": 1.21498,
+        "p(95)": 1.4221399999999997,
+        "p(99)": 2.322815000000002,
+        "max": 19.8152,
+        "avg": 0.8881393236978448
+      }
+    },
+    "data_sent": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "count": 2068296,
+        "rate": 6833.2341439282245
+      }
+    },
+    "http_req_duration{expected_response:true}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(90)": 16714.699959999998,
+        "p(95)": 20373.156239999975,
+        "p(99)": 27328.928476,
+        "max": 29187.8211,
+        "avg": 5382.995040000004,
+        "min": 0.5081,
+        "med": 2133.0527
+      }
+    },
+    "group_duration": {
+      "values": {
+        "med": 30000.5854,
+        "p(90)": 30001.152,
+        "p(95)": 30001.47168,
+        "p(99)": 30005.655742,
+        "max": 30049.2974,
+        "avg": 29408.308802707095,
+        "min": 1.4627
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "iterations": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "rate": 23.89637777331332,
+        "count": 7233
+      }
+    },
+    "api_calls": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 6139,
+        "rate": 20.282021726858908
+      }
+    },
+    "http_req_tls_handshaking": {
+      "contains": "time",
+      "values": {
+        "p(95)": 0,
+        "p(99)": 0,
+        "max": 0,
+        "avg": 0,
+        "min": 0,
+        "med": 0,
+        "p(90)": 0
+      },
+      "type": "trend"
+    },
+    "http_req_waiting": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(99)": 30002.042549,
+        "max": 30048.1878,
+        "avg": 29290.97626925283,
+        "min": 0,
+        "med": 29999.4945,
+        "p(90)": 30000.038520000002,
+        "p(95)": 30000.278945
+      }
+    },
+    "iteration_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(90)": 32252.8753,
+        "p(95)": 32385.35464,
+        "p(99)": 32488.249391999998,
+        "max": 51381.1509,
+        "avg": 30902.819854762987,
+        "min": 522.7842,
+        "med": 31349.0019
+      }
+    },
+    "vus": {
+      "type": "gauge",
+      "contains": "default",
+      "values": {
+        "min": 0,
+        "max": 1150,
+        "value": 3
+      }
+    },
+    "group_duration{group:::payroll}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 29826.382758496744,
+        "min": 3021.3414,
+        "med": 30000.6191,
+        "p(90)": 30001.181940000002,
+        "p(95)": 30001.4135,
+        "p(99)": 30003.74382,
+        "max": 30017.1289
+      },
+      "thresholds": {
+        "p(95)<3000": {
+          "ok": false
+        }
+      }
+    },
+    "data_received": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "count": 419423,
+        "rate": 1385.6892651481255
+      }
+    },
+    "group_duration{group:::employees}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(99)": 30005.538714000002,
+        "max": 30046.2509,
+        "avg": 29795.495429286486,
+        "min": 2066.6477,
+        "med": 30000.606,
+        "p(90)": 30001.14776,
+        "p(95)": 30001.383449999998
+      },
+      "thresholds": {
+        "p(95)<3000": {
+          "ok": false
+        }
+      }
+    },
+    "api_latency": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(90)": 30000.09616,
+        "p(95)": 30000.34175,
+        "p(99)": 30002.162492,
+        "max": 30048.1878,
+        "avg": 29344.70688424832,
+        "min": 0.5081,
+        "med": 29999.5509
+      }
+    },
+    "http_req_failed": {
+      "thresholds": {
+        "rate<0.10": {
+          "ok": false
+        }
+      },
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "rate": 0.9720479956367603,
+        "passes": 7129,
+        "fails": 205
+      }
+    }
+  },
+  "setup_data": {
+    "ids": {
+      "employeeId": "6a9c139450bb95fb06e59b0a",
+      "payrunId": "6a9cc317dfdd09f35b0bf4b7",
+      "payslipId": "6a9cc5eadfdd09f35b0c2749",
+      "roleId": "6a9c138a50bb95fb06e59a82"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTljMTM5MzUwYmI5NWZiMDZlNTliMDgiLCJpYXQiOjE3ODg2NTk3MTcsImV4cCI6MTc4OTI2NDUxN30.fovGMrD046WszNwdhpCXaU7QcJE7d7p6RbRDpgR5HHU"
+  }
+}

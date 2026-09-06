@@ -40,6 +40,9 @@ const businessLogSchema = new Schema(
 
 // Indexes for fast auditing searches
 businessLogSchema.index({ affectedEmployeeId: 1, entity: 1, createdAt: -1 });
+// The audit list sorts by createdAt desc with no filter — index it so we don't
+// scan + in-memory sort the whole collection on every page.
+businessLogSchema.index({ createdAt: -1 });
 
 export type BusinessLogModel = InferSchemaType<typeof businessLogSchema>;
 export type BusinessLogDocument = HydratedDocument<BusinessLogModel>;
