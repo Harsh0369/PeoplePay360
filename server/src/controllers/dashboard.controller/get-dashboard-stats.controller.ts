@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Employee, Payslip, Department, Attendance, TimeOffRequest } from "../../models";
+import { Employee, Payslip, Department, Attendance, TimeOffRequest, Contract } from "../../models";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 export const getDashboardStatsController = async (req: Request, res: Response): Promise<void> => {
@@ -74,8 +74,45 @@ export const getDashboardStatsController = async (req: Request, res: Response): 
     endOfToday.setHours(23, 59, 59, 999);
 
     const todaysAttendance = await Attendance.countDocuments({
-      clockInTime: { $gte: startOfToday, $lte: endOfToday },
+      "checkIn.time": { $gte: startOfToday, $lte: endOfToday },
     });
+
+    // 6. Employee Type Breakdown
+    const employeeTypeBreakdown = await Employee.aggregate([
+      { $match: { status: "Active" } },
+      {
+        $group: {
+          _id: "$employeeType",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          type: { $ifNull: ["$_id", "FULL_TIME"] },
+          count: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    // 7. Contract Status Breakdown
+    const contractStatusBreakdown = await Contract.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          status: { $ifNull: ["$_id", "Unknown"] },
+          count: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { count: -1 } }
+    ]);
 
     res.status(200).json({
       success: true,
@@ -86,6 +123,8 @@ export const getDashboardStatsController = async (req: Request, res: Response): 
         payslipsThisMonth: salaryStats.totalPayslips,
         pendingTimeOffs,
         todaysAttendance,
+        employeeTypeBreakdown,
+        contractStatusBreakdown,
       },
     });
   } catch (error: any) {

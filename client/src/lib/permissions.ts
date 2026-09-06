@@ -12,6 +12,7 @@ import { ActiveTab } from '../types';
 // Read permission(s) required to SEE a tab. null = any authenticated user.
 export const TAB_PERMS: Record<ActiveTab, string[] | null> = {
   MY_PROFILE: null,
+  DASHBOARD: ['admin', 'Dashboard.Read', 'Employee.Read'],
   EMPLOYEES: ['admin', 'Employee.Read'],
   CONTRACTS: ['admin', 'Contract.Read'],
   JOB_POSITIONS: ['admin', 'Organization.Read'],

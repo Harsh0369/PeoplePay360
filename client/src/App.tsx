@@ -3,6 +3,7 @@ import { Employee, Contract, JobPosition, Department, ActiveTab } from './types'
 import { apiService } from './services/api';
 import { Sidebar } from './components/Sidebar';
 import { TopHeader } from './components/TopHeader';
+import { DashboardModule } from './components/DashboardModule';
 import { EmployeesModule } from './components/EmployeesModule';
 import { EmployeeForm } from './components/EmployeeForm';
 import { ContractsModule } from './components/ContractsModule';
@@ -33,7 +34,7 @@ export function App() {
     return !perms || can(...perms);
   };
   // Main State Management
-  const [activeTab, setActiveTab] = useState<ActiveTab>('EMPLOYEES');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('DASHBOARD');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([]);
@@ -119,7 +120,7 @@ export function App() {
   useEffect(() => {
     if (!isAuthenticated) return;
     if (!canView(activeTab)) {
-      const order: ActiveTab[] = ['EMPLOYEES', 'ATTENDANCE', 'TIMEOFF', 'PAYROLL', 'CONTRACTS', 'ORG', 'CONFIG', 'SETTINGS', 'JOB_POSITIONS', 'MY_PROFILE'];
+      const order: ActiveTab[] = ['DASHBOARD', 'EMPLOYEES', 'ATTENDANCE', 'TIMEOFF', 'PAYROLL', 'CONTRACTS', 'ORG', 'CONFIG', 'SETTINGS', 'JOB_POSITIONS', 'MY_PROFILE'];
       setActiveTab(order.find(canView) || 'MY_PROFILE');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -268,7 +269,7 @@ export function App() {
   // -----------------------------------------------------------------------
 
   const TAB_TITLE: Record<string, string> = {
-    EMPLOYEES: 'Employees Directory', CONTRACTS: 'Contracts', JOB_POSITIONS: 'Job Positions',
+    DASHBOARD: 'Dashboard', EMPLOYEES: 'Employees Directory', CONTRACTS: 'Contracts', JOB_POSITIONS: 'Job Positions',
     ATTENDANCE: 'Attendance', TIMEOFF: 'Time Off', PAYROLL: 'Payroll', CONFIG: 'Configuration',
     ORG: 'Organization', SETTINGS: 'Roles & Access', AUDIT: 'Audit Trail', MY_PROFILE: 'My Profile',
   };
@@ -298,6 +299,7 @@ export function App() {
           <AccessDenied title={TAB_TITLE[activeTab]} />
         ) : (
         <>
+        {activeTab === 'DASHBOARD' && <DashboardModule />}
         {activeTab === 'PAYROLL' && <PayrollModule />}
         {activeTab === 'CONFIG' && <ConfigModule />}
         {activeTab === 'ATTENDANCE' && <AttendanceModule />}

@@ -51,6 +51,11 @@ const employeeSchema = new Schema(
       type: String,
       enum: ["Active", "Inactive", "Terminated"],
       default: "Active",
+    },
+    employeeType: {
+      type: String,
+      enum: ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERN"],
+      default: "FULL_TIME",
     }
   },
   {

@@ -62,6 +62,6 @@ export interface JobPosition {
 }
 
 export type ActiveTab =
-  | 'EMPLOYEES' | 'CONTRACTS' | 'JOB_POSITIONS'
+  | 'DASHBOARD' | 'EMPLOYEES' | 'CONTRACTS' | 'JOB_POSITIONS'
   | 'ATTENDANCE' | 'TIMEOFF' | 'PAYROLL' | 'CONFIG'
   | 'ORG' | 'SETTINGS' | 'AUDIT' | 'MY_PROFILE';

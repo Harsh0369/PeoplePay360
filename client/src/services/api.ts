@@ -41,6 +41,16 @@ export const apiService = {
     }
   },
 
+  async getDashboardStats(): Promise<any> {
+    const res = await fetch(`${API_BASE_URL}/dashboard/stats`, {
+      headers: authHeaders(),
+      signal: AbortSignal.timeout(20000),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json?.message || json?.error || `Request failed (${res.status})`);
+    return json?.data || {};
+  },
+
   async getEmployees(): Promise<Employee[]> {
     const data = await get('/employees');
     return data.map((item: any) => ({

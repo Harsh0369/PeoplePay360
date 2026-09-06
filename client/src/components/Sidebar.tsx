@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Users, FileText, Briefcase, Clock, CalendarCheck, Wallet,
-  SlidersHorizontal, Building2, ShieldCheck, ShieldAlert, UserCircle, LogOut, ShieldCheck as Logo, LucideIcon,
+  SlidersHorizontal, Building2, ShieldCheck, ShieldAlert, UserCircle, LogOut, ShieldCheck as Logo, LucideIcon, LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { roleLabel } from '../services/auth';
@@ -20,6 +20,7 @@ type Item = { tab: ActiveTab; label: string; icon: LucideIcon; section: 'main' |
 // Visibility is driven centrally by TAB_PERMS so nav, page guards and the
 // backend all agree on who sees what.
 const ITEMS: Item[] = [
+  { tab: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard, section: 'main' },
   { tab: 'EMPLOYEES', label: 'Employees', icon: Users, section: 'main' },
   { tab: 'CONTRACTS', label: 'Contracts', icon: FileText, section: 'main' },
   { tab: 'JOB_POSITIONS', label: 'Job Positions', icon: Briefcase, section: 'main' },
@@ -46,8 +47,8 @@ const NavLink: React.FC<{ item: Item; active: boolean; count?: number; onClick: 
         <Icon className={`w-4 h-4 ${active ? 'text-emerald-300' : 'text-emerald-300/60 group-hover:text-emerald-300'}`} />
         <span className="text-sm">{item.label}</span>
       </span>
-      {count != null && count > 0 && (
-        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${active ? 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' : 'bg-white/5 text-emerald-200/80'}`}>
+      {count != null && (
+        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${active ? 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' : 'bg-white/5 text-emerald-200/80'} ${count === 0 ? 'opacity-50' : ''}`}>
           {count}
         </span>
       )}
