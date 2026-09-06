@@ -1,1 +1,12 @@
-// Sample content for .dockerignore
+node_modules
+dist
+.env
+.env.*
+*.log
+npm-debug.log*
+.git
+.DS_Store
+coverage
+tmp
+generated
+storage/outbox
